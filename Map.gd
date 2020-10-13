@@ -125,7 +125,6 @@ func view_zlevel_incr(delta: int) -> void: # change map view to a different z-le
 	view_zlevel(current_zlevel + delta)
 
 func _draw() -> void:
-	#draw_rect(Rect2(Vector2.ZERO,get_pixel_size()),Color(.15,.15,.15))
 	# as said above, can't specify that Player is a Player while it's a Singleton
 	# warning-ignore:unsafe_property_access
 	if $"/root/Player".mousetool:
@@ -135,9 +134,3 @@ func _draw() -> void:
 		if not cell.is_default_cell:
 			var box_pos: Vector2 = cell.position
 			draw_rect(Rect2(box_pos,Vector2.ONE * cell.scale.x * 32),Color.white,false)
-#	for cell in cells:
-#		for i in cell.contents:
-#			if i is Wall:
-#				pass
-#				#draw_rect(Rect2(Vector2(cell.position),Vector2.ONE * $"/root/Game".cell_size),Color.gray)
-#				#i.draw_rect(Rect2(Vector2.ZERO,Vector2.ONE * $"/root/Game".cell_size),Color.gray)

@@ -30,12 +30,6 @@ func load_world() -> void:
 	add_child(map0)
 	set_current_map(map0)
 
-#func load_player():
-#	var player = preload("res://Player.tscn")
-#	player = player.instance()
-#	add_child(player)
-
 func _ready() -> void:
 	load_world()
-	#load_player()
 	TurnTimer.start()
