@@ -1,0 +1,13 @@
+[remap]
+
+importer="image"
+type="Image"
+path="res://.import/FullWhite.png-42b77e0e19943ca3251809aa12e8e8b8.image"
+
+[deps]
+
+source_file="res://Gfx/FullWhite.png"
+dest_files=[ "res://.import/FullWhite.png-42b77e0e19943ca3251809aa12e8e8b8.image" ]
+
+[params]
+
