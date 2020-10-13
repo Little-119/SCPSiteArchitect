@@ -82,7 +82,7 @@ func _ready() -> void:
 							var s = (Vector2.ONE * Constants.cell_size)/sprite.texture.get_size()
 							sprite.scale = s
 # warning-ignore:return_value_discarded
-	$"/root/Game/TurnTimer".connect("timeout",self,"on_turn")
+	#$"/root/Game/TurnTimer".connect("timeout",self,"on_turn")
 
 func on_turn() -> void:
 	pass

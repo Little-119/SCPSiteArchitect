@@ -11,6 +11,9 @@ var cell_position := Vector3.ZERO setget set_cell_position # This Cell's positio
 # warning-ignore:unused_class_variable
 var point_id: int = 0 # The cell's point ID in the parent map's AStar
 
+func _to_string():
+	return name
+
 func _init():
 	z_index -= 1
 
@@ -92,9 +95,9 @@ func add_child(child: Node,b: bool=false) -> void:
 		if parent:
 			parent.remove_child(child)
 		contents.append(child)
+		order_children()
 	.add_child(child,b)
 	zlevel_update(null)
-	order_children()
 
 func remove_child(child: Node) -> void:
 	if child.get("type"):

@@ -39,7 +39,16 @@ func _init() -> void:
 		things_list.append(thing)
 		things[thing.type] = thing
 
-func get_things_of_type(typename: String = "Thing",exclude_parent = true) -> Array:
+func get_thing_script(typename: String) -> GDScript:
+	if not things.has(typename):
+		push_warning("When getting script, did not find Thing with name %s" % typename)
+		return Thing # fall back to returning the base Thing
+	return things.get(typename)
+
+func create_thing(typename: String) -> Thing:
+	return get_thing_script(typename).new()
+
+func get_things_of_type(typename: String = "Thing",exclude_parent: bool = true) -> Array:
 	var type: Thing = things[typename] # get an instance of the Thing
 	var type_script: GDScript = type.get_script() # get the GDScript for the Thing. I'm still not sure if I understand the difference
 	var things_of_type: Array = []
@@ -50,7 +59,7 @@ func get_things_of_type(typename: String = "Thing",exclude_parent = true) -> Arr
 			things_of_type.append(thing)
 	return things_of_type
 
-func sort_for_layering(a,b): # Sort Things by layer, then by UID. Place non-Things last. For use with Array.sort
+func sort_for_layering(a,b) -> bool: # Sort Things by layer, then by UID. Place non-Things last, in whatever order. For use with Array.sort().
 	if not b is Thing:
 		return true
 	if not a is Thing:

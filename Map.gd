@@ -62,6 +62,8 @@ func _ready() -> void:
 	get_cell(Vector3(5,5,1)).add_thing(PlayerControlledActor)
 	# warning-ignore:unsafe_property_access
 	$"/root/Game".maps.append(self)
+	# warning-ignore:return_value_discarded
+	$"/root/Player".connect("camera_moved",self,"update")
 
 func get_cell(pos: Vector3) -> Cell: # get cell with cell_position
 	if pos.x >= 0 and pos.y >= 0 and pos.z >= 0 and cells_matrix.size() > pos.z and cells_matrix[pos.z].size() > pos.y and cells_matrix[pos.z][pos.y].size() > pos.x:
@@ -78,7 +80,7 @@ func get_cell_or_null(pos: Vector3) -> Cell:
 		return c
 
 func clamp_to_cell_grid(num: float) -> int:
-	return (((num as int) - abs((num as int) % Constants.cell_size))/Constants.cell_size) as int
+	return int(floor(num / Constants.cell_size))
 
 func get_cell_from_position(from_position: Vector2,z:int = 0) -> Cell:
 	var rounded_position = Vector3.ZERO
@@ -88,12 +90,12 @@ func get_cell_from_position(from_position: Vector2,z:int = 0) -> Cell:
 	return get_cell(rounded_position)
 
 func get_cell_from_screen_position(from_position: Vector2,z:int = 0) -> Cell: # get cell from local screen position
-	from_position += ($"/root/Player/Camera2D" as Camera2D).position
+	from_position += ($"/root/Player/Camera2D" as Camera2D).get_camera_position() - ($"/root" as Viewport).size/2
 	return get_cell_from_position(from_position,z)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouse:
-		#var local_pos: Vector2 = ($"/root/Player/Camera2D" as Camera2D).position + (event as InputEventMouse).position
+		#var local_pos: Vector2 = ($"/root/Player/Camera2D" as Camera2D).get_camera_position() + (event as InputEventMouse).position
 		var cell_at_pos: Cell = get_cell_from_screen_position((event as InputEventMouse).position,current_zlevel)
 		if event is InputEventMouseMotion:
 			update()
@@ -128,9 +130,7 @@ func _draw() -> void:
 	# as said above, can't specify that Player is a Player while it's a Singleton
 	# warning-ignore:unsafe_property_access
 	if $"/root/Player".mousetool:
-		# warning-ignore:unsafe_method_access
-		var mousepos: Vector2 = $"/root/Player".get_mouse_position()
-		var cell: Cell = get_cell_from_position(mousepos,current_zlevel)
+		var cell: Cell = get_cell_from_position(get_global_mouse_position(),current_zlevel)
 		if not cell.is_default_cell:
 			var box_pos: Vector2 = cell.position
 			draw_rect(Rect2(box_pos,Vector2.ONE * cell.scale.x * 32),Color.white,false)

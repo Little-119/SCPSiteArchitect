@@ -15,10 +15,11 @@ func set_current_map(map):
 			m.visible = false
 
 func _init() -> void:
-	add_child(default_cell)
 	default_cell.is_default_cell = true
 	default_cell.visible = false
 	default_cell.cell_position = Vector3(-1,-1,0)
+	add_child(default_cell)
+	
 	
 	TurnTimer.name = "TurnTimer"
 	TurnTimer.wait_time = 1.0

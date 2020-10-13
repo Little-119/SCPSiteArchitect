@@ -3,6 +3,8 @@ class MainPanel extends Panel:
 	func _init(UI: Control) -> void:
 		name = "MainPanel"
 		light_mask = 0
+		# the below line produces two warnings but I don't know how to ignore both without ignoring warnings in the whole file
+		# fixing the warning would require making UI a class, which is probably unnecessary
 		# warning-ignore:unsafe_property_access
 		margin_bottom = (UI.mainbutton_margin * -1.5) - UI.mainbutton_size
 		# warning-ignore:unsafe_property_access
