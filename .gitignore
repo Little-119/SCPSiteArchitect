@@ -5,3 +5,5 @@
 bin/
 build/
 lib/
+
+export_presets.cfg
