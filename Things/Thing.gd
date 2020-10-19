@@ -1,23 +1,22 @@
 extends Node2D
 class_name Thing
 
-var type: String = "Thing"
-var falling: float = 0
+const theme = preload("res://Gfx/ThingTheme.tres")
+const LAYER = preload("res://LayersEnum.gd")
 
-var coyote_time: int = 0
-var coyote_timer: int = 0
+var type := "Thing"
+var uid: int = -1
+# warning-ignore:unused_class_variable
+var layer: float = LAYER.EMPTY
+var size := Vector3.ONE
 
 var icon := "" # Can be a single character or a path to an image
 var icon_fallback := "" # In case Icon is a path to an image but it fails to load
 var color: Color = Color.white
 
-const theme = preload("res://Gfx/ThingTheme.tres")
-
-const LAYER = preload("res://LayersEnum.gd")
-# warning-ignore:unused_class_variable
-var layer: float = LAYER.EMPTY
-
-var uid: int = -1
+var falling: float = 0.0
+var coyote_time: int = 0 # time of grace period in which Thing does not fall due to gravity
+var coyote_timer: int = 0
 
 func get_parent_cell() -> Cell:
 	if $".." != null:
