@@ -95,7 +95,7 @@ func force_move(to,map = get_map()) -> void:
 	gravity()
 
 # warning-ignore:unused_argument
-func tool_lclick_oncell(cell: Cell) -> void:
+func tool_lclick_oncell(cell: Cell) -> void: # called in Map._unhanded_input()
 	pass
 
 # warning-ignore:unused_argument
