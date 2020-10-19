@@ -1,6 +1,6 @@
 extends Node
 
-const zoom_min: float = 1.0 # When zoomed below one, the UI jiggles when moving. Why? I don't know. This is fine.
+const zoom_min: float = .5
 const zoom_max: float = 5.0
 const zoom_increment: float = .25
 const move_speed: float = 200.0
@@ -45,7 +45,7 @@ func _process(delta: float) -> void:
 		# warning-ignore:unsafe_property_access
 		var uppers: Vector2 = $"/root/Game".current_map.get_pixel_size() + (VPort.size/-2)
 		($"Camera2D" as Camera2D).position = Vector2(clamp(new_pos.x,lowers.x,uppers.x),clamp(new_pos.y,lowers.y,uppers.y))
-		($"Camera2D" as Camera2D).force_update_scroll()
+		($"Camera2D" as Camera2D).force_update_scroll() # ensures UI is properly attached to camera, otherwise it lags behind when moving
 		emit_signal("camera_moved")
 
 func _ready() -> void:
@@ -54,14 +54,3 @@ func _ready() -> void:
 
 func equip_tool(t) -> void:
 	mousetool = t
-
-func get_mouse_position() -> Vector2:
-	var mouse_position: Vector2 = ($"/root" as Viewport).get_mouse_position()
-	return mouse_position
-
-func get_global_mouse_position() -> Vector2:
-	var mouse_position: Vector2 = get_mouse_position()
-	mouse_position -= (($"/root" as Viewport).size/2) - ($"Camera2D" as Camera2D).position
-	mouse_position *= ($"Camera2D" as Camera2D).zoom.x
-	return mouse_position
-	
