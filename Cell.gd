@@ -106,6 +106,7 @@ func add_child(child: Node,b: bool=false) -> void:
 		if child.get("type"):
 			map.emit_signal("thing_added",child)
 			if child.get("astar"):
+				# warning-ignore:unsafe_property_access
 				child.astar.refresh()
 				map.connect("thing_added",child,"_on_map_added_thing")
 	zlevel_update(null)

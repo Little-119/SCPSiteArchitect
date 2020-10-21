@@ -18,7 +18,9 @@ var falling: float = 0.0
 var coyote_time: int = 0 # time of grace period in which Thing does not fall due to gravity
 var coyote_timer: int = 0
 
+# warning-ignore:unused_class_variable
 var cell: Cell setget ,get_parent_cell
+# warning-ignore:unused_class_variable
 var map = null setget ,get_map
 
 func get_parent_cell() -> Cell:
@@ -87,18 +89,17 @@ func _ready() -> void:
 	$"/root/Game/TurnTimer".connect("timeout",self,"on_turn")
 
 func queue_free() -> void:
-	var map = get_map()
-	if map:
-		map.emit_signal("thing_removed")
+	if get_map():
+		get_map().emit_signal("thing_removed")
 	.queue_free()
 
 func on_turn() -> void:
 	pass
 
-func force_move(to,map = get_map()) -> void:
+func force_move(to,dest_map = get_map()) -> void:
 	if to is Vector3: #otherwise assume 'to' is a cell
-		assert(map)
-		to = map.get_cell(to)
+		assert(dest_map)
+		to = dest_map.get_cell(to)
 	to.add_thing(self)
 	gravity()
 
@@ -111,13 +112,12 @@ func can_coexist_with(other_thing: Thing) -> bool: # check if this Thing can be 
 	return true
 
 func gravity() -> void:
-	var map = get_map()
-	if map:
+	if get_map():
 		var support: bool = false
 		for thing in (get_parent_cell() as Cell).contents:
 			if thing != self and thing.get("solid"):
 				support = true
-		var below_cell = map.get_cell_or_null(get_parent_cell().cell_position + Vector3.FORWARD)
+		var below_cell = get_map().get_cell_or_null(get_parent_cell().cell_position + Vector3.FORWARD)
 		if not below_cell:
 			support = true
 		else:

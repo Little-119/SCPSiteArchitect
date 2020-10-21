@@ -10,6 +10,7 @@ const mainpanels := preload("res://MainPanels.gd")
 func _init() -> void:
 	for i in mainbuttons.size():
 		var b := Button.new()
+		b.focus_mode = Button.FOCUS_NONE
 		b.text = mainbuttons[i]
 		b.clip_text = true
 		b.anchor_bottom = 1
@@ -20,7 +21,7 @@ func _init() -> void:
 		b.margin_right = b.margin_left + mainbutton_size
 		b.rect_size = Vector2.ONE * 64
 		b.light_mask = 0
-# warning-ignore:return_value_discarded
+		# warning-ignore:return_value_discarded
 		b.connect("pressed",self,"_on_mainbutton_pressed",[mainbuttons[i]])
 		add_child(b)
 

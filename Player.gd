@@ -6,8 +6,6 @@ const zoom_increment: float = .25
 const move_speed: float = 200.0
 signal camera_moved
 
-onready var VPort: Viewport = get_viewport()
-
 var mousetool = null
 
 func _unhandled_input(event: InputEvent) -> void:

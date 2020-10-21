@@ -10,30 +10,29 @@ var astar := CustomAStar.new() # Navigation mesh for this Actor. Let us meet aga
 class CustomAStar:
 	extends AStar
 	var ready: bool = false
-	var actor: Thing = null
-	func get_point_path(from_id: int, to_id: int) -> PoolVector3Array:
-		var r = .get_point_path(from_id,to_id)
-		print(r)
-		return r
+	var actor: Actor = null
+#	func get_point_path(from_id: int, to_id: int) -> PoolVector3Array:
+#		var r: PoolVector3Array = .get_point_path(from_id,to_id)
+#		return r
 	
 	func refresh() -> void:
 		clear()
 		ready = false
-		var map = actor.get_map()
+		var map = actor.map
 		var map_astar: AStar = map.astar
 		reserve_space(map_astar.get_point_count())
-		for point_id in map_astar.get_points():
-			var point_pos: Vector3 = map_astar.get_point_position(point_id)
+		for p_id in map_astar.get_points():
+			var point_pos: Vector3 = map_astar.get_point_position(p_id)
 			var point_cell = map.get_cell(point_pos)
-			var weight_scale: float = map_astar.get_point_weight_scale(point_id)
-			var impassable: bool = actor.is_cell_impassable(point_cell)
-			add_point(point_id,point_pos,weight_scale)
-			set_point_disabled(point_id,impassable)
-		for point_id in get_points():
-			for connected_id in map_astar.get_point_connections(point_id):
-				connect_points(point_id,connected_id)
+			var weight_scale: float = map_astar.get_point_weight_scale(p_id)
+			var impassable: bool = (actor as Actor).is_cell_impassable(point_cell)
+			add_point(p_id,point_pos,weight_scale)
+			set_point_disabled(p_id,impassable)
+		for p_id in get_points():
+			for x_id in map_astar.get_point_connections(p_id):
+				connect_points(p_id,x_id)
 		ready = true
-		for a in actor.actions:
+		for a in (actor as Actor).actions:
 			a.think()
 
 func _init().():
@@ -42,7 +41,7 @@ func _init().():
 	layer = LAYER.ACTOR
 	astar.actor = self
 
-func is_cell_impassable(cell: Cell,test=false) -> bool:
+func is_cell_impassable(cell: Cell) -> bool:
 	for thing in cell.contents:
 		if thing == self:
 			continue
@@ -56,8 +55,9 @@ func test_move(cella: Cell,cellb: Cell) -> int: # probably needs optimization
 	
 	if is_cell_impassable(cellb):
 		return MOVE_OBSTRUCTED
-	var cpos_diff: Vector3 = cellb.cell_position - cella.cell_position
-	if cellb.map != cella.map:
+	#var cpos_diff: Vector3 = cellb.cell_position - cella.cell_position
+	# warning-ignore:unsafe_property_access
+	if cellb.map != (cella as Cell).map:
 		return MOVE_DIFFERENT_MAP # TODO?: Later down the line, if destination is on a different map, find a way to get to it somehow? Like RW caravans
 	if astar.is_point_disabled(cellb.point_id):
 		return MOVE_OBSTRUCTED
@@ -86,7 +86,7 @@ func move(direction: Vector3) -> int:
 
 func _on_map_added_thing(thing: Thing):
 	var thing_cell = thing.get_parent_cell()
-	var cell_impassability: bool = is_cell_impassable(thing_cell,true)
+	var cell_impassability: bool = is_cell_impassable(thing_cell)
 	var point_disabability: bool = astar.is_point_disabled(thing_cell.point_id)
 	astar.set_point_disabled(thing_cell.point_id,cell_impassability)
 	if point_disabability != cell_impassability:

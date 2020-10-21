@@ -1,7 +1,9 @@
 extends Node2D
 class_name Map
 
-signal thing_added
+# warning-ignore:unused_signal
+signal thing_added # emitted in Cell.add_child
+# warning-ignore:unused_signal
 signal thing_removed
 
 const max_size := Vector3(512,512,32)
@@ -18,6 +20,7 @@ func _to_string():
 
 func set_size(newsize: Vector3) -> void:
 	size = newsize
+	# warning-ignore:narrowing_conversion
 	astar.reserve_space(newsize.x*newsize.y*newsize.z)
 	# warning-ignore:narrowing_conversion
 	cells_matrix.resize(clamp(size.z,cells_matrix.size(),max_size.z))

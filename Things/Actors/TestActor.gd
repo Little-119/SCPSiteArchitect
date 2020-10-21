@@ -6,5 +6,6 @@ func _init():
 
 func _ready():
 	var act = Actions.MoveTo.new(self)
+	act.target = Vector3(15,15,0)
 	act.think()
 	act.execute()

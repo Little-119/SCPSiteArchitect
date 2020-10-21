@@ -4,7 +4,7 @@ class BaseAction:
 	extends Node
 	var actioner: Actor
 	var target
-	var path
+	var path: PoolVector3Array
 	var progress: int = 0
 	func _init(new_actioner: Actor) -> void:
 		actioner = new_actioner
@@ -25,7 +25,8 @@ class MoveTo:
 		pass
 	func think():
 		if actioner.astar.ready:
-			path = actioner.astar.get_point_path(actioner.cell.point_id,actioner.map.get_cell(Vector3(15,15,0)).point_id)
+			# warning-ignore:unsafe_property_access
+			path = actioner.astar.get_point_path(actioner.cell.point_id,actioner.map.get_cell(target).point_id)
 			if path.size() == 0:
 				fail()
 			else:
