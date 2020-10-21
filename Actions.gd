@@ -39,14 +39,8 @@ class MoveTo:
 			var result: int = actioner.move_to(path[0])
 			if result != Actor.MOVE_OK:
 				think()
-				return
-			path.remove(0)
-			progress = 0
-			match path.size():
-				0:
+			else:
+				if path.size() == 1:
 					finish()
-				var steps_left:
-					for i in range(1,clamp(steps_left,1,5)):
-						if actioner.test_move(actioner.get_map().get_cell(path[i-1]),actioner.get_map().get_cell(path[i])) != Actor.MOVE_OK:
-							think()
-							break
+				path.remove(0)
+				progress = 0
