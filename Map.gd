@@ -1,17 +1,24 @@
 extends Node2D
 class_name Map
 
+signal thing_added
+signal thing_removed
+
 const max_size := Vector3(512,512,32)
 var size: Vector3 setget set_size
-var cells_matrix := [] # Z(-levels), then Y, then X
-var cells := [] # 1D list of all cells in map
+var cells_matrix := [] # 3-D array of cells. In order of Z(-levels), then Y, then X
+var cells := [] # 1-D list of all cells in map
 
 var current_zlevel: int = 0
 
 var astar := AStar.new() # Let us meet again as stars.
 
+func _to_string():
+	return "Map"
+
 func set_size(newsize: Vector3) -> void:
 	size = newsize
+	astar.reserve_space(newsize.x*newsize.y*newsize.z)
 	# warning-ignore:narrowing_conversion
 	cells_matrix.resize(clamp(size.z,cells_matrix.size(),max_size.z))
 	for zn in size.z:
@@ -33,7 +40,7 @@ func set_size(newsize: Vector3) -> void:
 				# warning-ignore:unsafe_property_access
 				nc.map = self
 				nc.point_id = astar.get_point_count()
-				astar.add_point(nc.point_id,nc.cell_position,1)
+				astar.add_point(nc.point_id,nc.cell_position)
 				add_child(nc)
 			y[yn] = x
 		cells_matrix[zn] = y
@@ -49,21 +56,18 @@ func get_pixel_size() -> Vector2:
 	return Vector2(size.x * cell_size,size.y * cell_size)
 
 func _ready() -> void:
-	# warning-ignore:narrowing_conversion
-	astar.reserve_space(size.x*size.y*size.z)
-	
 	set_size(size)
-	
 	for cell in cells:
 		for adj_cell in cell.get_eight_adjacent_cells():
-			if not adj_cell.is_default_cell:
+			if not astar.are_points_connected(cell.point_id,adj_cell.point_id):
 				astar.connect_points(cell.point_id,adj_cell.point_id)
 	
-	get_cell(Vector3(5,5,1)).add_thing(PlayerControlledActor)
+	#get_cell(Vector3(5,5,1)).add_thing(PlayerControlledActor)
 	# warning-ignore:unsafe_property_access
 	$"/root/Game".maps.append(self)
 	# warning-ignore:return_value_discarded
 	$"/root/Player".connect("camera_moved",self,"update")
+	get_cell(Vector3(0,0,0)).add_thing(TestActor)
 
 func get_cell(pos: Vector3) -> Cell: # get cell with cell_position
 	if pos.x >= 0 and pos.y >= 0 and pos.z >= 0 and cells_matrix.size() > pos.z and cells_matrix[pos.z].size() > pos.y and cells_matrix[pos.z][pos.y].size() > pos.x:

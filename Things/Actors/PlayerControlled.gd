@@ -18,7 +18,7 @@ func _input(event):
 
 func on_turn():
 	if dir != Vector2.ZERO:
-# warning-ignore:return_value_discarded
+		# warning-ignore:return_value_discarded
 		move(Vector3(dir.x,dir.y,0))
 	dir = Vector2.ZERO
 

@@ -12,7 +12,7 @@ var cell_position := Vector3.ZERO setget set_cell_position # This Cell's positio
 var point_id: int = 0 # The cell's point ID in the parent map's AStar
 
 func _to_string():
-	return name
+	return "Cell (Pos: %s)" % name
 
 func _init():
 	z_index -= 1
@@ -40,7 +40,9 @@ func get_cells_in_directions(directions: Array) -> Array:
 	var adjacent_cells = []
 	for direction in directions:
 		if direction == Vector3.ZERO: continue
-		adjacent_cells.append(get_adjacent_cell(direction))
+		var adj_cell = get_adjacent_cell(direction)
+		if not adj_cell.is_default_cell: # collect only non-default cells
+			adjacent_cells.append(adj_cell)
 	return adjacent_cells
 
 func get_four_adjacent_cells() -> Array: # adjacent, excluding diagonals
@@ -90,13 +92,22 @@ func zlevel_update(zlevel) -> void:
 	modulate = Color(1,1,1,clamp(1-(diff/-4),0,1))
 
 func add_child(child: Node,b: bool=false) -> void:
+	var old_parent
 	if child.get("type"): # 'if child is Thing' causes an error. Workaround: see if it has a property called type
-		var parent = child.get_node_or_null("..")
-		if parent:
-			parent.remove_child(child)
+		old_parent = child.get_node_or_null("..")
+		if old_parent:
+			old_parent.remove_child(child)
 		contents.append(child)
 		order_children()
 	.add_child(child,b)
+	#if map:
+		#map.emit_signal("thing_added",child)
+	if not old_parent or (map != old_parent.map):
+		if child.get("type"):
+			map.emit_signal("thing_added",child)
+			if child.get("astar"):
+				child.refresh_astar()
+				map.connect("thing_added",child,"_on_map_added_thing")
 	zlevel_update(null)
 
 func remove_child(child: Node) -> void:
@@ -104,6 +115,8 @@ func remove_child(child: Node) -> void:
 		contents.erase(child)
 	.remove_child(child)
 	order_children()
+	#if map:
+		#map.emit_signal("thing_removed",child)
 	#if child is Wall:
 	#	var above_cell = $"..".get_cell_or_null(cell_position + Vector3.BACK)
 	#	if above_cell:

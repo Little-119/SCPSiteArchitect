@@ -18,6 +18,9 @@ var falling: float = 0.0
 var coyote_time: int = 0 # time of grace period in which Thing does not fall due to gravity
 var coyote_timer: int = 0
 
+var cell: Cell setget ,get_parent_cell
+var map = null setget ,get_map
+
 func get_parent_cell() -> Cell:
 	if $".." != null:
 		return ($".." as Cell)
@@ -80,8 +83,14 @@ func _ready() -> void:
 							sprite.texture = texture
 							var s = (Vector2.ONE * Constants.cell_size)/sprite.texture.get_size()
 							sprite.scale = s
-# warning-ignore:return_value_discarded
-	#$"/root/Game/TurnTimer".connect("timeout",self,"on_turn")
+	# warning-ignore:return_value_discarded
+	$"/root/Game/TurnTimer".connect("timeout",self,"on_turn")
+
+func queue_free() -> void:
+	var map = get_map()
+	if map:
+		map.emit_signal("thing_removed")
+	.queue_free()
 
 func on_turn() -> void:
 	pass
@@ -94,7 +103,7 @@ func force_move(to,map = get_map()) -> void:
 	gravity()
 
 # warning-ignore:unused_argument
-func tool_lclick_oncell(cell: Cell) -> void: # called in Map._unhanded_input()
+func tool_lclick_oncell(clicked_cell: Cell) -> void: # called in Map._unhanded_input()
 	pass
 
 # warning-ignore:unused_argument
@@ -106,7 +115,7 @@ func gravity() -> void:
 	if map:
 		var support: bool = false
 		for thing in (get_parent_cell() as Cell).contents:
-			if thing != self and thing.solid:
+			if thing != self and thing.get("solid"):
 				support = true
 		var below_cell = map.get_cell_or_null(get_parent_cell().cell_position + Vector3.FORWARD)
 		if not below_cell:

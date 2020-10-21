@@ -49,6 +49,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Things/Structures/Structure.gd"
 }, {
+"base": "Actor",
+"class": "TestActor",
+"language": "GDScript",
+"path": "res://Things/Actors/TestActor.gd"
+}, {
 "base": "Node2D",
 "class": "Thing",
 "language": "GDScript",
@@ -73,6 +78,7 @@ _global_script_class_icons={
 "Map": "",
 "PlayerControlledActor": "",
 "Structure": "",
+"TestActor": "",
 "Thing": "",
 "Turf": "",
 "Wall": ""
@@ -88,6 +94,7 @@ config/quit_on_go_back=false
 
 Constants="*res://Constants.gd"
 Player="*res://Player.tscn"
+Actions="*res://Actions.gd"
 ThingsManager="*res://ThingsManager.gd"
 
 [debug]

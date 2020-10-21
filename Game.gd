@@ -20,13 +20,12 @@ func _init() -> void:
 	default_cell.cell_position = Vector3(-1,-1,0)
 	add_child(default_cell)
 	
-	
 	TurnTimer.name = "TurnTimer"
-	TurnTimer.wait_time = 1.0
+	TurnTimer.wait_time = .01
 	add_child(TurnTimer)
 
 func load_world() -> void:
-	var map0 = (load("res://Map.gd") as GDScript).new()
+	var map0 = (load("res://Map.gd") as GDScript).new(Vector3(16,16,1))
 	map0.name = "Map0"
 	add_child(map0)
 	set_current_map(map0)
