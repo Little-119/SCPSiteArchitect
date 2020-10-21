@@ -28,8 +28,11 @@ func _unhandled_input(event: InputEvent) -> void:
 			($"Camera2D" as Camera2D).zoom = Vector2.ONE * z
 			($"Camera2D" as Camera2D).scale = Vector2.ONE * z
 	if event is InputEventKey and event.is_pressed():
-		if (event as InputEventKey).scancode == KEY_ESCAPE:
-			get_tree().quit()
+		match (event as InputEventKey).scancode:
+			KEY_SPACE:
+				$"/root/Game".set_process(not $"/root/Game".is_processing())
+			KEY_ESCAPE:
+				get_tree().quit()
 
 func _process(delta: float) -> void:
 	var move_dir := Vector2.ZERO

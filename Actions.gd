@@ -15,7 +15,7 @@ class BaseAction:
 	func execute() -> void:
 		pass
 	func finish() -> void:
-		self.queue_free()
+		queue_free()
 	func fail() -> void:
 		finish()
 
@@ -24,7 +24,7 @@ class MoveTo:
 	func _init(new_actioner: Actor).(new_actioner):
 		pass
 	func think():
-		if actioner.astar.has_meta("ready") and actioner.astar.get_meta("ready"):
+		if actioner.astar.ready:
 			path = actioner.astar.get_point_path(actioner.cell.point_id,actioner.map.get_cell(Vector3(15,15,0)).point_id)
 			if path.size() == 0:
 				fail()

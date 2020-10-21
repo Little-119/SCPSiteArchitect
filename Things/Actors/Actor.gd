@@ -5,12 +5,42 @@ enum  {MOVE_OK, MOVE_DIFFERENT_MAP, MOVE_FAIL_GENERIC, MOVE_INVALID_CELL, MOVE_O
 
 var actions := []
 
-var astar := AStar.new() # Navigation mesh for this Actor. Let us meet again as stars
+var astar := CustomAStar.new() # Navigation mesh for this Actor. Let us meet again as stars
+
+class CustomAStar:
+	extends AStar
+	var ready: bool = false
+	var actor: Thing = null
+	func get_point_path(from_id: int, to_id: int) -> PoolVector3Array:
+		var r = .get_point_path(from_id,to_id)
+		print(r)
+		return r
+	
+	func refresh() -> void:
+		clear()
+		ready = false
+		var map = actor.get_map()
+		var map_astar: AStar = map.astar
+		reserve_space(map_astar.get_point_count())
+		for point_id in map_astar.get_points():
+			var point_pos: Vector3 = map_astar.get_point_position(point_id)
+			var point_cell = map.get_cell(point_pos)
+			var weight_scale: float = map_astar.get_point_weight_scale(point_id)
+			var impassable: bool = actor.is_cell_impassable(point_cell)
+			add_point(point_id,point_pos,weight_scale)
+			set_point_disabled(point_id,impassable)
+		for point_id in get_points():
+			for connected_id in map_astar.get_point_connections(point_id):
+				connect_points(point_id,connected_id)
+		ready = true
+		for a in actor.actions:
+			a.think()
 
 func _init().():
 	type = "Actor"
 	icon = "A"
 	layer = LAYER.ACTOR
+	astar.actor = self
 
 func is_cell_impassable(cell: Cell,test=false) -> bool:
 	for thing in cell.contents:
@@ -62,27 +92,6 @@ func _on_map_added_thing(thing: Thing):
 	if point_disabability != cell_impassability:
 		for a in actions:
 			a.think()
-	
-
-func refresh_astar() -> void:
-	astar.clear()
-	astar.set_meta("ready",false)
-	var map = get_map()
-	var map_astar: AStar = map.astar
-	astar.reserve_space(map_astar.get_point_count())
-	for point_id in map_astar.get_points():
-		var point_pos: Vector3 = map_astar.get_point_position(point_id)
-		var point_cell = map.get_cell(point_pos)
-		var weight_scale: float = map_astar.get_point_weight_scale(point_id)
-		var impassable: bool = is_cell_impassable(point_cell)
-		astar.add_point(point_id,point_pos,weight_scale)
-		astar.set_point_disabled(point_id,impassable)
-	for point_id in astar.get_points():
-		for connected_id in map_astar.get_point_connections(point_id):
-			astar.connect_points(point_id,connected_id)
-	astar.set_meta("ready",true)
-	for a in actions:
-		a.think()
 
 func on_turn():
 	.on_turn()

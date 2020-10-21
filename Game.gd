@@ -24,6 +24,10 @@ func _init() -> void:
 	TurnTimer.wait_time = .01
 	add_child(TurnTimer)
 
+func set_process(enable: bool) -> void:
+	TurnTimer.paused = enable
+	.set_process(enable)
+
 func load_world() -> void:
 	var map0 = (load("res://Map.gd") as GDScript).new(Vector3(16,16,1))
 	map0.name = "Map0"

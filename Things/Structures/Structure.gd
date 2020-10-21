@@ -13,4 +13,4 @@ func tool_lclick_oncell(cell: Cell) -> void:
 			valid = false
 			break
 	if valid:
-		cell.add_thing(self.get_script())
+		cell.add_thing(get_script())
