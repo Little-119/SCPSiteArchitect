@@ -23,8 +23,13 @@ var cell: Cell setget ,get_parent_cell
 # warning-ignore:unused_class_variable
 var map = null setget ,get_map
 
+func _to_string():
+	return "[%s:%s]" % [type,get_instance_id()]
+
 func get_parent_cell() -> Cell:
-	if $".." != null:
+	if not is_inside_tree() or get_node_or_null("/root/Game") == null:
+		return null
+	if get_node_or_null("..") != null:
 		return ($".." as Cell)
 	else:
 		# warning-ignore:unsafe_property_access
@@ -38,7 +43,13 @@ func get_map():
 		return null
 
 func _init() -> void:
-	pass
+	var collider = StaticBody.new()
+	var shape_owner = collider.create_shape_owner(Node.new())
+	var shape = BoxShape.new()
+	shape.extents = Vector3(1,1,1)
+	collider.shape_owner_add_shape(shape_owner,shape)
+	collider.name = "Collider"
+	add_child(collider)
 
 func _ready() -> void:
 	name = type
@@ -67,16 +78,16 @@ func _ready() -> void:
 				continue
 			_:
 				match len(icon):
-					0:
+					0: # don't add any icon or text. Used for walls, which are rendered elsewhere for efficiency
 						pass
-					1:
+					1: # ASCII char icon
 						label.text = icon
-					_:
+					_: # assume 'icon' is meant to be a path to a texture
 						icon = icon.strip_edges()
 						var texture = ImageTexture.new()
 						var err = texture.load(icon)
 						if err:
-							print("Sprite (path: %s) for Thing %s failed to load with error code: %s" % [icon,name,err])
+							push_error("Sprite (path: %s) for Thing %s failed to load with error code: %s." % [icon,str(self),err])
 							if len(icon_fallback.strip_edges()) > 0:
 								label.text = icon_fallback
 							else:
@@ -102,6 +113,15 @@ func force_move(to,dest_map = get_map()) -> void:
 		to = dest_map.get_cell(to)
 	to.add_thing(self)
 	gravity()
+
+func _enter_tree():
+	on_moved()
+
+func on_moved(old_cell: Cell = null) -> void:
+	if not get_parent_cell():
+		return
+	var new_position = get_parent_cell().cell_position
+	($"Collider" as StaticBody).transform.origin = Vector3(new_position.x,new_position.z,new_position.y)
 
 # warning-ignore:unused_argument
 func tool_lclick_oncell(clicked_cell: Cell) -> void: # called in Map._unhanded_input()

@@ -1,11 +1,13 @@
 extends Thing
 class_name Actor
 
-enum  {MOVE_OK, MOVE_DIFFERENT_MAP, MOVE_FAIL_GENERIC, MOVE_INVALID_CELL, MOVE_OBSTRUCTED, MOVE_TILES_UNCONNECTED}
+enum {MOVE_OK, MOVE_DIFFERENT_MAP, MOVE_FAIL_GENERIC, MOVE_INVALID_CELL, MOVE_OBSTRUCTED, MOVE_TILES_UNCONNECTED}
 
 var actions := []
 
 var astar := CustomAStar.new() # Navigation mesh for this Actor. Let us meet again as stars
+
+var sight_radius: float = 5.0
 
 class CustomAStar:
 	extends AStar
@@ -18,6 +20,7 @@ class CustomAStar:
 	func refresh() -> void:
 		clear()
 		ready = false
+		# warning-ignore:unsafe_property_access
 		var map = actor.map
 		var map_astar: AStar = map.astar
 		reserve_space(map_astar.get_point_count())
@@ -93,6 +96,39 @@ func _on_map_added_thing(thing: Thing):
 		for a in actions:
 			a.think()
 
+func die() -> void:
+	queue_free()
+
+func on_moved(old_cell: Cell = null) -> void:
+	.on_moved(old_cell)
+	#in_sight_radius = get_cells_in_radius(child.sight_radius)
+
+enum {RELATION_HOSTILE=-100,RELATION_NEUTRAL=0,RELATION_ALLIED=100}
+
+func get_relation(other_actor: Actor) -> int:
+	if other_actor == self:
+		return 1000
+	return RELATION_NEUTRAL
+
+var cells_in_sight: Array
+
+#func see(): #TODO: make this whole system actually detect things
+#	if not get_parent_cell():
+#		return
+#	var cells_in_sight_radius: Array = get_parent_cell().get_cells_in_radius(sight_radius)
+#	cells_in_sight.clear()
+#	var our_spatial: Spatial = get_parent_cell().get_node("Spatial")
+#	for cell in cells_in_sight_radius:
+#		var their_spatial: Spatial = cell.get_node("Spatial")
+#		var raycast_result: Dictionary = our_spatial.get_world().direct_space_state.intersect_ray(our_spatial.transform.origin,their_spatial.transform.origin)
+#		if raycast_result.empty():
+#			cells_in_sight.append(cell)
+#	print(cells_in_sight.size())
+
+func _physics_process(delta):
+	pass
+	#see()
+
 func on_turn():
 	.on_turn()
 	for i in actions.size():
@@ -102,9 +138,6 @@ func on_turn():
 			i -= 1
 			continue
 		action.execute()
-
-func die() -> void:
-	queue_free()
 
 # Start AI-related
 

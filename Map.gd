@@ -70,7 +70,7 @@ func _ready() -> void:
 	$"/root/Game".maps.append(self)
 	# warning-ignore:return_value_discarded
 	$"/root/Player".connect("camera_moved",self,"update")
-	get_cell(Vector3(0,0,0)).add_thing(TestActor)
+	get_cell(Vector3(1,1,0)).add_thing(OneSevenThree)
 
 func get_cell(pos: Vector3) -> Cell: # get cell with cell_position
 	if pos.x >= 0 and pos.y >= 0 and pos.z >= 0 and cells_matrix.size() > pos.z and cells_matrix[pos.z].size() > pos.y and cells_matrix[pos.z][pos.y].size() > pos.x:

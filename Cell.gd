@@ -15,6 +15,9 @@ func _to_string():
 	return "Cell (Pos: %s)" % name
 
 func _init():
+	var spatial = Spatial.new()
+	spatial.name = "Spatial"
+	add_child(spatial)
 	z_index -= 1
 
 func _ready():
@@ -26,12 +29,12 @@ func _draw():
 
 func set_cell_position(newpos: Vector3 = cell_position) -> void:
 	position = Vector2(newpos.x * Constants.cell_size,newpos.y * Constants.cell_size)
+	($"Spatial" as Spatial).transform.origin = Vector3(newpos.x,newpos.z,newpos.y)
 	cell_position = newpos
 
 func get_adjacent_cell(offset: Vector3) -> Cell:
 	if map:
-		var ac = map.get_cell(Vector3(cell_position.x+offset.x,cell_position.y-offset.y,cell_position.z-offset.z))
-		return ac
+		return map.get_cell(Vector3(cell_position.x+offset.x,cell_position.y-offset.y,cell_position.z-offset.z))
 	else:
 		# warning-ignore:unsafe_property_access
 		return $"/root/Game".default_cell
@@ -63,6 +66,13 @@ func get_twentysix_adjacent_cells() -> Array: # this is big brain time probably.
 		cells += get_cells_in_directions(dirs)
 	return cells
 
+func get_cells_in_radius(radius: float,multi_z: bool = false) -> Array: # TODO: this can probably be optimized
+	var cells = []
+	for cell in map.cells:
+		if cell_position.distance_to(cell.cell_position) <= radius and (not multi_z or cell.cell_position.z == cell_position.z):
+			cells.append(cell)
+	return cells
+
 func on_left_click() -> void:
 	pass
 
@@ -81,12 +91,10 @@ func order_children() -> void: # Re-order this Cell's children in the tree. I fo
 		move_child(c,i)
 
 func zlevel_update(zlevel) -> void:
-	if is_default_cell:
+	if is_default_cell or not map:
 		return
 	if not zlevel is int:
-		# specifying type as Map causes cyclic dependency
-		# warning-ignore:unsafe_property_access
-		zlevel = $"..".current_zlevel
+		zlevel = map.current_zlevel
 	var diff = cell_position.z - zlevel
 	visible = diff <= 0 and diff >= -3
 	modulate = Color(1,1,1,clamp(1-(diff/-4),0,1))
@@ -99,6 +107,8 @@ func add_child(child: Node,b: bool=false) -> void:
 			old_parent.remove_child(child)
 		contents.append(child)
 		order_children()
+		# warning-ignore:unsafe_method_access
+		child.on_moved(old_parent)
 	.add_child(child,b)
 	#if map:
 		#map.emit_signal("thing_added",child)

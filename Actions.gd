@@ -2,14 +2,20 @@ extends Node
 
 class BaseAction:
 	extends Node
+	var type: String = "BaseAction"
 	var actioner: Actor
+	# warning-ignore:unused_class_variable
 	var target
+	# warning-ignore:unused_class_variable
 	var path: PoolVector3Array
+	# warning-ignore:unused_class_variable
 	var progress: int = 0
 	func _init(new_actioner: Actor) -> void:
 		actioner = new_actioner
 		actioner.actions.append(self)
 		actioner.add_child(self)
+	func _to_string():
+		return "[%s:%s (Owner: %s)]" % [type,get_instance_id(),actioner]
 	func think() -> void:
 		pass
 	func execute() -> void:
@@ -22,7 +28,7 @@ class BaseAction:
 class MoveTo:
 	extends BaseAction
 	func _init(new_actioner: Actor).(new_actioner):
-		pass
+		type = "MoveTo"
 	func think():
 		if actioner.astar.ready:
 			# warning-ignore:unsafe_property_access
