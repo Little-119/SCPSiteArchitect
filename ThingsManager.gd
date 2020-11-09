@@ -43,7 +43,7 @@ func get_thing_script(typename: String) -> GDScript:
 	if not things.has(typename):
 		push_warning("When getting script, did not find Thing with name %s" % typename)
 		return Thing # fall back to returning the base Thing
-	return things.get(typename)
+	return things[typename].get_script()
 
 func create_thing(typename: String) -> Thing:
 	return get_thing_script(typename).new()

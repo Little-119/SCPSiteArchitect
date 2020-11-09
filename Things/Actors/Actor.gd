@@ -43,6 +43,7 @@ func _init().():
 	icon = "A"
 	layer = LAYER.ACTOR
 	astar.actor = self
+	select_priority = 2
 
 func is_cell_impassable(cell: Cell) -> bool:
 	for thing in cell.contents:
@@ -142,3 +143,15 @@ func on_turn():
 # Start AI-related
 
 # End AI-related
+
+func select():
+	var screen_size = $"/root".size
+	var UI: Control = $"/root/Player/Camera2D/UI"
+	var actor_card = Panel.new() # FIXME: not visible and I don't know why
+	actor_card.theme = load("res://Gfx/UITheme.tres")
+	actor_card.margin_right = screen_size.x * .5
+	actor_card.margin_left = 0
+	actor_card.margin_top = screen_size.y * .75
+	actor_card.margin_bottom = screen_size.y
+	actor_card.rect_min_size = actor_card.rect_size
+	UI.add_child(actor_card)

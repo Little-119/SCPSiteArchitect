@@ -74,7 +74,16 @@ func get_cells_in_radius(radius: float,multi_z: bool = false) -> Array: # TODO: 
 	return cells
 
 func on_left_click() -> void:
-	pass
+	var thing_to_select
+	for priority in [2,1]:
+		for thing in contents:
+			if thing.select_priority == priority:
+				thing_to_select = thing
+				break
+		if thing_to_select:
+			break
+	if thing_to_select:
+		thing_to_select.select()
 
 func on_right_click() -> void:
 	pass

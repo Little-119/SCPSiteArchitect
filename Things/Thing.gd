@@ -10,6 +10,8 @@ var uid: int = -1
 var layer: float = LAYER.EMPTY
 var size := Vector3.ONE
 
+var select_priority: int = 0
+
 export(String, FILE) var icon := "" # Can be a single character or a path to an image
 export(String) var icon_fallback := "" # In case Icon is a path to an image but it fails to load
 export(Color, RGB) var color: Color = Color.white

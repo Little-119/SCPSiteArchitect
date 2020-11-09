@@ -4,6 +4,7 @@ class_name Structure
 func _init().():
 	type = "Structure"
 	layer = LAYER.STRUCTURE
+	select_priority = 1
 
 func tool_lclick_oncell(cell: Cell) -> void:
 	.tool_lclick_oncell(cell)
