@@ -8,6 +8,8 @@ signal camera_moved
 
 var mousetool = null
 
+var selection: Thing = null
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.is_pressed():
 		if (event as InputEventMouseButton).button_index == BUTTON_RIGHT:

@@ -7,16 +7,18 @@ signal thing_added # emitted in Cell.add_child
 signal thing_removed
 
 const max_size := Vector3(512,512,32)
-var size: Vector3 setget set_size
+export(Vector3) var size: Vector3 setget set_size
 var cells_matrix := [] # 3-D array of cells. In order of Z(-levels), then Y, then X
 var cells := [] # 1-D list of all cells in map
 
-var current_zlevel: int = 0
+var current_zlevel: int = 0 # displayed z-level
 
 var astar := AStar.new() # Let us meet again as stars.
 
 func _to_string():
 	return "Map"
+
+var orphaned_things: Array = [] # Array of Things not in a cell, presumably because they were added in editor
 
 func set_size(newsize: Vector3) -> void:
 	size = newsize
@@ -52,25 +54,59 @@ func set_size(newsize: Vector3) -> void:
 func _init(newsize: Vector3 = Vector3(64,64,1)) -> void:
 	size = newsize
 	z_index = -1
-	name = "Map"
+	set_size(size)
 
 func get_pixel_size() -> Vector2:
 	var cell_size = Constants.cell_size
 	return Vector2(size.x * cell_size,size.y * cell_size)
 
 func _ready() -> void:
-	set_size(size)
+	for child in get_children():
+		if child is Thing:
+			remove_child(child)
+			child.request_ready()
+			orphaned_things.append(child)
+			
 	for cell in cells:
 		for adj_cell in cell.get_eight_adjacent_cells():
 			if not astar.are_points_connected(cell.point_id,adj_cell.point_id):
 				astar.connect_points(cell.point_id,adj_cell.point_id)
+	for i in orphaned_things.size():
+		var thing = orphaned_things[i]
+		if not thing: continue
+		var adoptive_cell: Cell = get_cell(Vector3(thing.position.x,thing.position.y,thing.position_z))
+		if adoptive_cell:
+			adoptive_cell.add_child(thing)
+			orphaned_things.remove(i)
+			i -= 1
 	
 	#get_cell(Vector3(5,5,1)).add_thing(PlayerControlledActor)
 	# warning-ignore:unsafe_property_access
 	$"/root/Game".maps.append(self)
 	# warning-ignore:return_value_discarded
 	$"/root/Player".connect("camera_moved",self,"update")
-	get_cell(Vector3(1,1,0)).add_thing(OneSevenThree)
+	#get_cell(Vector3(1,1,0)).add_thing(OneSevenThree)
+
+func load_submap(submap: Map, offset: Vector3) -> void: # offset defines position of the upper left corner of the submap
+	var orphans: Array = []
+	for child in submap.get_children():
+		if not (child is Cell):
+			submap.remove_child(child)
+			orphans.append(child)
+	for cell in submap.cells:
+		for child in cell.contents:
+			cell.remove_child(child)
+			child.request_ready()
+			child.position = Vector2(cell.cell_position.x,cell.cell_position.y)
+			child.position_z = cell.cell_position.z
+			orphans.append(child)
+	for orphan in orphans:
+		var adoptive_cell = get_cell_or_null(offset + Vector3(orphan.position.x,orphan.position.y,orphan.position_z))
+		if adoptive_cell:
+			orphan.position = Vector2.ZERO
+			orphan.position_z = 0
+			adoptive_cell.add_child(orphan)
+	submap.queue_free()
 
 func get_cell(pos: Vector3) -> Cell: # get cell with cell_position
 	if pos.x >= 0 and pos.y >= 0 and pos.z >= 0 and cells_matrix.size() > pos.z and cells_matrix[pos.z].size() > pos.y and cells_matrix[pos.z][pos.y].size() > pos.x:

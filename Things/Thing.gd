@@ -10,9 +10,9 @@ var uid: int = -1
 var layer: float = LAYER.EMPTY
 var size := Vector3.ONE
 
-var icon := "" # Can be a single character or a path to an image
-var icon_fallback := "" # In case Icon is a path to an image but it fails to load
-var color: Color = Color.white
+export(String, FILE) var icon := "" # Can be a single character or a path to an image
+export(String) var icon_fallback := "" # In case Icon is a path to an image but it fails to load
+export(Color, RGB) var color: Color = Color.white
 
 var falling: float = 0.0
 var coyote_time: int = 0 # time of grace period in which Thing does not fall due to gravity
@@ -22,6 +22,15 @@ var coyote_timer: int = 0
 var cell: Cell setget ,get_parent_cell
 # warning-ignore:unused_class_variable
 var map = null setget ,get_map
+
+export(int) var position_z: int = 0 setget ,get_position_z # intended to be used when making maps in editor
+
+func get_position_z() -> int:
+	var parent_cell = get_parent_cell()
+	if parent_cell:
+		return parent_cell.cell_position.z
+	else:
+		return 0
 
 func _to_string():
 	return "[%s:%s]" % [type,get_instance_id()]
@@ -52,6 +61,8 @@ func _init() -> void:
 	add_child(collider)
 
 func _ready() -> void:
+	if not get_map():
+		return
 	name = type
 	z_index += 1
 	uid = ThingsManager.next_thing_uid
@@ -123,6 +134,11 @@ func on_moved(old_cell: Cell = null) -> void:
 	var new_position = get_parent_cell().cell_position
 	($"Collider" as StaticBody).transform.origin = Vector3(new_position.x,new_position.z,new_position.y)
 
+func select():
+	if $"/root/Game".get("selection"):
+		pass
+	$"/root/Game".set("selection",self)
+
 # warning-ignore:unused_argument
 func tool_lclick_oncell(clicked_cell: Cell) -> void: # called in Map._unhanded_input()
 	pass
@@ -130,6 +146,21 @@ func tool_lclick_oncell(clicked_cell: Cell) -> void: # called in Map._unhanded_i
 # warning-ignore:unused_argument
 func can_coexist_with(other_thing: Thing) -> bool: # check if this Thing can be on the same tile as another Thing. Used for placing, probably not for moving
 	return true
+
+# Start grammar-related
+enum GRAMMATICAL_GENDER {DEFER = -1, NEUTER, PLURAL, MALE, FEMALE}
+enum BIOLOGICAL_SEX {NEUTER, MALE, FEMALE, INTERSEX}
+enum GENDER_IDENTITY {NONE, NONBINARY, MALE, FEMALE}
+
+export(BIOLOGICAL_SEX) var sex: int = BIOLOGICAL_SEX.NEUTER
+export(GENDER_IDENTITY) var gender_identity: int = GENDER_IDENTITY.NONE
+export(GRAMMATICAL_GENDER) var gender: int = GRAMMATICAL_GENDER.DEFER
+
+enum PRONUUN_CASE {SUBJECT,OBJECT,POSSESSIVE,REFLEXIVE}
+
+func get_pronoun(case: int, speaker: int):
+	pass
+# End grammar-related
 
 func gravity() -> void:
 	if get_map():

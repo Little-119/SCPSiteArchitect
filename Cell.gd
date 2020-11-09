@@ -12,7 +12,7 @@ var cell_position := Vector3.ZERO setget set_cell_position # This Cell's positio
 var point_id: int = 0 # The cell's point ID in the parent map's AStar
 
 func _to_string():
-	return "Cell (Pos: %s)" % name
+	return "Cell (Pos: %s)" % cell_position
 
 func _init():
 	var spatial = Spatial.new()
@@ -112,7 +112,7 @@ func add_child(child: Node,b: bool=false) -> void:
 	.add_child(child,b)
 	#if map:
 		#map.emit_signal("thing_added",child)
-	if not old_parent or (map != old_parent.map):
+	if not old_parent or (map != old_parent.get("map")):
 		if child.get("type"):
 			map.emit_signal("thing_added",child)
 			if child.get("astar"):
