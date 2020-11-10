@@ -26,7 +26,7 @@ func set_process(enable: bool) -> void:
 	.set_process(enable)
 
 func load_world() -> void:
-	var map0 = load("res://Map.gd").new()
+	var map0 = (load("res://Map.gd") as GDScript).new()
 	map0.name = "TestMap"
 	add_child(map0)
 	map0.load_submap((load("res://Maps/TestMap.tscn") as PackedScene).instance(),Vector3(2,2,0))
@@ -36,7 +36,7 @@ func _ready() -> void:
 	load_world()
 	turn_timer.start()
 	if OS.is_debug_build():
-		var gut = load("res://test/tests.tscn").instance()
+		var gut = (load("res://test/tests.tscn") as PackedScene).instance()
 		gut.visible = false
 		$"/root/Player/Camera2D/Debug".add_child(gut)
 

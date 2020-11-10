@@ -150,8 +150,11 @@ enum GRAMMATICAL_GENDER {DEFER = -1, NEUTER, PLURAL, MALE, FEMALE}
 enum BIOLOGICAL_SEX {NEUTER, MALE, FEMALE, INTERSEX}
 enum GENDER_IDENTITY {NONE, NONBINARY, MALE, FEMALE}
 
+# warning-ignore:unused_class_variable
 export(BIOLOGICAL_SEX) var bio_sex: int = BIOLOGICAL_SEX.NEUTER
+# warning-ignore:unused_class_variable
 export(GENDER_IDENTITY) var gender_identity: int = GENDER_IDENTITY.NONE
+# warning-ignore:unused_class_variable
 export(GRAMMATICAL_GENDER) var gender: int = GRAMMATICAL_GENDER.DEFER
 
 enum PRONOUN_CASE {SUBJECT,OBJECT,POSSESSIVE,REFLEXIVE}
