@@ -1,14 +1,14 @@
 extends Actor
 class_name Humanoid
 
-var first_name: String = "FirstName"
-var last_name: String = "LastName"
-var nick_name: String = ""
-var alias: String = "" # e.g. D-class designations
-var culture: String = "American"
+export(String) var first_name: String = ""
+export(String) var last_name: String = ""
+export(String) var nick_name: String = ""
+export(String) var alias: String = "" # e.g. D-class designations
+export(String) var culture: String = "American"
 
 func _to_string():
-	return "[%s (Name: %s):%s]" % [type,get_display_name(),get_instance_id()]
+	return "[%s (Name: '%s'):%s]" % [type,get_display_name(),get_instance_id()]
 
 func get_full_name() -> String:
 	return "%s %s" % [first_name, last_name]
@@ -24,3 +24,9 @@ func get_display_name() -> String:
 
 static func generate_name(gender: int,from_culture: String) -> PoolStringArray:
 	return PoolStringArray(["Bong","Bong","Bong Bong"])
+
+func _init():
+	var new_name = generate_name(gender, culture)
+	first_name = new_name[0]
+	last_name = new_name[1]
+	nick_name = new_name[2]

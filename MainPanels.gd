@@ -6,9 +6,9 @@ class MainPanel extends Panel:
 		# the below line produces two warnings but I don't know how to ignore both without ignoring warnings in the whole file
 		# fixing the warning would require making UI a class, which is probably unnecessary
 		# warning-ignore:unsafe_property_access
-		margin_bottom = (UI.mainbutton_margin * -1.5) - UI.mainbutton_size
+		margin_bottom = (UI.get("mainbutton_margin") * -1.5) - UI.get("mainbutton_size")
 		# warning-ignore:unsafe_property_access
-		margin_left = UI.mainbutton_margin
+		margin_left = UI.get("mainbutton_margin")
 		anchor_bottom = 1
 		anchor_top = 1
 	func resize() -> void:

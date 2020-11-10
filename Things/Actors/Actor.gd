@@ -7,6 +7,7 @@ var actions := []
 
 var astar := CustomAStar.new() # Navigation mesh for this Actor. Let us meet again as stars
 
+# warning-ignore:unused_class_variable
 var sight_radius: float = 5.0
 
 class CustomAStar:
@@ -60,8 +61,7 @@ func test_move(cella: Cell,cellb: Cell) -> int: # probably needs optimization
 	if is_cell_impassable(cellb):
 		return MOVE_OBSTRUCTED
 	#var cpos_diff: Vector3 = cellb.cell_position - cella.cell_position
-	# warning-ignore:unsafe_property_access
-	if cellb.map != (cella as Cell).map:
+	if cellb.get("map") != cella.get("map"):
 		return MOVE_DIFFERENT_MAP # TODO?: Later down the line, if destination is on a different map, find a way to get to it somehow? Like RW caravans
 	if astar.is_point_disabled(cellb.point_id):
 		return MOVE_OBSTRUCTED
@@ -126,7 +126,7 @@ var cells_in_sight: Array
 #			cells_in_sight.append(cell)
 #	print(cells_in_sight.size())
 
-func _physics_process(delta):
+func _physics_process(_delta):
 	pass
 	#see()
 
@@ -143,15 +143,3 @@ func on_turn():
 # Start AI-related
 
 # End AI-related
-
-func select():
-	var screen_size = $"/root".size
-	var UI: Control = $"/root/Player/Camera2D/UI"
-	var actor_card = Panel.new() # FIXME: not visible and I don't know why
-	actor_card.theme = load("res://Gfx/UITheme.tres")
-	actor_card.margin_right = screen_size.x * .5
-	actor_card.margin_left = 0
-	actor_card.margin_top = screen_size.y * .75
-	actor_card.margin_bottom = screen_size.y
-	actor_card.rect_min_size = actor_card.rect_size
-	UI.add_child(actor_card)

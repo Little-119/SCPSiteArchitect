@@ -8,31 +8,36 @@ signal camera_moved
 
 var mousetool = null
 
-var selection: Thing = null
+var selection = null setget set_selection
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.is_pressed():
-		if (event as InputEventMouseButton).button_index == BUTTON_RIGHT:
-			if mousetool:
-				mousetool = null
-				return
-		var z: float = ($"Camera2D" as Camera2D).zoom.x
+		var z_delta: float
 		match (event as InputEventMouseButton).button_index:
+			BUTTON_LEFT:
+				set_selection(null)
+			BUTTON_RIGHT:
+				if mousetool:
+					mousetool = null
+					return
 			BUTTON_WHEEL_UP:
-				z -= zoom_increment
+				z_delta = -zoom_increment
 			BUTTON_WHEEL_DOWN:
-				z += zoom_increment
-		if z != 0:
+				z_delta = zoom_increment
+		if z_delta != 0:
 			emit_signal("camera_moved")
-			z = clamp(z,zoom_min,zoom_max)
-			($"Camera2D" as Camera2D).zoom = Vector2.ONE * z
-			($"Camera2D" as Camera2D).scale = Vector2.ONE * z
+			var new_z = clamp(($"Camera2D" as Camera2D).zoom.x + z_delta,zoom_min,zoom_max)
+			($"Camera2D" as Camera2D).zoom = Vector2(new_z,new_z)
+			($"Camera2D" as Camera2D).scale = Vector2(new_z,new_z)
 	if event is InputEventKey and event.is_pressed():
 		match (event as InputEventKey).scancode:
 			KEY_SPACE:
 				$"/root/Game".set_process(not $"/root/Game".is_processing())
 			KEY_ESCAPE:
-				get_tree().quit()
+				if mousetool:
+					mousetool = null
+				else:
+					get_tree().quit()
 
 func _process(delta: float) -> void:
 	var move_dir := Vector2.ZERO
@@ -56,3 +61,14 @@ func _ready() -> void:
 
 func equip_tool(t) -> void:
 	mousetool = t
+
+func set_selection(new_selection = null) -> void:
+	if selection or new_selection == null:
+		var card = get_node_or_null("Camera2D/UI/SelectionCard")
+		if card:
+			card.queue_free()
+	if new_selection:
+		var selection_card: Panel = (load("res://SelectionCard.tscn") as PackedScene).instance()
+		(selection_card.get_node("RichTextLabel") as RichTextLabel).text = new_selection.get_display_name()
+		($"/root/Player/Camera2D/UI" as Control).add_child(selection_card)
+	selection = new_selection

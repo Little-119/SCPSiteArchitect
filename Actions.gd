@@ -11,12 +11,13 @@ class BaseAction:
 	# warning-ignore:unused_class_variable
 	var progress: int = 0
 	enum FAILURE_CODE {NO_PATH}
+	# warning-ignore:unused_class_variable
 	var failures: Array = []
 	func _init(new_actioner: Actor) -> void:
 		actioner = new_actioner
 		actioner.actions.append(self)
 		actioner.add_child(self)
-	func _to_string():
+	func _to_string() -> String:
 		return "[%s:%s (Owner: %s)]" % [type,get_instance_id(),actioner]
 	func think() -> void:
 		pass
@@ -31,11 +32,11 @@ class MoveTo: # Move between cells on one map
 	extends BaseAction
 	func _init(new_actioner: Actor).(new_actioner):
 		type = "MoveTo"
-	func think():
+	func think() -> void:
 		if not (target is Cell):
 			push_error("MoveTo needs a Cell as a target.")
 			fail()
-		if actioner.cell.map != target.map: # TODO: Pathing between maps
+		if (actioner.cell as Cell).get("map") != target.map: # TODO: Pathing between maps
 			push_error("MoveTo between maps is unimplemented.")
 			fail()
 		if actioner.cell == target: # We're already at the destination
@@ -47,7 +48,7 @@ class MoveTo: # Move between cells on one map
 				fail()
 			else:
 				path.remove(0)
-	func execute():
+	func execute() -> void:
 		if not path or path.size() == 0:
 			think()
 			failures.append(FAILURE_CODE.NO_PATH)

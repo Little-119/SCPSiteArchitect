@@ -136,7 +136,7 @@ func get_cell_from_screen_position(from_position: Vector2,z:int = 0) -> Cell: # 
 	from_position += ($"/root/Player/Camera2D" as Camera2D).get_camera_position() - ($"/root" as Viewport).size/2
 	return get_cell_from_position(from_position,z)
 
-func _unhandled_input(event: InputEvent) -> void:
+func _input(event: InputEvent) -> void:
 	if event is InputEventMouse:
 		# event.global_position does not contain the actual global position, or at least not the global position that's needed here
 		var cell_at_pos: Cell = get_cell_from_position(get_global_mouse_position(),current_zlevel)

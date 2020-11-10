@@ -75,15 +75,22 @@ func get_cells_in_radius(radius: float,multi_z: bool = false) -> Array: # TODO: 
 
 func on_left_click() -> void:
 	var thing_to_select
+	var selected_at: int = -1
+	if $"/root/Player".get("selection"):
+		selected_at = contents.find($"/root/Player".get("selection"))
+	if selected_at+1 == contents.size():
+		selected_at = -1
 	for priority in [2,1]:
-		for thing in contents:
+		for i in range(selected_at+1,contents.size()):
+			var thing = contents[i]
 			if thing.select_priority == priority:
 				thing_to_select = thing
 				break
 		if thing_to_select:
 			break
 	if thing_to_select:
-		thing_to_select.select()
+		$"/root/Player".set("selection",thing_to_select)
+		get_tree().set_input_as_handled()
 
 func on_right_click() -> void:
 	pass
@@ -108,7 +115,7 @@ func zlevel_update(zlevel) -> void:
 	visible = diff <= 0 and diff >= -3
 	modulate = Color(1,1,1,clamp(1-(diff/-4),0,1))
 
-func add_child(child: Node,b: bool=false) -> void:
+func add_child(child: Node,b: bool = false) -> void:
 	var old_parent
 	if child.get("type"): # 'if child is Thing' causes an error. Workaround: see if it has a property called type
 		old_parent = child.get_node_or_null("..")

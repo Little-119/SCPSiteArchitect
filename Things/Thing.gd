@@ -10,6 +10,7 @@ var uid: int = -1
 var layer: float = LAYER.EMPTY
 var size := Vector3.ONE
 
+# warning-ignore:unused_class_variable
 var select_priority: int = 0
 
 export(String, FILE) var icon := "" # Can be a single character or a path to an image
@@ -25,6 +26,7 @@ var cell: Cell setget ,get_parent_cell
 # warning-ignore:unused_class_variable
 var map = null setget ,get_map
 
+# warning-ignore:unused_class_variable
 export(int) var position_z: int = 0 setget ,get_position_z # intended to be used when making maps in editor
 
 func get_position_z() -> int:
@@ -127,19 +129,14 @@ func force_move(to,dest_map = get_map()) -> void:
 	to.add_thing(self)
 	gravity()
 
-func _enter_tree():
+func _enter_tree() -> void:
 	on_moved()
 
-func on_moved(old_cell: Cell = null) -> void:
+func on_moved(_old_cell: Cell = null) -> void:
 	if not get_parent_cell():
 		return
 	var new_position = get_parent_cell().cell_position
 	($"Collider" as StaticBody).transform.origin = Vector3(new_position.x,new_position.z,new_position.y)
-
-func select():
-	if $"/root/Game".get("selection"):
-		pass
-	$"/root/Game".set("selection",self)
 
 # warning-ignore:unused_argument
 func tool_lclick_oncell(clicked_cell: Cell) -> void: # called in Map._unhanded_input()
@@ -154,14 +151,17 @@ enum GRAMMATICAL_GENDER {DEFER = -1, NEUTER, PLURAL, MALE, FEMALE}
 enum BIOLOGICAL_SEX {NEUTER, MALE, FEMALE, INTERSEX}
 enum GENDER_IDENTITY {NONE, NONBINARY, MALE, FEMALE}
 
-export(BIOLOGICAL_SEX) var sex: int = BIOLOGICAL_SEX.NEUTER
+export(BIOLOGICAL_SEX) var bio_sex: int = BIOLOGICAL_SEX.NEUTER
 export(GENDER_IDENTITY) var gender_identity: int = GENDER_IDENTITY.NONE
 export(GRAMMATICAL_GENDER) var gender: int = GRAMMATICAL_GENDER.DEFER
 
-enum PRONUUN_CASE {SUBJECT,OBJECT,POSSESSIVE,REFLEXIVE}
+enum PRONOUN_CASE {SUBJECT,OBJECT,POSSESSIVE,REFLEXIVE}
 
-func get_pronoun(case: int, speaker: int):
-	pass
+func get_pronoun(case: int, speaker: int) -> String:
+	return ""
+
+func get_full_name() -> String:
+	return type
 # End grammar-related
 
 func gravity() -> void:
