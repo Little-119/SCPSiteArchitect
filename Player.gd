@@ -53,7 +53,6 @@ func _process(delta: float) -> void:
 
 func _ready() -> void:
 	($"Camera2D" as Camera2D).make_current()
-	($"Camera2D/UI" as Control).rect_position = ($"/root" as Viewport).size / Vector2(-2,2)
 
 func equip_tool(t) -> void:
 	mousetool = t
