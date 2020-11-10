@@ -50,8 +50,7 @@ func _process(delta: float) -> void:
 		move_dir *= delta
 		var new_pos: Vector2 = ($"Camera2D" as Camera2D).get_camera_position() + move_dir
 		var lowers = Vector2.ZERO
-		# warning-ignore:unsafe_property_access
-		var uppers: Vector2 = $"/root/Game".current_map.get_pixel_size()
+		var uppers: Vector2 = $"/root/Game".get("current_map").get_pixel_size() if get_node_or_null("/root/Game") and $"/root/Game".get("current_map") else Vector2.ZERO
 		($"Camera2D" as Camera2D).position = Vector2(clamp(new_pos.x,lowers.x,uppers.x),clamp(new_pos.y,lowers.y,uppers.y))
 		($"Camera2D" as Camera2D).force_update_scroll() # ensures UI is properly attached to camera, otherwise it lags behind when moving
 		emit_signal("camera_moved")
