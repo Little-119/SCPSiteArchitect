@@ -42,6 +42,17 @@ func load_world() -> void:
 func _ready() -> void:
 	load_world()
 	turn_timer.start()
+	if OS.is_debug_build():
+		var gut = load("res://test/tests.tscn").instance()
+		gut.visible = false
+		$"/root/Player/Camera2D/Debug".add_child(gut)
+
+func _input(event: InputEvent):
+	if event.is_pressed():
+		if event is InputEventKey:
+			match (event as InputEventKey).scancode:
+				KEY_F1:
+					($"/root/Player/Camera2D/Debug" as Control).visible = not ($"/root/Player/Camera2D/Debug" as Control).visible
 
 func on_turn() -> void:
 	turn += 1

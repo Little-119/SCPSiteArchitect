@@ -133,6 +133,10 @@ window/size/test_width=1280
 window/size/test_height=720
 window/stretch/aspect="keep"
 
+[editor_plugins]
+
+enabled=PoolStringArray( "gut" )
+
 [gdnative]
 
 singletons=[ "res://git_api.gdnlib" ]
