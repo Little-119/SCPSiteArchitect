@@ -26,8 +26,7 @@ func set_process(enable: bool) -> void:
 	.set_process(enable)
 
 func load_world() -> void:
-	#var map0 = Map.new(Vector3(16,16,1))
-	var map0 = Map.new()
+	var map0 = load("res://Map.gd").new()
 	map0.name = "TestMap"
 	add_child(map0)
 	map0.load_submap((load("res://Maps/TestMap.tscn") as PackedScene).instance(),Vector3(2,2,0))
