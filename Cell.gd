@@ -2,11 +2,11 @@ extends Node2D
 class_name Cell
 # A cell is a space in which Things often exist. Probably should've been called tiles.
 
-var is_default_cell: bool = false # Whether this is the Default Cell or not.
+export var is_default_cell: bool = false # Whether this is the Default Cell or not.
 
 var map = null # Map that this Cell is part of
 var contents: Array = [] # List of Things in the cell. get_children() does the same thing unless Cells ever get non-Thing children
-var cell_position := Vector3.ZERO setget set_cell_position # This Cell's position on the grid
+export var cell_position := Vector3.ZERO setget set_cell_position # This Cell's position on the grid
 
 # warning-ignore:unused_class_variable
 var point_id: int = 0 # The cell's point ID in the parent map's AStar
@@ -37,7 +37,7 @@ func get_adjacent_cell(offset: Vector3) -> Cell:
 		return map.get_cell(Vector3(cell_position.x+offset.x,cell_position.y-offset.y,cell_position.z-offset.z))
 	else:
 		# warning-ignore:unsafe_property_access
-		return $"/root/Game".default_cell
+		return Constants.default_cell
 
 func get_cells_in_directions(directions: Array) -> Array:
 	var adjacent_cells = []

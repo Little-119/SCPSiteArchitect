@@ -4,7 +4,6 @@ var current_map = null setget set_current_map
 # warning-ignore:unused_class_variable
 var maps: Array = []
 
-var default_cell: Cell = Cell.new()
 var turn_timer := Timer.new()
 var turn: int = 0
 
@@ -15,12 +14,7 @@ func set_current_map(map):
 		if m is Map and m != current_map:
 			m.visible = false
 
-func _init() -> void:
-	default_cell.is_default_cell = true
-	default_cell.visible = false
-	default_cell.cell_position = Vector3(-1,-1,0)
-	add_child(default_cell)
-	
+func _init() -> void:	
 	turn_timer.name = "TurnTimer"
 	turn_timer.wait_time = .01
 	# warning-ignore:return_value_discarded

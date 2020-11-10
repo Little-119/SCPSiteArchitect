@@ -45,8 +45,7 @@ func get_parent_cell() -> Cell:
 	if get_node_or_null("..") != null:
 		return ($".." as Cell)
 	else:
-		# warning-ignore:unsafe_property_access
-		return $"/root/Game".default_cell
+		return Constants.default_cell
 
 func get_map():
 	var parent_cell = get_parent_cell()
