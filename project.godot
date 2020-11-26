@@ -34,6 +34,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Things/Actors/Humanoid.gd"
 }, {
+"base": "Thing",
+"class": "Item",
+"language": "GDScript",
+"path": "res://Things/Items/Item.gd"
+}, {
 "base": "Structure",
 "class": "Lamp",
 "language": "GDScript",
@@ -43,11 +48,6 @@ _global_script_classes=[ {
 "class": "Map",
 "language": "GDScript",
 "path": "res://Map.gd"
-}, {
-"base": "SCP",
-"class": "OneSevenThree",
-"language": "GDScript",
-"path": "res://Things/Actors/SCPs/173.gd"
 }, {
 "base": "Actor",
 "class": "PlayerControlledActor",
@@ -74,6 +74,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Things/Thing.gd"
 }, {
+"base": "Reference",
+"class": "Time",
+"language": "GDScript",
+"path": "res://TimeObject.gd"
+}, {
 "base": "Thing",
 "class": "Turf",
 "language": "GDScript",
@@ -90,14 +95,15 @@ _global_script_class_icons={
 "Dirt": "",
 "GitAPI": "",
 "Humanoid": "",
+"Item": "",
 "Lamp": "",
 "Map": "",
-"OneSevenThree": "",
 "PlayerControlledActor": "",
 "SCP": "",
 "Structure": "",
 "TestActor": "",
 "Thing": "",
+"Time": "",
 "Turf": "",
 "Wall": ""
 }
@@ -110,6 +116,7 @@ config/quit_on_go_back=false
 
 [autoload]
 
+Settings="*res://Settings.gd"
 Constants="*res://Constants.gd"
 Player="*res://Player.tscn"
 Actions="*res://Actions.gd"

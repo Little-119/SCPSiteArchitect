@@ -23,7 +23,8 @@ var orphaned_things: Array = [] # Array of Things not in a cell, presumably beca
 func set_size(newsize: Vector3) -> void:
 	size = newsize
 	# warning-ignore:narrowing_conversion
-	astar.reserve_space(newsize.x*newsize.y*newsize.z)
+	if astar.get_point_capacity() < newsize.x*newsize.y*newsize.z:
+		astar.reserve_space(newsize.x*newsize.y*newsize.z)
 	# warning-ignore:narrowing_conversion
 	cells_matrix.resize(clamp(size.z,cells_matrix.size(),max_size.z))
 	for zn in size.z:
@@ -80,12 +81,12 @@ func _ready() -> void:
 			orphaned_things.remove(i)
 			i -= 1
 	
-	#get_cell(Vector3(5,5,1)).add_thing(PlayerControlledActor)
 	# warning-ignore:unsafe_property_access
 	$"/root/Game".maps.append(self)
 	# warning-ignore:return_value_discarded
 	$"/root/Player".connect("camera_moved",self,"update")
-	#get_cell(Vector3(1,1,0)).add_thing(OneSevenThree)
+	# warning-ignore:return_value_discarded
+	($"/root/Game/TurnTimer" as Timer).connect("timeout",self,"on_turn")
 
 func load_submap(submap: Map, offset: Vector3) -> void: # offset defines position of the upper left corner of the submap
 	var orphans: Array = []
@@ -176,3 +177,12 @@ func _draw() -> void:
 		if not cell.is_default_cell:
 			var box_pos: Vector2 = cell.position
 			draw_rect(Rect2(box_pos,Vector2.ONE * cell.scale.x * 32),Color.white,false)
+
+func on_turn() -> void:
+	pass
+	#prints($"/root/Game".turn,get_local_time())
+
+func get_local_time(turn: int = $"/root/Game".turn) -> Dictionary:
+	var time = load("res://TimeObject.gd").new()
+	time.seconds = turn * Constants.turn_length
+	return time.get_all()

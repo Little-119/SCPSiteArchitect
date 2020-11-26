@@ -143,3 +143,6 @@ func on_turn():
 # Start AI-related
 
 # End AI-related
+
+func get_actions(user) -> Array:
+	return []
