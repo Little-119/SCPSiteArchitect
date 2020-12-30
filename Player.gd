@@ -1,4 +1,5 @@
 extends Node
+class_name Player
 
 const zoom_min: float = .5
 const zoom_max: float = 5.0

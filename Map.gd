@@ -84,12 +84,9 @@ func _ready() -> void:
 			orphaned_things.remove(i)
 			i -= 1
 	
-	# warning-ignore:unsafe_property_access
-	$"/root/Game".maps.append(self)
-	# warning-ignore:return_value_discarded
-	$"/root/Player".connect("camera_moved",self,"update")
-	# warning-ignore:return_value_discarded
-	($"/root/Game/TurnTimer" as Timer).connect("timeout",self,"on_turn")
+	if get_node_or_null("/root/Player"):
+		# warning-ignore:return_value_discarded
+		$"/root/Player".connect("camera_moved",self,"update")
 
 func load_submap(submap: Map, offset: Vector3) -> void: # offset defines position of the upper left corner of the submap
 	var orphans: Array = []
@@ -180,35 +177,28 @@ func view_zlevel_incr(delta: int) -> void: # change map view to a different z-le
 	view_zlevel(current_zlevel + delta)
 
 func _draw() -> void:
-	# as said above, can't specify that Player is a Player while it's a Singleton
-	# warning-ignore:unsafe_property_access
-	if $"/root/Player".mousetool:
-		var cell: Cell = get_cell_from_position(get_global_mouse_position(),current_zlevel)
-		if not cell.is_default_cell:
-			var box_pos: Vector2 = cell.position
-			draw_rect(Rect2(box_pos,Vector2.ONE * cell.scale.x * 32),Color.white,false)
-	# warning-ignore:unsafe_property_access
-	if not $"/root/Player".selection.empty():
+	if get_node_or_null("/root/Player"):
 		# warning-ignore:unsafe_property_access
-		for selected_i in $"/root/Player".selection.size():
-			# warning-ignore:unsafe_property_access
-			var selected = $"/root/Player".selection[selected_i]
-			if not selected:
-				continue
-			if selected.get("actions"):
-				if selected.actions.front() is Actions.MoveTo:
-					var path: Array = selected.actions.front().path
-					if not path.empty():
-						var path_copy = path.duplicate()
-						path_copy.insert(0,selected.cell.cell_position)
-						for point_i in range(1,path_copy.size()):
-							var from: Vector2 = (Vector2(path_copy[point_i-1].x,path_copy[point_i-1].y) + Vector2(.5,.5)) * Constants.cell_size
-							var to: Vector2 = (Vector2(path_copy[point_i].x,path_copy[point_i].y) + Vector2(.5,.5)) * Constants.cell_size
-							draw_line(from,to,Color.white,1,true)
-
-func on_turn() -> void:
-	pass
-	#prints($"/root/Game".turn,get_local_time())
+		if $"/root/Player".mousetool:
+			var cell: Cell = get_cell_from_position(get_global_mouse_position(),current_zlevel)
+			if not cell.is_default_cell:
+				var box_pos: Vector2 = cell.position
+				draw_rect(Rect2(box_pos,Vector2.ONE * cell.scale.x * 32),Color.white,false)
+		if not ($"/root/Player" as Player).selection.empty():
+			for selected_i in ($"/root/Player" as Player).selection.size():
+				var selected = ($"/root/Player" as Player).selection[selected_i]
+				if not selected:
+					continue
+				if selected.get("actions"):
+					if selected.actions.front() is Actions.MoveTo:
+						var path: Array = selected.actions.front().path
+						if not path.empty():
+							var path_copy = path.duplicate()
+							path_copy.insert(0,selected.cell.cell_position)
+							for point_i in range(1,path_copy.size()):
+								var from: Vector2 = (Vector2(path_copy[point_i-1].x,path_copy[point_i-1].y) + Vector2(.5,.5)) * Constants.cell_size
+								var to: Vector2 = (Vector2(path_copy[point_i].x,path_copy[point_i].y) + Vector2(.5,.5)) * Constants.cell_size
+								draw_line(from,to,Color.white,1,true)
 
 # warning-ignore:unsafe_property_access
 func get_local_time(turn: int = $"/root/Game".turn) -> Dictionary:

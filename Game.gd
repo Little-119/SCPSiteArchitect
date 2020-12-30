@@ -2,9 +2,9 @@ extends Node
 
 func _ready() -> void:
 	var gut = (load("res://tests/tests.tscn") as PackedScene).instance()
-	$"GUTContainer".add_child(gut)
+	$"DebugContainer".add_child(gut)
 	if not OS.has_feature("standalone"):
-		$"GUTContainer".visible = Settings.get("debug_gut_visible")
+		($"DebugContainer" as Control).visible = Settings.get("debug_gut_visible")
 
 func _unhandled_input(event: InputEvent):
 	if event.is_pressed():
@@ -18,5 +18,5 @@ func _unhandled_input(event: InputEvent):
 					if not OS.has_feature("standalone"):
 						var new_gut_visibility: bool = not Settings.get("debug_gut_visible")
 						Settings.set("debug_gut_visible",new_gut_visibility)
-						$"GUTContainer".visible = new_gut_visibility
+						($"DebugContainer" as Control).visible = new_gut_visibility
 						get_tree().set_input_as_handled()

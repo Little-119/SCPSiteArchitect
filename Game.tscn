@@ -6,7 +6,7 @@
 pause_mode = 2
 script = ExtResource( 1 )
 
-[node name="GUTContainer" type="Control" parent="."]
+[node name="DebugContainer" type="Control" parent="."]
 __meta__ = {
 "_edit_use_anchors_": false
 }

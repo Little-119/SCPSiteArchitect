@@ -215,8 +215,9 @@ func remove_child(child: Node) -> void:
 	#		for thing in above_cell.contents:
 	#			thing.gravity()
 
-func add_thing(thing) -> void: # Create or move a thing to this tile
+func add_thing(thing): # Create or move a thing to this tile
 	if thing is GDScript:
 		thing = thing.new()
 	add_child(thing)
 	if map: map.update()
+	return thing
