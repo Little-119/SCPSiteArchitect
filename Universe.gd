@@ -1,4 +1,5 @@
 extends Node
+class_name Universe
 
 var current_map = null setget set_current_map
 
@@ -19,13 +20,6 @@ func _init() -> void:
 	# warning-ignore:return_value_discarded
 	turn_timer.connect("timeout",self,"on_turn")
 	add_child(turn_timer)
-	
-	# This part loads a test map. For testing. TEMPORARY, TODO: Remove this when it's no longer needed
-	var map0 = (load("res://Map.gd") as GDScript).new(Vector3(64,64,1))
-	map0.name = "TestMap"
-	add_child(map0)
-	map0.load_submap((load("res://Maps/TestMap.tscn") as PackedScene).instance(),Vector3(2,2,0))
-	set_current_map(map0)
 
 func on_turn() -> void:
 	turn += 1
