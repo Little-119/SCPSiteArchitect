@@ -49,5 +49,5 @@ func get(key):
 	return settings[key]
 
 func _notification(what):
-	if what == NOTIFICATION_PREDELETE: # if this autoload is getting deleted, assume the program is exiting
+	if what == NOTIFICATION_PREDELETE: # if this autoload is getting deleted, assume the program is exiting. Note that this apparently wont fire when the game is killed in the editor
 		write()

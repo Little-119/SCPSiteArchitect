@@ -21,6 +21,8 @@ var falling: float = 0.0
 var coyote_time: int = 0 # time of grace period in which Thing does not fall due to gravity
 var coyote_timer: int = 0
 
+var solid = true
+
 # warning-ignore:unused_class_variable
 var cell: Cell setget ,get_parent_cell
 # warning-ignore:unused_class_variable
@@ -110,12 +112,10 @@ func _ready() -> void:
 							sprite.texture = texture
 							var s = (Vector2.ONE * Constants.cell_size)/sprite.texture.get_size()
 							sprite.scale = s
-	# warning-ignore:return_value_discarded
-	$"/root/Game/TurnTimer".connect("timeout",self,"on_turn")
 
 func _draw():
 	# warning-ignore:unsafe_property_access
-	if self in $"/root/Player".selection:
+	if get_node_or_null("/root/Player") and self in $"/root/Player".selection:
 		draw_rect(Rect2(0,0,Constants.cell_size,Constants.cell_size),Color.white,false,2)
 
 func queue_free() -> void:
@@ -130,7 +130,7 @@ func force_move(to,dest_map = get_map()) -> void:
 	if to is Vector3: #otherwise assume 'to' is a cell
 		assert(dest_map)
 		to = dest_map.get_cell(to)
-	to.add_thing(self)
+	to.call_deferred("add_thing",self)
 	gravity()
 
 func _enter_tree() -> void:

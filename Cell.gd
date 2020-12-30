@@ -191,8 +191,6 @@ func add_child(child: Node,b: bool = false) -> void:
 		# warning-ignore:unsafe_method_access
 		child.on_moved(old_parent)
 	.add_child(child,b)
-	#if map:
-		#map.emit_signal("thing_added",child)
 	if not old_parent or (map != old_parent.get("map")):
 		if child.get("type"):
 			map.emit_signal("thing_added",child)
