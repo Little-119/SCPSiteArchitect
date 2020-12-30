@@ -154,9 +154,10 @@ func get_current_action():
 			return action
 	return null
 
-func force_action(action: String, target) -> void: # called when player is commanding that this actor do a thing
+func force_action(action: String, target): # called when player is commanding that this actor do a thing
 	var new_action = (load("res://Actions.gd") as GDScript)[action].new(self,true,false)
 	new_action.target = target
+	return new_action
 
 # Start AI-related
 
