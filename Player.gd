@@ -1,4 +1,5 @@
 extends Node
+class_name Player
 
 const zoom_min: float = .5
 const zoom_max: float = 5.0
@@ -50,8 +51,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_ESCAPE:
 				if mousetool:
 					mousetool = null
-				else:
-					get_tree().quit()
+					get_tree().set_input_as_handled()
 
 func _process(delta: float) -> void:
 	var move_dir := Vector2.ZERO

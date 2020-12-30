@@ -28,8 +28,6 @@ func _init() -> void:
 func update_size() -> void:
 	rect_size = ($"/root" as Viewport).size
 	rect_position = ($"/root" as Viewport).size / -2
-	($"../Debug" as Control).rect_size = rect_size
-	($"../Debug" as Control).rect_position = rect_position
 
 func _ready():
 	update_size()

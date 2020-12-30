@@ -11,8 +11,10 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 _run_on_load = true
+_should_maximize = true
 _should_print_to_console = false
 _include_subdirectories = true
 _directory1 = "res://tests/unit"
 _directory2 = "res://tests/integration"
 _pre_run_script = "res://tests/prerun.gd"
+_post_run_script = "res://tests/postrun.gd"
