@@ -13,7 +13,6 @@ func before_each():
 	add_child(universe)
 
 func after_each():
-	map.free()
 	universe.free()
 
 func test_map_functioning(): # Test if map system is functioning (i.e. loading of maps, getting cells from them, etc)
@@ -43,17 +42,13 @@ func test_actor_actions():
 	var cell: Cell = map.get_cell(Vector3(2,2,0))
 	var target = Vector3(15,15,0)
 	var actor = cell.add_thing(Actor)
-	var action_one = actor.force_action("MoveTo",target)
-	action_one.no_free_when_done = true
-	action_one.move_turns = 0
+	var action = actor.force_action("MoveTo",target)
+	action.no_free_when_done = true
+	action.move_turns = 0
 	(universe.get_node("TurnTimer") as Timer).start()
 	
-	yield(yield_to(action_one,"finished",5),YIELD)
-	assert_signal_emitted(action_one,"finished")
+	yield(yield_to(action,"finished",5),YIELD)
+	assert_signal_emitted(action,"finished")
 	assert_eq(actor.cell.cell_position, target)
-	assert_eq(action_one.last_think_result.code, load("res://Actions.gd").STATUS.DONE)
-	action_one.free()
-	
-	var action_two = actor.force_action("MoveTo", Vector3(-2,-2,-1))
-	yield(yield_to(action_two,"finished",5),YIELD)
-	assert_signal_emitted(action_two,"finished")
+	assert_eq(action.last_think_result.code, load("res://Actions.gd").STATUS.DONE)
+	action.free()
