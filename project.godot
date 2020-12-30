@@ -118,7 +118,6 @@ config/quit_on_go_back=false
 
 Settings="*res://Settings.gd"
 Constants="*res://Constants.gd"
-Player="*res://Player.tscn"
 Actions="*res://Actions.gd"
 ThingsManager="*res://ThingsManager.gd"
 
