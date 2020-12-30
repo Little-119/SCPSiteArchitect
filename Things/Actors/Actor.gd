@@ -3,7 +3,7 @@ class_name Actor
 
 enum {MOVE_OK, MOVE_DIFFERENT_MAP, MOVE_FAIL_GENERIC, MOVE_INVALID_CELL, MOVE_OBSTRUCTED, MOVE_TILES_UNCONNECTED}
 
-var actions := []
+var actions: Array = []
 
 var astar := CustomAStar.new() # Navigation mesh for this Actor. Let us meet again as stars
 
@@ -14,17 +14,15 @@ class CustomAStar:
 	extends AStar
 	var ready: bool = false
 	var actor: Actor = null
-#	func get_point_path(from_id: int, to_id: int) -> PoolVector3Array:
-#		var r: PoolVector3Array = .get_point_path(from_id,to_id)
-#		return r
-	
+
 	func refresh() -> void:
 		clear()
 		ready = false
 		# warning-ignore:unsafe_property_access
 		var map = actor.map
 		var map_astar: AStar = map.astar
-		reserve_space(map_astar.get_point_count())
+		if map_astar.get_point_count() > get_point_capacity():
+			reserve_space(map_astar.get_point_count())
 		for p_id in map_astar.get_points():
 			var point_pos: Vector3 = map_astar.get_point_position(p_id)
 			var point_cell = map.get_cell(point_pos)
@@ -82,6 +80,8 @@ func move_to(destination: Vector3) -> int:
 	var test_result: int = test_move(get_parent_cell(),get_map().get_cell(destination))
 	if test_result == MOVE_OK:
 		force_move(destination)
+	elif test_result == MOVE_OBSTRUCTED:
+		astar.refresh()
 	return test_result
 
 func move(direction: Vector3) -> int:
@@ -95,7 +95,8 @@ func _on_map_added_thing(thing: Thing):
 	astar.set_point_disabled(thing_cell.point_id,cell_impassability)
 	if point_disabability != cell_impassability:
 		for a in actions:
-			a.think()
+			if a:
+				a.think()
 
 func die() -> void:
 	queue_free()
@@ -132,17 +133,31 @@ func _physics_process(_delta):
 
 func on_turn():
 	.on_turn()
-	for i in actions.size():
-		var action = actions[i]
+	var actions_tmp = actions.duplicate() # protects against the actions list being modified
+	for i in actions_tmp.size():
+		var action = actions_tmp[i]
 		if not action:
-			actions.remove(i)
-			i -= 1
 			continue
-		action.execute()
+		if action.allowed_execute:
+			action.execute()
+			break
+
+func get_current_action():
+	if actions.empty():
+		return null
+	for action in actions:
+		if not action:
+			continue
+		if action.status >= Actions.STATUS.DONE:
+			continue
+		if action.allowed_execute:
+			return action
+	return null
+
+func force_action(action: String, target) -> void: # called when player is commanding that this actor do a thing
+	var new_action = (load("res://Actions.gd") as GDScript)[action].new(self,true,false)
+	new_action.target = target
 
 # Start AI-related
 
 # End AI-related
-
-func get_actions(user) -> Array:
-	return []

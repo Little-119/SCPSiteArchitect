@@ -113,6 +113,11 @@ func _ready() -> void:
 	# warning-ignore:return_value_discarded
 	$"/root/Game/TurnTimer".connect("timeout",self,"on_turn")
 
+func _draw():
+	# warning-ignore:unsafe_property_access
+	if self in $"/root/Player".selection:
+		draw_rect(Rect2(0,0,Constants.cell_size,Constants.cell_size),Color.white,false,2)
+
 func queue_free() -> void:
 	if get_map():
 		get_map().emit_signal("thing_removed")
@@ -138,7 +143,10 @@ func on_moved(_old_cell: Cell = null) -> void:
 	($"Collider" as StaticBody).transform.origin = Vector3(new_position.x,new_position.z,new_position.y)
 
 # warning-ignore:unused_argument
-func tool_lclick_oncell(clicked_cell: Cell) -> void: # called in Map._unhanded_input()
+func tool_lclick_oncell(clicked_cell: Cell, event: InputEvent) -> void: # called in Map._unhanded_input()
+	pass
+
+func force_action(action: String, target: Cell) -> void:
 	pass
 
 # warning-ignore:unused_argument
@@ -146,6 +154,10 @@ func can_coexist_with(other_thing: Thing) -> bool: # check if this Thing can be 
 	return true
 
 # Start grammar-related
+
+func get_display_name() -> String:
+	return type
+
 enum GRAMMATICAL_GENDER {DEFER = -1, NEUTER, PLURAL, MALE, FEMALE}
 enum BIOLOGICAL_SEX {NEUTER, MALE, FEMALE, INTERSEX}
 enum GENDER_IDENTITY {NONE, NONBINARY, MALE, FEMALE}
@@ -162,8 +174,6 @@ enum PRONOUN_CASE {SUBJECT,OBJECT,POSSESSIVE,REFLEXIVE}
 func get_pronoun(case: int, speaker: int) -> String:
 	return ""
 
-func get_full_name() -> String:
-	return type
 # End grammar-related
 
 func gravity() -> void:

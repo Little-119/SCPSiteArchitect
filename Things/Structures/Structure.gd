@@ -6,8 +6,8 @@ func _init().():
 	layer = LAYER.STRUCTURE
 	select_priority = 1
 
-func tool_lclick_oncell(cell: Cell) -> void:
-	.tool_lclick_oncell(cell)
+func tool_lclick_oncell(cell: Cell, event: InputEvent) -> void:
+	.tool_lclick_oncell(cell, event)
 	var valid: bool = true
 	for other_thing in cell.contents:
 		if not can_coexist_with(other_thing):

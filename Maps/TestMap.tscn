@@ -5,14 +5,17 @@
 
 [node name="Map" type="Node2D"]
 script = ExtResource( 1 )
+size = Vector3( 4, 4, 1 )
 
 [node name="Humanoid" type="Node2D" parent="."]
 position = Vector2( 1, 1 )
 script = ExtResource( 2 )
+color = Color( 0, 0, 1, 1 )
 
 [node name="Humanoid2" type="Node2D" parent="."]
 position = Vector2( 1, 1 )
 script = ExtResource( 2 )
+color = Color( 0, 1, 0, 1 )
 first_name = "Bing"
 last_name = "Bong"
 nick_name = "Bing Bong"

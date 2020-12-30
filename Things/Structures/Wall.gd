@@ -9,8 +9,8 @@ func _init().() -> void:
 	occluder.occluder.polygon = PoolVector2Array([Vector2.ZERO,Vector2(32,0),Vector2(32,32),Vector2(0,32)])
 	add_child(occluder)
 
-func tool_lclick_oncell(cell: Cell) -> void:
-	.tool_lclick_oncell(cell)
+func tool_lclick_oncell(cell: Cell, event: InputEvent) -> void:
+	.tool_lclick_oncell(cell, event)
 	pass
 
 func _draw():

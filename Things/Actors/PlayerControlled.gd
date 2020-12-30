@@ -4,7 +4,7 @@ class_name PlayerControlledActor
 
 var dir := Vector2.ZERO
 
-func _input(event):
+func _unhandled_input(event):
 	if event is InputEventKey:
 		match event.scancode:
 			KEY_UP, KEY_KP_8: dir = Vector2.UP

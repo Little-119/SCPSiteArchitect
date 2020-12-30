@@ -36,8 +36,8 @@ func get_adjacent_cell(offset: Vector3) -> Cell:
 	if map:
 		return map.get_cell(Vector3(cell_position.x+offset.x,cell_position.y-offset.y,cell_position.z-offset.z))
 	else:
-		# warning-ignore:unsafe_property_access
-		return Constants.default_cell
+		# warning-ignore:unsafe_cast
+		return (Constants.default_cell as Cell)
 
 func get_cells_in_directions(directions: Array) -> Array:
 	var adjacent_cells = []
@@ -73,15 +73,21 @@ func get_cells_in_radius(radius: float,multi_z: bool = false) -> Array: # TODO: 
 			cells.append(cell)
 	return cells
 
-func on_left_click() -> void:
+func on_left_click(event: InputEventWithModifiers) -> void: # called in Map.gd. Probably could be called here, too bad!
 	var thing_to_select
-	var selected_at: int = -1
-	if $"/root/Player".get("selection"):
-		selected_at = contents.find($"/root/Player".get("selection"))
-	if selected_at+1 == contents.size():
-		selected_at = -1
+	var selected_at: int = contents.size()
+	if $"/root/Player".get("selection").size() > 0:
+		for selected in $"/root/Player".get("selection"):
+			var found_at = contents.find(selected)
+			if found_at >= 0 and found_at < selected_at:
+				selected_at = found_at
+		if selected_at == 0:
+			selected_at = contents.size()
+	var r = range(0,selected_at,1)
+	r.invert()
 	for priority in [2,1]:
-		for i in range(selected_at+1,contents.size()):
+		for i in r:
+			pass
 			var thing = contents[i]
 			if thing.select_priority == priority:
 				thing_to_select = thing
@@ -89,11 +95,70 @@ func on_left_click() -> void:
 		if thing_to_select:
 			break
 	if thing_to_select:
-		$"/root/Player".set("selection",thing_to_select)
+		# warning-ignore:unsafe_method_access
+		$"/root/Player".select(thing_to_select,not event.shift)
 		get_tree().set_input_as_handled()
 
-func on_right_click() -> void:
-	pass
+func on_right_click(event: InputEventWithModifiers) -> void:
+	var actions: Array = []
+	var actionable_results: Dictionary = {}
+	var actions_script: GDScript = load("res://Actions.gd")
+	# warning-ignore:unsafe_property_access
+	if $"/root/Player".selection.empty():
+		return
+	# warning-ignore:unsafe_property_access
+	for selected in $"/root/Player".selection:
+		if not selected:
+			continue
+		if selected.get("actions") == null: # check if selected is an Actor
+			continue
+		var tile_open: bool = true
+		var my_actions: Array = []
+		for thing in contents:
+			if not selected.can_coexist_with(thing):
+				tile_open = false
+				break
+		if tile_open:
+			my_actions.append("MoveTo")
+		for action_name in my_actions:
+			if not action_name in actions:
+				actions.append(action_name)
+			if actions_script[action_name]:
+				var action_node = actions_script[action_name].new(selected,false)
+				var actionable_result = action_node.is_actionable(self)
+				# warning-ignore:unsafe_property_access
+				if actionable_result.code != actions_script.STATUS.OK:
+					actionable_results[action_name] = actionable_result
+				action_node.queue_free()
+	if actions.empty():
+		return
+	else:
+		get_tree().set_input_as_handled()
+		var panel: Panel = (load("res://ActionsCard.tscn") as PackedScene).instance()
+		for action in actions:
+			if actionable_results.has(action):
+				# warning-ignore:unsafe_property_access
+				if actionable_results[action].code == actions_script.STATUS.DONE:
+					continue
+			var button = Button.new()
+			button.text = " " + action if not actionable_results.has(action) else " %s (%s)" % [action,actionable_results[action].details]
+			if actionable_results.has(action):
+				# warning-ignore:unsafe_property_access
+				# warning-ignore:unsafe_property_access
+				if actionable_results[action].code == actions_script.STATUS.FAIL or actionable_results[action].code == actions_script.STATUS.ERROR:
+					button.disabled = true
+			panel.add_child(button)
+			button.rect_size = Vector2(128,30)
+			button.rect_position += Vector2(0,20 * (get_child_count()-1))
+			button.align = Button.ALIGN_LEFT
+			button.connect("pressed", panel, "queue_free")
+			# warning-ignore:unsafe_property_access
+			for selected in $"/root/Player".selection:
+				button.connect("pressed", selected, "force_action", [action,self], CONNECT_ONESHOT)
+		$"/root/Player/Camera2D/UI".add_child(panel,true)
+		panel.name = "ActionsCard"
+
+		panel.rect_position = get_global_mouse_position() + (get_viewport().size/2) - ($"/root/Player/Camera2D" as Camera2D).position # TODO: I forget how to get the screen position of a cell.
 
 func on_mouseonto() -> void:
 	pass

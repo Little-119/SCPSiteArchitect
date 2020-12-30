@@ -10,9 +10,6 @@ export(String) var culture: String = "American"
 func _to_string():
 	return "[%s (Name: '%s'):%s]" % [type,get_display_name(),get_instance_id()]
 
-func get_full_name() -> String:
-	return "%s %s" % [first_name, last_name]
-
 func get_display_name() -> String:
 	if alias.length() > 0:
 		return alias

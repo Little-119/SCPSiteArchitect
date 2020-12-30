@@ -27,7 +27,7 @@ func set_process(enable: bool) -> void:
 	.set_process(enable)
 
 func load_world() -> void:
-	var map0 = (load("res://Map.gd") as GDScript).new()
+	var map0 = (load("res://Map.gd") as GDScript).new(Vector3(64,64,1))
 	map0.name = "TestMap"
 	add_child(map0)
 	map0.load_submap((load("res://Maps/TestMap.tscn") as PackedScene).instance(),Vector3(2,2,0))
@@ -36,12 +36,14 @@ func load_world() -> void:
 func _ready() -> void:
 	load_world()
 	turn_timer.start()
-	if OS.is_debug_build():
-		var gut = (load("res://test/tests.tscn") as PackedScene).instance()
-		($"/root/Player/Camera2D/Debug" as Control).add_child(gut)
-		($"/root/Player/Camera2D/Debug" as Control).visible = Settings.get("debug_gut_visible")
+	
+	#var gut = (load("res://tests/tests.tscn") as PackedScene).instance()
+	if not OS.has_feature("standalone"):
+		pass
+		#($"/root/Player/Camera2D/Debug" as Control).add_child(gut)
+		#($"/root/Player/Camera2D/Debug" as Control).visible = Settings.get("debug_gut_visible")
 
-func _input(event: InputEvent):
+func _unhandled_input(event: InputEvent):
 	if event.is_pressed():
 		if event is InputEventKey:
 			match (event as InputEventKey).scancode:
@@ -49,6 +51,7 @@ func _input(event: InputEvent):
 					if OS.is_debug_build():
 						($"/root/Player/Camera2D/Debug" as Control).visible = not ($"/root/Player/Camera2D/Debug" as Control).visible
 						Settings.set("debug_gut_visible",($"/root/Player/Camera2D/Debug" as Control).visible)
+						get_tree().set_input_as_handled()
 
 func on_turn() -> void:
 	turn += 1

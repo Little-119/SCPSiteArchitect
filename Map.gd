@@ -52,10 +52,13 @@ func set_size(newsize: Vector3) -> void:
 		cells_matrix[zn] = y
 	update()
 
-func _init(newsize: Vector3 = Vector3(64,64,1)) -> void:
-	size = newsize
+func _init(newsize = null) -> void:
+	if newsize:
+		set_size(newsize)
+	else:
+		set_size(size)
 	z_index = -1
-	set_size(size)
+	
 
 func get_pixel_size() -> Vector2:
 	var cell_size = Constants.cell_size
@@ -136,12 +139,14 @@ func get_cell_from_screen_position(from_position: Vector2,z:int = 0) -> Cell: # 
 	from_position += ($"/root/Player/Camera2D" as Camera2D).get_camera_position() - ($"/root" as Viewport).size/2
 	return get_cell_from_position(from_position,z)
 
-func _input(event: InputEvent) -> void:
+func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouse:
 		# event.global_position does not contain the actual global position, or at least not the global position that's needed here
 		var cell_at_pos: Cell = get_cell_from_position(get_global_mouse_position(),current_zlevel)
 		if event is InputEventMouseMotion:
-			update()
+			# warning-ignore:unsafe_property_access
+			if $"/root/Player".mousetool:
+				update()
 			if cell_at_pos and (not cell_at_pos.is_default_cell):
 				cell_at_pos.on_mouseonto()
 		
@@ -150,16 +155,21 @@ func _input(event: InputEvent) -> void:
 				if cell_at_pos and (not cell_at_pos.is_default_cell):
 					match (event as InputEventMouseButton).button_index:
 						1:
-							cell_at_pos.on_left_click()
 							# can't specify that Player is a Player while it's a Singleton
 							# warning-ignore:unsafe_property_access
 							if $"/root/Player".mousetool:
 								# warning-ignore:unsafe_property_access
-								$"/root/Player".mousetool.tool_lclick_oncell(cell_at_pos)
+								$"/root/Player".mousetool.tool_lclick_oncell(cell_at_pos,event)
+							else:
+								cell_at_pos.on_left_click(event)
 						2:
-							cell_at_pos.on_right_click()
+							# warning-ignore:unsafe_property_access
+							if $"/root/Player".mousetool == null:
+								cell_at_pos.on_right_click(event)
 
 func view_zlevel(z: int = 0) -> void: # change map view to a different z-level
+	if z == current_zlevel:
+		return
 	# warning-ignore:narrowing_conversion
 	z = clamp(z,0,cells_matrix.size()-1)
 	current_zlevel = z
@@ -177,12 +187,31 @@ func _draw() -> void:
 		if not cell.is_default_cell:
 			var box_pos: Vector2 = cell.position
 			draw_rect(Rect2(box_pos,Vector2.ONE * cell.scale.x * 32),Color.white,false)
+	# warning-ignore:unsafe_property_access
+	if not $"/root/Player".selection.empty():
+		# warning-ignore:unsafe_property_access
+		for selected_i in $"/root/Player".selection.size():
+			# warning-ignore:unsafe_property_access
+			var selected = $"/root/Player".selection[selected_i]
+			if not selected:
+				continue
+			if selected.get("actions"):
+				if selected.actions.front() is Actions.MoveTo:
+					var path: Array = selected.actions.front().path
+					if not path.empty():
+						var path_copy = path.duplicate()
+						path_copy.insert(0,selected.cell.cell_position)
+						for point_i in range(1,path_copy.size()):
+							var from: Vector2 = (Vector2(path_copy[point_i-1].x,path_copy[point_i-1].y) + Vector2(.5,.5)) * Constants.cell_size
+							var to: Vector2 = (Vector2(path_copy[point_i].x,path_copy[point_i].y) + Vector2(.5,.5)) * Constants.cell_size
+							draw_line(from,to,Color.white,1,true)
 
 func on_turn() -> void:
 	pass
 	#prints($"/root/Game".turn,get_local_time())
 
+# warning-ignore:unsafe_property_access
 func get_local_time(turn: int = $"/root/Game".turn) -> Dictionary:
-	var time = load("res://TimeObject.gd").new()
+	var time = (load("res://TimeObject.gd") as GDScript).new()
 	time.seconds = turn * Constants.turn_length
 	return time.get_all()

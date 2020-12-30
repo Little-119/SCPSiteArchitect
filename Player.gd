@@ -8,18 +8,32 @@ signal camera_moved
 
 var mousetool = null
 
-var selection = null setget set_selection
+var selection: Array = []# setget set_selection
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.is_pressed():
 		var z_delta: float
 		match (event as InputEventMouseButton).button_index:
+			BUTTON_LEFT,BUTTON_RIGHT:
+				var old_actions_panel = get_node_or_null("/root/Player/Camera2D/UI/ActionsCard")
+				if old_actions_panel:
+					old_actions_panel.visible = false
+					old_actions_panel.name += "Freed"
+					old_actions_panel.queue_free()
+				continue
 			BUTTON_LEFT:
-				set_selection(null)
+				select(null)
+				continue
 			BUTTON_RIGHT:
 				if mousetool:
 					mousetool = null
-					return
+				continue
+			BUTTON_LEFT, BUTTON_RIGHT:
+				var old_panel = get_node_or_null("/root/Player/Camera2D/UI/ActionsCard")
+				if old_panel:
+					old_panel.visible = false
+					old_panel.name += "Freed"
+					old_panel.queue_free()
 			BUTTON_WHEEL_UP:
 				z_delta = -zoom_increment
 			BUTTON_WHEEL_DOWN:
@@ -61,13 +75,46 @@ func _ready() -> void:
 func equip_tool(t) -> void:
 	mousetool = t
 
-func set_selection(new_selection = null) -> void:
-	if selection or new_selection == null:
+func select(new_selection = null,clear_old_selection: bool = true) -> void:
+	var changed = selection.duplicate()
+	changed.append(new_selection)
+	#if selection.size() > 0 or new_selection == null:
+	if true:
 		var card = get_node_or_null("Camera2D/UI/SelectionCard")
 		if card:
+			card.name = "SelectionCardFreed"
 			card.queue_free()
+		if clear_old_selection:
+			selection.clear()
+	selection.append(new_selection)
 	if new_selection:
 		var selection_card: Panel = (load("res://SelectionCard.tscn") as PackedScene).instance()
-		(selection_card.get_node("RichTextLabel") as RichTextLabel).text = new_selection.get_display_name()
-		($"/root/Player/Camera2D/UI" as Control).add_child(selection_card)
-	selection = new_selection
+		($"Camera2D/UI" as Control).add_child(selection_card,true)
+		update_selection_card()
+	for thing in changed:
+		if not thing:
+			continue
+		thing.update()
+	# warning-ignore:unsafe_property_access
+	if get_node("/root/Game").current_map:
+		# warning-ignore:unsafe_property_access
+		get_node("/root/Game").current_map.update()
+
+func update_selection_card() -> void:
+	var selection_card: Panel = get_node_or_null("Camera2D/UI/SelectionCard")
+	if not selection_card:
+		return
+	if selection.size() == 1:
+		var selected: Thing = selection[0]
+		(selection_card.get_node("Title") as RichTextLabel).text = (selected as Thing).get_display_name()
+		var action_text = "Idle"
+		if selected is Actor:
+			if (selected as Actor).actions.size() > 0:
+				var current_action: Actions.BaseAction = (selected as Actor).get_current_action()
+				if current_action is Actions.BaseAction:
+					action_text = current_action.get_display_name()
+		(selection_card.get_node("CurrentAction") as RichTextLabel).text = action_text
+	elif selection.size() > 1:
+		var title_text: String = "Things"
+		(selection_card.get_node("Title") as RichTextLabel).text = title_text + " x" + str(selection.size()) # TODO: find if everything selected is of a common type and show that common type here because that's how RW does it so why not actually maybe that's a bad way of thinking
+		
