@@ -3,10 +3,14 @@
 
 # Explicitly declare text files you want to always be normalized and converted
 # to native line endings on checkout.
+*.gd text
+*.tscn text
+*.godot text
+*.txt text
+
 *.cpp text
 *.c text
 *.h text
-*.gd text
 *.cs text
 
 # Declare files that will always have CRLF line endings on checkout.
