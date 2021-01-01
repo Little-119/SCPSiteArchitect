@@ -2,7 +2,7 @@ extends Node
 
 var settings_file: File
 
-var settings: Dictionary = {debug_gut_visible = false}
+var settings: Dictionary = {debug_gut_visible = false, autoloadmap = null}
 
 func _init() -> void:
 	settings_file = File.new()
