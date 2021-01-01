@@ -1,4 +1,5 @@
 extends Node
+class_name Universe
 
 var maps: Array = []
 var current_map = null setget set_current_map
