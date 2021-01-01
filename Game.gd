@@ -14,6 +14,10 @@ func get_current_map():
 	else:
 		return null
 
+func add_child(node: Node, legible_unique_name: bool = false) -> void:
+	.add_child(node, legible_unique_name)
+	move_child($"DebugContainer",get_child_count())
+
 func _ready() -> void:
 	var gut = (load("res://tests/tests.tscn") as PackedScene).instance()
 	$"DebugContainer".add_child(gut)
@@ -30,6 +34,7 @@ func _ready() -> void:
 			var player = load("res://Player.tscn").instance()
 			add_child(universe,true)
 			add_child(player,true)
+			($"DebugContainer" as Control).rect_position = get_viewport().size/-2
 			current_universe = universe
 
 func _unhandled_input(event: InputEvent):
