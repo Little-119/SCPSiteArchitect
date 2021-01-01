@@ -100,9 +100,9 @@ func _ready() -> void:
 			orphaned_things.remove(i)
 			i -= 1
 	
-	if get_node_or_null("/root/Player"):
+	if get_node_or_null("/root/Game/Player"):
 		# warning-ignore:return_value_discarded
-		$"/root/Player".connect("camera_moved",self,"update")
+		$"/root/Game/Player".connect("camera_moved",self,"update")
 
 func collect_orphans(orphanage: Map = self) -> void:
 	var orphans: Array = []
@@ -156,7 +156,7 @@ func get_cell_from_position(from_position: Vector2,z:int = 0) -> Cell:
 	return get_cell(rounded_position)
 
 func get_cell_from_screen_position(from_position: Vector2,z:int = 0) -> Cell: # get cell from local screen position
-	from_position += ($"/root/Player/Camera2D" as Camera2D).get_camera_position() - ($"/root" as Viewport).size/2
+	from_position += ($"/root/Game/Player/Camera2D" as Camera2D).get_camera_position() - ($"/root" as Viewport).size/2
 	return get_cell_from_position(from_position,z)
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -165,7 +165,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		var cell_at_pos: Cell = get_cell_from_position(get_global_mouse_position(),current_zlevel)
 		if event is InputEventMouseMotion:
 			# warning-ignore:unsafe_property_access
-			if get_node_or_null("/root/Player") and $"/root/Player".mousetool:
+			if get_node_or_null("/root/Game/Player") and $"/root/Game/Player".mousetool:
 				update()
 			if cell_at_pos and (not cell_at_pos.is_default_cell):
 				cell_at_pos.on_mouseonto()
@@ -177,14 +177,14 @@ func _unhandled_input(event: InputEvent) -> void:
 						1:
 							# can't specify that Player is a Player while it's a Singleton
 							# warning-ignore:unsafe_property_access
-							if $"/root/Player".mousetool:
+							if $"/root/Game/Player".mousetool:
 								# warning-ignore:unsafe_property_access
-								$"/root/Player".mousetool.tool_lclick_oncell(cell_at_pos,event)
+								$"/root/Game/Player".mousetool.tool_lclick_oncell(cell_at_pos,event)
 							else:
 								cell_at_pos.on_left_click(event)
 						2:
 							# warning-ignore:unsafe_property_access
-							if $"/root/Player".mousetool == null:
+							if $"/root/Game/Player".mousetool == null:
 								cell_at_pos.on_right_click(event)
 
 func view_zlevel(z: int = 0) -> void: # change map view to a different z-level
@@ -200,16 +200,16 @@ func view_zlevel_incr(delta: int) -> void: # change map view to a different z-le
 	view_zlevel(current_zlevel + delta)
 
 func _draw() -> void:
-	if get_node_or_null("/root/Player"):
+	if get_node_or_null("/root/Game/Player"):
 		# warning-ignore:unsafe_property_access
-		if $"/root/Player".mousetool:
+		if $"/root/Game/Player".mousetool:
 			var cell: Cell = get_cell_from_position(get_global_mouse_position(),current_zlevel)
 			if not cell.is_default_cell:
 				var box_pos: Vector2 = cell.position
 				draw_rect(Rect2(box_pos,Vector2.ONE * cell.scale.x * 32),Color.white,false)
-		if not ($"/root/Player" as Player).selection.empty():
-			for selected_i in ($"/root/Player" as Player).selection.size():
-				var selected = ($"/root/Player" as Player).selection[selected_i]
+		if not ($"/root/Game/Player" as Player).selection.empty():
+			for selected_i in ($"/root/Game/Player" as Player).selection.size():
+				var selected = ($"/root/Game/Player" as Player).selection[selected_i]
 				if not selected:
 					continue
 				if selected.get("actions"):

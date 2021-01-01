@@ -16,7 +16,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		var z_delta: float
 		match (event as InputEventMouseButton).button_index:
 			BUTTON_LEFT,BUTTON_RIGHT:
-				var old_actions_panel = get_node_or_null("/root/Player/Camera2D/UI/ActionsCard")
+				var old_actions_panel = get_node_or_null("/root/Game/Player/Camera2D/UI/ActionsCard")
 				if old_actions_panel:
 					old_actions_panel.visible = false
 					old_actions_panel.name += "Freed"
@@ -30,7 +30,7 @@ func _unhandled_input(event: InputEvent) -> void:
 					mousetool = null
 				continue
 			BUTTON_LEFT, BUTTON_RIGHT:
-				var old_panel = get_node_or_null("/root/Player/Camera2D/UI/ActionsCard")
+				var old_panel = get_node_or_null("/root/Game/Player/Camera2D/UI/ActionsCard")
 				if old_panel:
 					old_panel.visible = false
 					old_panel.name += "Freed"

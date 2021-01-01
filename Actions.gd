@@ -24,9 +24,9 @@ class BaseAction extends Node:
 	func set_target(new_target) -> void:
 		target = new_target
 		# warning-ignore:unsafe_property_access
-		if get_node_or_null("/root/Player") and actioner in $"/root/Player".selection:
+		if get_node_or_null("/root/Game/Player") and actioner in $"/root/Game/Player".selection:
 			# warning-ignore:unsafe_method_access
-			$"/root/Player".update_selection_card()
+			$"/root/Game/Player".update_selection_card()
 	func is_debug_mode() -> bool: # checks if this action is part of automated testing
 		return get_path().get_name(2) == "DebugContainer"
 	# warning-ignore:unused_class_variable
@@ -47,9 +47,9 @@ class BaseAction extends Node:
 				actioner.actions.append(self)
 		actioner.add_child(self,true)
 		# warning-ignore:unsafe_property_access
-		if get_node_or_null("/root/Player") and (actioner in $"/root/Player".selection) and allow_execute:
+		if get_node_or_null("/root/Game/Player") and (actioner in $"/root/Game/Player".selection) and allow_execute:
 			# warning-ignore:unsafe_method_access
-			$"/root/Player".update_selection_card()
+			$"/root/Game/Player".update_selection_card()
 			if actioner.get("map"):
 				actioner.get("map").update()
 	func _to_string() -> String:
@@ -74,8 +74,8 @@ class BaseAction extends Node:
 		pass
 	func finish() -> void:
 		emit_signal("finished")
-		if get_node_or_null("/root/Player") and actioner in $"/root/Player".selection:
-			$"/root/Player".update_selection_card()
+		if get_node_or_null("/root/Game/Player") and actioner in $"/root/Game/Player".selection:
+			$"/root/Game/Player".update_selection_card()
 		if not is_debug_mode(): # automated tests need actions to stick around to check their result
 			queue_free()
 	func fail() -> void:

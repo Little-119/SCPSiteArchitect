@@ -113,7 +113,7 @@ func _ready() -> void:
 
 func _draw():
 	# warning-ignore:unsafe_property_access
-	if get_node_or_null("/root/Player") and self in $"/root/Player".selection:
+	if get_node_or_null("/root/Game/Player") and self in $"/root/Game/Player".selection:
 		draw_rect(Rect2(0,0,Constants.cell_size,Constants.cell_size),Color.white,false,2)
 
 func queue_free() -> void:

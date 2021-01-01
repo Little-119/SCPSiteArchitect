@@ -76,8 +76,8 @@ func get_cells_in_radius(radius: float,multi_z: bool = false) -> Array: # TODO: 
 func on_left_click(event: InputEventWithModifiers) -> void: # called in Map.gd. Probably could be called here, too bad!
 	var thing_to_select
 	var selected_at: int = contents.size()
-	if $"/root/Player".get("selection").size() > 0:
-		for selected in $"/root/Player".get("selection"):
+	if $"/root/Game/Player".get("selection").size() > 0:
+		for selected in $"/root/Game/Player".get("selection"):
 			var found_at = contents.find(selected)
 			if found_at >= 0 and found_at < selected_at:
 				selected_at = found_at
@@ -96,7 +96,7 @@ func on_left_click(event: InputEventWithModifiers) -> void: # called in Map.gd. 
 			break
 	if thing_to_select:
 		# warning-ignore:unsafe_method_access
-		$"/root/Player".select(thing_to_select,not event.shift)
+		$"/root/Game/Player".select(thing_to_select,not event.shift)
 		get_tree().set_input_as_handled()
 
 func on_right_click(event: InputEventWithModifiers) -> void:
@@ -104,10 +104,10 @@ func on_right_click(event: InputEventWithModifiers) -> void:
 	var actionable_results: Dictionary = {}
 	var actions_script: GDScript = load("res://Actions.gd")
 	# warning-ignore:unsafe_property_access
-	if $"/root/Player".selection.empty():
+	if $"/root/Game/Player".selection.empty():
 		return
 	# warning-ignore:unsafe_property_access
-	for selected in $"/root/Player".selection:
+	for selected in $"/root/Game/Player".selection:
 		if not selected:
 			continue
 		if selected.get("actions") == null: # check if selected is an Actor
@@ -153,12 +153,12 @@ func on_right_click(event: InputEventWithModifiers) -> void:
 			button.align = Button.ALIGN_LEFT
 			button.connect("pressed", panel, "queue_free")
 			# warning-ignore:unsafe_property_access
-			for selected in $"/root/Player".selection:
+			for selected in $"/root/Game/Player".selection:
 				button.connect("pressed", selected, "force_action", [action,self], CONNECT_ONESHOT)
-		$"/root/Player/Camera2D/UI".add_child(panel,true)
+		$"/root/Game/Player/Camera2D/UI".add_child(panel,true)
 		panel.name = "ActionsCard"
 
-		panel.rect_position = get_global_mouse_position() + (get_viewport().size/2) - ($"/root/Player/Camera2D" as Camera2D).position # TODO: I forget how to get the screen position of a cell.
+		panel.rect_position = get_global_mouse_position() + (get_viewport().size/2) - ($"/root/Game/Player/Camera2D" as Camera2D).position # TODO: I forget how to get the screen position of a cell.
 
 func on_mouseonto() -> void:
 	pass

@@ -17,7 +17,7 @@ class MainPanel extends Panel:
 	func _ready() -> void:
 		resize()
 	func equip_buildable(button,buildable) -> void:
-		button.get_node("/root/Player").equip_tool(buildable)
+		button.get_node("/root/Game/Player").equip_tool(buildable)
 		queue_free()
 
 class ArchitectPanel extends MainPanel:

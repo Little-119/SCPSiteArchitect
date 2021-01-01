@@ -36,7 +36,7 @@ func _ready():
 
 func _draw() -> void:
 	# warning-ignore:unsafe_property_access
-	if $"/root/Player".mousetool:
+	if $"/root/Game/Player".mousetool:
 		var mousepos: Vector2 = ($"/root" as Viewport).get_mouse_position()
 		# warning-ignore:unsafe_property_access
 		var map: Map = $"/root/Game".current_map
@@ -44,7 +44,7 @@ func _draw() -> void:
 		if not cell.is_default_cell:
 			pass
 			#var box_pos: Vector2 = mousepos - Vector2(int(mousepos.x) % 32,int(mousepos.y) % 32)
-			#var box_pos: Vector2 = cell.global_position - $"/root/Player/Camera2D".position
+			#var box_pos: Vector2 = cell.global_position - $"/root/Game/Player/Camera2D".position
 			#draw_rect(Rect2(box_pos,Vector2.ONE * 32),Color.white,false)
 
 func _process(_delta) -> void:
