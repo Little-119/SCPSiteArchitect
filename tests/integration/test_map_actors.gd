@@ -41,7 +41,7 @@ func test_actor_pathfinding():
 	action.free()
 
 var prisons = [["get_four_adjacent_cells"],["get_eight_adjacent_cells"]]
-func test_actor_imprisonment(params=use_parameters(prisons)):
+func test_actor_imprisonment(params=use_parameters(prisons)): # Encase actor in walls, tell them to move, expect it to fail
 	var start_cell: Cell = map.get_cell(Vector3(2,2,0))
 	start_cell.add_thing(actor)
 	for cell in start_cell.call(params[0]):
@@ -53,10 +53,9 @@ func test_actor_imprisonment(params=use_parameters(prisons)):
 	action.move_turns = 0
 	# warning-ignore:unsafe_cast
 	(universe.get_node("TurnTimer") as Timer).start()
-	
+	yield(yield_to(action,"finished",.5),YIELD)
 	assert_signal_emitted(action,"finished")
 	assert_eq(actor.cell, start_cell)
-	assert_ne(actor.cell, target)
 	assert_not_null(action.last_think_result)
 	if action.last_think_result:
 		assert_eq(action.last_think_result.details, "No path")
