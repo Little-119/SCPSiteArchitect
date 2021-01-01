@@ -15,7 +15,11 @@ func set_current_map(map: Map):
 			if m is Map and m != map:
 				m.visible = false
 
-func _init() -> void:
+func _init(to_load) -> void:
+	if to_load:
+		var map = Map.load_map(to_load)
+		add_child(map)
+		set_current_map(map)
 	turn_timer.name = "TurnTimer"
 	turn_timer.wait_time = .1
 	# warning-ignore:return_value_discarded
