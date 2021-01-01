@@ -42,8 +42,6 @@ func _to_string():
 	return "[%s:%s]" % [type,get_instance_id()]
 
 func get_parent_cell() -> Cell:
-	if not is_inside_tree() or get_node_or_null("/root/Game") == null:
-		return null
 	if get_node_or_null("..") != null:
 		return ($".." as Cell)
 	else:

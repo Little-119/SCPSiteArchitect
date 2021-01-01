@@ -5,6 +5,13 @@ func _ready() -> void:
 	$"DebugContainer".add_child(gut)
 	if not OS.has_feature("standalone"):
 		($"DebugContainer" as Control).visible = Settings.get("debug_gut_visible")
+	var autoloadmap = Settings.get("autoloadmap")
+	match autoloadmap:
+		null, false:
+			return
+		true, TYPE_STRING:
+			Universe.new(autoloadmap)
+		
 
 func _unhandled_input(event: InputEvent):
 	if event.is_pressed():
