@@ -142,7 +142,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		var cell_at_pos: Cell = get_cell_from_position(get_global_mouse_position(),current_zlevel)
 		if event is InputEventMouseMotion:
 			# warning-ignore:unsafe_property_access
-			if $"/root/Player".mousetool:
+			if get_node_or_null("/root/Player") and $"/root/Player".mousetool:
 				update()
 			if cell_at_pos and (not cell_at_pos.is_default_cell):
 				cell_at_pos.on_mouseonto()

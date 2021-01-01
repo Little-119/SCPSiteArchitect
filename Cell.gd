@@ -181,6 +181,7 @@ func zlevel_update(zlevel) -> void:
 	modulate = Color(1,1,1,clamp(1-(diff/-4),0,1))
 
 func add_child(child: Node,b: bool = false) -> void:
+	assert(child)
 	var old_parent
 	if child.get("type"): # 'if child is Thing' causes an error. Workaround: see if it has a property called type
 		old_parent = child.get_node_or_null("..")
