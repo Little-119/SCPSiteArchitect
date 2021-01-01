@@ -55,10 +55,26 @@ func set_size(newsize: Vector3) -> void:
 func _init(newsize = null) -> void:
 	if newsize:
 		set_size(newsize)
-	else:
+	elif size:
 		set_size(size)
 	z_index = -1
-	
+
+static func load_map(from) -> Map:
+	if typeof(from) == TYPE_STRING:
+		match from.get_extension():
+			"tscn":
+				var scene = load(from)
+				if not scene is PackedScene:
+					push_error("Error when loading map: Did not find scene at " + str(from))
+				else:
+					var instance = scene.instance()
+					if instance.get_script() != load("res://Map.gd"):
+						push_error("Error when loading map: Found scene, but scene is not map. Path: " + str(from))
+					else:
+						instance.set_size(instance.size)
+						instance.collect_orphans()
+						return instance
+	return load("res://Map.gd").new()
 
 func get_pixel_size() -> Vector2:
 	var cell_size = Constants.cell_size
@@ -88,25 +104,32 @@ func _ready() -> void:
 		# warning-ignore:return_value_discarded
 		$"/root/Player".connect("camera_moved",self,"update")
 
-func load_submap(submap: Map, offset: Vector3) -> void: # offset defines position of the upper left corner of the submap
+func collect_orphans(orphanage: Map = self) -> void:
 	var orphans: Array = []
+	for child in get_children():
+		if not (child is Cell):
+			remove_child(child)
+			orphans.append(child)
+	for orphan in orphans:
+		var adoptive_cell = orphanage.get_cell_or_null(Vector3(orphan.position.x,orphan.position.y,orphan.position_z))
+		if adoptive_cell:
+			orphan.position = Vector2.ZERO
+			orphan.position_z = 0 # reset to 0 because this isn't used outside of creating maps in editor ...I think?
+			adoptive_cell.add_child(orphan)
+
+func load_submap(submap: Map, offset: Vector3) -> void: # offset defines position of the upper left corner of the submap
 	for child in submap.get_children():
 		if not (child is Cell):
-			submap.remove_child(child)
-			orphans.append(child)
-	for cell in submap.cells:
+			child.position += Vector2(offset.x,offset.y)
+			child.position_z += offset.z
+	for cell in submap.cells: # this loop orphanizes the contents of all cells in the submap for later collection
 		for child in cell.contents:
 			cell.remove_child(child)
 			child.request_ready()
-			child.position = Vector2(cell.cell_position.x,cell.cell_position.y)
+			child.position = Vector2(cell.cell_position.x,cell.cell_position.y) + Vector2(offset.x,offset.y)
 			child.position_z = cell.cell_position.z
-			orphans.append(child)
-	for orphan in orphans:
-		var adoptive_cell = get_cell_or_null(offset + Vector3(orphan.position.x,orphan.position.y,orphan.position_z))
-		if adoptive_cell:
-			orphan.position = Vector2.ZERO
-			orphan.position_z = 0
-			adoptive_cell.add_child(orphan)
+			submap.add_child(child)
+	submap.collect_orphans(self)
 	submap.queue_free()
 
 func get_cell(pos: Vector3) -> Cell: # get cell with cell_position
@@ -142,7 +165,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		var cell_at_pos: Cell = get_cell_from_position(get_global_mouse_position(),current_zlevel)
 		if event is InputEventMouseMotion:
 			# warning-ignore:unsafe_property_access
-			if $"/root/Player".mousetool:
+			if get_node_or_null("/root/Player") and $"/root/Player".mousetool:
 				update()
 			if cell_at_pos and (not cell_at_pos.is_default_cell):
 				cell_at_pos.on_mouseonto()

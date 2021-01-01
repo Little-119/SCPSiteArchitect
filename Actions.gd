@@ -18,7 +18,6 @@ class BaseAction extends Node:
 	var status: int = STATUS.NEW
 	var last_think_result: ThinkResult = null
 	var allowed_execute: bool = true # checked in Actor.gd before calling execute
-	var no_free_when_done: bool = false # used in integration testing
 	var actioner: Actor
 	# warning-ignore:unused_class_variable
 	var target = null setget set_target
@@ -28,6 +27,8 @@ class BaseAction extends Node:
 		if get_node_or_null("/root/Player") and actioner in $"/root/Player".selection:
 			# warning-ignore:unsafe_method_access
 			$"/root/Player".update_selection_card()
+	func is_debug_mode() -> bool: # checks if this action is part of automated testing
+		return get_path().get_name(2) == "DebugContainer"
 	# warning-ignore:unused_class_variable
 	var path: PoolVector3Array
 	# warning-ignore:unused_class_variable
@@ -65,7 +66,8 @@ class BaseAction extends Node:
 		last_think_result = result
 		match result_status:
 			STATUS.FAIL,STATUS.ERROR:
-				push_error(error_message)
+				if not is_debug_mode():
+					push_error(error_message)
 				fail()
 		return result
 	func execute() -> void:
@@ -74,7 +76,7 @@ class BaseAction extends Node:
 		emit_signal("finished")
 		if get_node_or_null("/root/Player") and actioner in $"/root/Player".selection:
 			$"/root/Player".update_selection_card()
-		if not no_free_when_done:
+		if not is_debug_mode(): # automated tests need actions to stick around to check their result
 			queue_free()
 	func fail() -> void:
 		finish()
@@ -85,6 +87,20 @@ class MoveTo extends BaseAction: # Move between cells on one map
 	var move_turns = 10
 	func _init(new_actioner: Actor,allow_execute: bool = false,add_to_queue: bool = false).(new_actioner,allow_execute,add_to_queue):
 		allowed_execute = allow_execute
+	func set_target(new_target) -> void:
+		if new_target is Vector3:
+			push_warning("MoveTo should be given a cell as a target")
+			new_target = actioner.map.get_cell(new_target)
+		if new_target is Cell:
+			if new_target.is_default_cell:
+				fail()
+				think_result(STATUS.ERROR,"Error: MoveTo needs a non-default Cell as a target")
+				return
+		else:
+			fail()
+			think_result(STATUS.ERROR,"Error: MoveTo needs a Cell as a target")
+			return
+		.set_target(new_target)
 	func get_class() -> String: return "MoveTo"
 	func get_display_name() -> String:
 		if target:
@@ -97,15 +113,8 @@ class MoveTo extends BaseAction: # Move between cells on one map
 			actioner.get("map").update()
 		.finish()
 	func think() -> ThinkResult:
-		if not (target is Cell):
-			if target is Vector3:
-				target = actioner.map.get_cell(target)
-			else:
-				fail()
-				return think_result(STATUS.ERROR,"Error: MoveTo needs a Cell as a target")
-		if (actioner.cell as Cell).get("map") != target.map: # TODO: Pathing between maps
-			fail()
-			return think_result(STATUS.ERROR,"MoveTo between maps is unimplemented")
+		if not target or status == STATUS.FAIL or status == STATUS.ERROR:
+			return last_think_result
 		if actioner.cell == target: # We're already at the destination
 			finish()
 			return think_result(STATUS.DONE,"Already at destination")
