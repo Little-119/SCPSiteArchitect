@@ -6,7 +6,8 @@ var universe = null
 var map: Map = null
 
 func before_each():
-	universe = (load("res://Universe.gd") as GDScript).new(null)
+	universe = Universe.new(null)
+	universe.visible = false
 	map = Map.new(map_size) # Make a new map, resetting us to a clean slate
 	universe.add_child(map)
 	universe.set_current_map(map)
