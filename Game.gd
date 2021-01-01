@@ -1,5 +1,19 @@
 extends Node
 
+var current_universe: Universe setget set_current_universe
+
+func set_current_universe(new_universe):
+	if new_universe == null:
+		current_universe = null
+	elif new_universe is Universe:
+		current_universe = new_universe
+
+func get_current_map():
+	if current_universe:
+		return current_universe.current_map
+	else:
+		return null
+
 func _ready() -> void:
 	var gut = (load("res://tests/tests.tscn") as PackedScene).instance()
 	$"DebugContainer".add_child(gut)
@@ -10,8 +24,13 @@ func _ready() -> void:
 		null, false:
 			return
 		true, TYPE_STRING:
-			Universe.new(autoloadmap)
-		
+			var universe = Universe.new(autoloadmap)
+			universe.name = "Universe"
+			universe.current_map.set_size(Vector3(32,32,2))
+			var player = load("res://Player.tscn").instance()
+			add_child(universe,true)
+			add_child(player,true)
+			current_universe = universe
 
 func _unhandled_input(event: InputEvent):
 	if event.is_pressed():

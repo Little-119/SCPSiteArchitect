@@ -39,7 +39,7 @@ func _draw() -> void:
 	if $"/root/Game/Player".mousetool:
 		var mousepos: Vector2 = ($"/root" as Viewport).get_mouse_position()
 		# warning-ignore:unsafe_property_access
-		var map: Map = $"/root/Game".current_map
+		var map: Map = $"/root/Game".get_current_map()
 		var cell: Cell = map.get_cell_from_screen_position(mousepos,map.current_zlevel)
 		if not cell.is_default_cell:
 			pass
