@@ -18,7 +18,7 @@ func set_current_map(map: Map):
 func _init(to_load) -> void:
 	if to_load:
 		var map = Map.load_map(to_load)
-		add_child(map)
+		add_child(map,true)
 		set_current_map(map)
 	turn_timer.name = "TurnTimer"
 	turn_timer.wait_time = .1
@@ -29,6 +29,7 @@ func _init(to_load) -> void:
 func add_child(node: Node, legible_unique_name: bool = false):
 	if node is Map:
 		maps.append(node)
+		node.name = "Map " + str(node.get_instance_id())
 	.add_child(node,legible_unique_name)
 
 func on_turn() -> void:
