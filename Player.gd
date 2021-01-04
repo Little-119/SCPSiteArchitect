@@ -27,7 +27,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				continue
 			BUTTON_RIGHT:
 				if mousetool:
-					mousetool = null
+					set_mousetool(null)
 				continue
 			BUTTON_LEFT, BUTTON_RIGHT:
 				var old_panel = get_node_or_null("/root/Game/Player/Camera2D/UI/ActionsCard")
@@ -50,7 +50,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				$"/root/Game".set_process(not $"/root/Game".is_processing())
 			KEY_ESCAPE:
 				if mousetool:
-					mousetool = null
+					set_mousetool(null)
 					get_tree().set_input_as_handled()
 
 func _process(delta: float) -> void:
@@ -73,8 +73,11 @@ func _process(delta: float) -> void:
 func _ready() -> void:
 	($"Camera2D" as Camera2D).make_current()
 
-func equip_tool(t) -> void:
-	mousetool = t
+func set_mousetool(new_mousetool) -> void:
+	if new_mousetool == null:
+		if $"/root/Game".current_map:
+			$"/root/Game".current_map.update()
+	mousetool = new_mousetool
 
 func select(new_selection = null,clear_old_selection: bool = true) -> void:
 	var changed = selection.duplicate()
