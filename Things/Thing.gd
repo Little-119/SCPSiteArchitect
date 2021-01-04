@@ -113,7 +113,7 @@ func _ready() -> void:
 							sprite.scale = s
 
 func _draw():
-	if get_node_or_null("/root/Game/Player") and self in $"/root/Game/Player:selection":
+	if get_node_or_null("/root/Game/Player") and self in $"/root/Game/Player".get("selection"):
 		draw_rect(Rect2(0,0,Constants.cell_size,Constants.cell_size),Color.white,false,2)
 
 func queue_free() -> void:

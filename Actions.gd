@@ -23,7 +23,7 @@ class BaseAction extends Node:
 	var target = null setget set_target
 	func set_target(new_target) -> void:
 		target = new_target
-		if get_node_or_null("/root/Game/Player") and actioner in $"/root/Game/Player:selection":
+		if get_node_or_null("/root/Game/Player") and actioner in $"/root/Game/Player".get("selection"):
 			$"/root/Game/Player".call("update_selection_card")
 	func is_debug_mode() -> bool: # checks if this action is part of automated testing
 		return get_path().get_name(2) == "DebugContainer"
@@ -44,7 +44,7 @@ class BaseAction extends Node:
 			else:
 				actioner.actions.append(self)
 		actioner.add_child(self,true)
-		if get_node_or_null("/root/Game/Player") and (actioner in $"/root/Game/Player:selection") and allow_execute:
+		if get_node_or_null("/root/Game/Player") and (actioner in $"/root/Game/Player".get("selection")) and allow_execute:
 			$"/root/Game/Player".call("update_selection_box")
 			if actioner.get("map"):
 				actioner.get("map").update()

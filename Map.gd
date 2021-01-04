@@ -162,7 +162,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		# event.global_position does not contain the actual global position, or at least not the global position that's needed here
 		var cell_at_pos: Cell = get_cell_from_position(get_global_mouse_position(),current_zlevel)
 		if event is InputEventMouseMotion:
-			if get_node_or_null("/root/Game/Player") and $"/root/Game/Player:mousetool":
+			if get_node_or_null("/root/Game/Player") and $"/root/Game/Player".get("mousetool"):
 				update()
 			if cell_at_pos and (not cell_at_pos.is_default_cell):
 				cell_at_pos.on_mouseonto()
@@ -170,16 +170,14 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event is InputEventMouseButton:
 			if (event as InputEventMouseButton).pressed:
 				if cell_at_pos and (not cell_at_pos.is_default_cell):
-					match (event as InputEventMouseButton).button_index:
-						1:
-							if get_node_or_null("/root/Game/Player:mousetool"):
-								# warning-ignore:unsafe_method_access
-								$"/root/Game/Player:mousetool".tool_lclick_oncell(cell_at_pos,event)
-							else:
-								cell_at_pos.on_left_click(event)
-						2:
-							if get_node_or_null("/root/Game/Player:mousetool") == null:
-								cell_at_pos.on_right_click(event)
+					if get_node_or_null("/root/Game/Player") and $"/root/Game/Player".get("mousetool"):
+						match (event as InputEventMouseButton).button_index:
+							1: $"/root/Game/Player".get("mousetool").tool_lclick_oncell(cell_at_pos,event)
+							2: pass
+					else:
+						match (event as InputEventMouseButton).button_index:
+							1: cell_at_pos.on_left_click(event)
+							2: cell_at_pos.on_right_click(event)
 
 func view_zlevel(z: int = 0) -> void: # change map view to a different z-level
 	if z == current_zlevel:

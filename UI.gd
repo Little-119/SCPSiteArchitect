@@ -35,7 +35,7 @@ func _ready():
 	$"/root".connect("size_changed",self,"update_size")
 
 func _draw() -> void:
-	if $"/root/Game/Player:mousetool":
+	if $"/root/Game/Player".get("mousetool"):
 		var mousepos: Vector2 = ($"/root" as Viewport).get_mouse_position()
 		var map: Map = $"/root/Game".get("current_map")
 		var cell: Cell = map.get_cell_from_screen_position(mousepos,map.current_zlevel)

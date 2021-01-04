@@ -104,7 +104,7 @@ func on_right_click(event: InputEventWithModifiers) -> void:
 	var actions_script: GDScript = load("res://Actions.gd")
 	if $"/root/Game/Player".get("selection").empty():
 		return
-	for selected in $"/root/Game/Player:selection":
+	for selected in $"/root/Game/Player".get("selection"):
 		if not selected:
 			continue
 		if selected.get("actions") == null: # check if selected is an Actor
@@ -149,7 +149,7 @@ func on_right_click(event: InputEventWithModifiers) -> void:
 			button.rect_position += Vector2(0,20 * (get_child_count()-1))
 			button.align = Button.ALIGN_LEFT
 			button.connect("pressed", panel, "queue_free")
-			for selected in $"/root/Game/Player:selection":
+			for selected in $"/root/Game/Player".get("selection"):
 				button.connect("pressed", selected, "force_action", [action,self], CONNECT_ONESHOT)
 		$"/root/Game/Player/Camera2D/UI".add_child(panel,true)
 		panel.name = "ActionsCard"
