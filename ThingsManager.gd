@@ -5,7 +5,7 @@ var things: Dictionary = {}
 var things_list: Array = []
 
 # warning-ignore:unused_class_variable
-var next_thing_uid: int = 0
+var next_thing_uid: int = 0 # used in Thing.gd
 
 func get_files_in_directory(dir_path: String = "res://") -> Array:
 	var dir: Directory = Directory.new()

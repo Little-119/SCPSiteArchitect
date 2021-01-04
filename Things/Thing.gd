@@ -11,7 +11,7 @@ var layer: float = LAYER.EMPTY
 var size := Vector3.ONE
 
 # warning-ignore:unused_class_variable
-var select_priority: int = 0
+var select_priority: int = 0 # used in Cell.gd
 
 export(String, FILE) var icon := "" # Can be a single character or a path to an image
 export(String) var icon_fallback := "" # In case Icon is a path to an image but it fails to load
@@ -21,15 +21,16 @@ var falling: float = 0.0
 var coyote_time: int = 0 # time of grace period in which Thing does not fall due to gravity
 var coyote_timer: int = 0
 
+# warning-ignore:unused_class_variable
 var solid = true
 
 # warning-ignore:unused_class_variable
-var cell: Cell setget ,get_parent_cell
+var cell: Cell setget ,get_parent_cell # convenience variable
 # warning-ignore:unused_class_variable
-var map = null setget ,get_map
+var map = null setget ,get_map # convenience variable
 
 # warning-ignore:unused_class_variable
-export(int) var position_z: int = 0 setget ,get_position_z # intended to be used when making maps in editor
+export(int,0,0xFF) var position_z: int = 0 setget ,get_position_z # Z component of position. Intended to be used when making maps in editor
 
 func get_position_z() -> int:
 	var parent_cell = get_parent_cell()
@@ -112,8 +113,7 @@ func _ready() -> void:
 							sprite.scale = s
 
 func _draw():
-	# warning-ignore:unsafe_property_access
-	if get_node_or_null("/root/Game/Player") and self in $"/root/Game/Player".selection:
+	if get_node_or_null("/root/Game/Player") and self in $"/root/Game/Player:selection":
 		draw_rect(Rect2(0,0,Constants.cell_size,Constants.cell_size),Color.white,false,2)
 
 func queue_free() -> void:
@@ -140,15 +140,13 @@ func on_moved(_old_cell: Cell = null) -> void:
 	var new_position = get_parent_cell().cell_position
 	($"Collider" as StaticBody).transform.origin = Vector3(new_position.x,new_position.z,new_position.y)
 
-# warning-ignore:unused_argument
 func tool_lclick_oncell(clicked_cell: Cell, event: InputEvent) -> void: # called in Map._unhanded_input()
 	pass
 
 func force_action(action: String, target: Cell) -> void:
 	pass
 
-# warning-ignore:unused_argument
-func can_coexist_with(other_thing: Thing) -> bool: # check if this Thing can be on the same tile as another Thing. Used for placing, probably not for moving
+func can_coexist_with(_other_thing: Thing) -> bool: # check if this Thing can be on the same tile as another Thing. Used for placing, probably not for moving
 	return true
 
 # Start grammar-related

@@ -35,7 +35,7 @@ func add_child(node: Node, legible_unique_name: bool = false):
 func on_turn() -> void:
 	turn += 1
 	for map in maps:
-		(map as Node).propagate_call("on_turn",[],true)
+		map.call("propagate_call","on_turn",[],true)
 
 func set_process(enable: bool) -> void:
 	turn_timer.paused = enable

@@ -7,7 +7,7 @@ var map: Map = null
 
 func before_each():
 	universe = Universe.new(null)
-	(universe.get_node("TurnTimer") as Timer).wait_time = .001
+	universe.turn_timer.wait_time = .001
 	universe.visible = false
 	map = Map.new(map_size) # Make a new map, resetting us to a clean slate
 	universe.add_child(map)

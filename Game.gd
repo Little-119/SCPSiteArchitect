@@ -1,6 +1,8 @@
 extends Node
 
 var current_universe: Universe setget set_current_universe
+# warning-ignore:unused_class_variable
+var current_map: Map setget ,get_current_map # for convenience/consistency with current_universe
 
 func set_current_universe(new_universe):
 	if new_universe == null:
@@ -10,7 +12,7 @@ func set_current_universe(new_universe):
 
 func get_current_map():
 	if current_universe:
-		return current_universe.current_map
+		return current_universe.get("current_map")
 	else:
 		return null
 
@@ -31,7 +33,7 @@ func _ready() -> void:
 			var universe = Universe.new(autoloadmap)
 			universe.name = "Universe"
 			universe.current_map.set_size(Vector3(32,32,2))
-			var player = load("res://Player.tscn").instance()
+			var player = (load("res://Player.tscn") as PackedScene).instance()
 			add_child(universe,true)
 			add_child(player,true)
 			($"DebugContainer" as Control).rect_position = get_viewport().size/-2

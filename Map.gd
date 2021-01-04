@@ -42,9 +42,7 @@ func set_size(newsize: Vector3) -> void:
 				cells.append(nc)
 				x[xn] = nc
 				nc.cell_position = Vector3(xn,yn,zn)
-				# don't know why this produces an unsafe property access warning
-				# warning-ignore:unsafe_property_access
-				nc.map = self
+				nc.set("map",self)
 				nc.point_id = astar.get_point_count()
 				astar.add_point(nc.point_id,nc.cell_position)
 				add_child(nc)
@@ -74,7 +72,7 @@ static func load_map(from) -> Map:
 						instance.set_size(instance.size)
 						instance.collect_orphans()
 						return instance
-	return load("res://Map.gd").new()
+	return (load("res://Map.gd") as GDScript).new() # If we are otherwise unable to create a map, return a basic one
 
 func get_pixel_size() -> Vector2:
 	var cell_size = Constants.cell_size
@@ -164,8 +162,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		# event.global_position does not contain the actual global position, or at least not the global position that's needed here
 		var cell_at_pos: Cell = get_cell_from_position(get_global_mouse_position(),current_zlevel)
 		if event is InputEventMouseMotion:
-			# warning-ignore:unsafe_property_access
-			if get_node_or_null("/root/Game/Player") and $"/root/Game/Player".mousetool:
+			if get_node_or_null("/root/Game/Player") and $"/root/Game/Player:mousetool":
 				update()
 			if cell_at_pos and (not cell_at_pos.is_default_cell):
 				cell_at_pos.on_mouseonto()
@@ -175,16 +172,13 @@ func _unhandled_input(event: InputEvent) -> void:
 				if cell_at_pos and (not cell_at_pos.is_default_cell):
 					match (event as InputEventMouseButton).button_index:
 						1:
-							# can't specify that Player is a Player while it's a Singleton
-							# warning-ignore:unsafe_property_access
-							if $"/root/Game/Player".mousetool:
-								# warning-ignore:unsafe_property_access
-								$"/root/Game/Player".mousetool.tool_lclick_oncell(cell_at_pos,event)
+							if get_node_or_null("/root/Game/Player:mousetool"):
+								# warning-ignore:unsafe_method_access
+								$"/root/Game/Player:mousetool".tool_lclick_oncell(cell_at_pos,event)
 							else:
 								cell_at_pos.on_left_click(event)
 						2:
-							# warning-ignore:unsafe_property_access
-							if $"/root/Game/Player".mousetool == null:
+							if get_node_or_null("/root/Game/Player:mousetool") == null:
 								cell_at_pos.on_right_click(event)
 
 func view_zlevel(z: int = 0) -> void: # change map view to a different z-level
@@ -201,8 +195,7 @@ func view_zlevel_incr(delta: int) -> void: # change map view to a different z-le
 
 func _draw() -> void:
 	if get_node_or_null("/root/Game/Player"):
-		# warning-ignore:unsafe_property_access
-		if $"/root/Game/Player".mousetool:
+		if $"/root/Game/Player".get("mousetool"):
 			var cell: Cell = get_cell_from_position(get_global_mouse_position(),current_zlevel)
 			if not cell.is_default_cell:
 				var box_pos: Vector2 = cell.position
@@ -224,7 +217,7 @@ func _draw() -> void:
 								draw_line(from,to,Color.white,1,true)
 
 # warning-ignore:unsafe_property_access
-func get_local_time(turn: int = $"/root/Game".turn) -> Dictionary:
+func get_local_time(turn: int = $"..".turn) -> Dictionary:
 	var time = (load("res://TimeObject.gd") as GDScript).new()
 	time.seconds = turn * Constants.turn_length
 	return time.get_all()

@@ -95,19 +95,16 @@ func on_left_click(event: InputEventWithModifiers) -> void: # called in Map.gd. 
 		if thing_to_select:
 			break
 	if thing_to_select:
-		# warning-ignore:unsafe_method_access
-		$"/root/Game/Player".select(thing_to_select,not event.shift)
+		$"/root/Game/Player".call("select",thing_to_select,not event.shift)
 		get_tree().set_input_as_handled()
 
 func on_right_click(event: InputEventWithModifiers) -> void:
 	var actions: Array = []
 	var actionable_results: Dictionary = {}
 	var actions_script: GDScript = load("res://Actions.gd")
-	# warning-ignore:unsafe_property_access
-	if $"/root/Game/Player".selection.empty():
+	if $"/root/Game/Player".get("selection").empty():
 		return
-	# warning-ignore:unsafe_property_access
-	for selected in $"/root/Game/Player".selection:
+	for selected in $"/root/Game/Player:selection":
 		if not selected:
 			continue
 		if selected.get("actions") == null: # check if selected is an Actor
@@ -152,8 +149,7 @@ func on_right_click(event: InputEventWithModifiers) -> void:
 			button.rect_position += Vector2(0,20 * (get_child_count()-1))
 			button.align = Button.ALIGN_LEFT
 			button.connect("pressed", panel, "queue_free")
-			# warning-ignore:unsafe_property_access
-			for selected in $"/root/Game/Player".selection:
+			for selected in $"/root/Game/Player:selection":
 				button.connect("pressed", selected, "force_action", [action,self], CONNECT_ONESHOT)
 		$"/root/Game/Player/Camera2D/UI".add_child(panel,true)
 		panel.name = "ActionsCard"
@@ -189,15 +185,13 @@ func add_child(child: Node,b: bool = false) -> void:
 			old_parent.remove_child(child)
 		contents.append(child)
 		order_children()
-		# warning-ignore:unsafe_method_access
-		child.on_moved(old_parent)
+		child.call("on_moved",old_parent)
 	.add_child(child,b)
 	if not old_parent or (map != old_parent.get("map")):
 		if child.get("type"):
 			map.emit_signal("thing_added",child)
 			if child.get("astar"):
-				# warning-ignore:unsafe_property_access
-				child.astar.refresh()
+				child.get("astar").refresh()
 				map.connect("thing_added",child,"_on_map_added_thing")
 	zlevel_update(null)
 

@@ -23,10 +23,8 @@ class BaseAction extends Node:
 	var target = null setget set_target
 	func set_target(new_target) -> void:
 		target = new_target
-		# warning-ignore:unsafe_property_access
-		if get_node_or_null("/root/Game/Player") and actioner in $"/root/Game/Player".selection:
-			# warning-ignore:unsafe_method_access
-			$"/root/Game/Player".update_selection_card()
+		if get_node_or_null("/root/Game/Player") and actioner in $"/root/Game/Player:selection":
+			$"/root/Game/Player".call("update_selection_card")
 	func is_debug_mode() -> bool: # checks if this action is part of automated testing
 		return get_path().get_name(2) == "DebugContainer"
 	# warning-ignore:unused_class_variable
@@ -46,10 +44,8 @@ class BaseAction extends Node:
 			else:
 				actioner.actions.append(self)
 		actioner.add_child(self,true)
-		# warning-ignore:unsafe_property_access
-		if get_node_or_null("/root/Game/Player") and (actioner in $"/root/Game/Player".selection) and allow_execute:
-			# warning-ignore:unsafe_method_access
-			$"/root/Game/Player".update_selection_card()
+		if get_node_or_null("/root/Game/Player") and (actioner in $"/root/Game/Player:selection") and allow_execute:
+			$"/root/Game/Player".call("update_selection_box")
 			if actioner.get("map"):
 				actioner.get("map").update()
 	func _to_string() -> String:
@@ -74,8 +70,8 @@ class BaseAction extends Node:
 		pass
 	func finish() -> void:
 		emit_signal("finished")
-		if get_node_or_null("/root/Game/Player") and actioner in $"/root/Game/Player".selection:
-			$"/root/Game/Player".update_selection_card()
+		if get_node_or_null("/root/Game/Player") and actioner in $"/root/Game/Player".get("selection"):
+			$"/root/Game/Player".call("update_selection_card")
 		if not is_debug_mode(): # automated tests need actions to stick around to check their result
 			queue_free()
 	func fail() -> void:
@@ -84,20 +80,23 @@ class BaseAction extends Node:
 		return true
 
 class MoveTo extends BaseAction: # Move between cells on one map
-	var move_turns = 10
+	var move_turns: int = 10
 	func _init(new_actioner: Actor,allow_execute: bool = false,add_to_queue: bool = false).(new_actioner,allow_execute,add_to_queue):
 		allowed_execute = allow_execute
 	func set_target(new_target) -> void:
 		if new_target is Vector3:
 			push_warning("MoveTo should be given a cell as a target")
-			new_target = actioner.map.get_cell(new_target)
+			if actioner.get("map"):
+				new_target = actioner.get("map").get_cell(new_target)
 		if new_target is Cell:
 			if new_target.is_default_cell:
 				fail()
+				# warning-ignore:return_value_discarded
 				think_result(STATUS.ERROR,"Error: MoveTo needs a non-default Cell as a target")
 				return
 		else:
 			fail()
+			# warning-ignore:return_value_discarded
 			think_result(STATUS.ERROR,"Error: MoveTo needs a Cell as a target")
 			return
 		.set_target(new_target)
@@ -140,6 +139,7 @@ class MoveTo extends BaseAction: # Move between cells on one map
 			if result.details == "No path":
 				failures.append(FAILURE.NO_PATH)
 				if failures.count(FAILURE.NO_PATH) > 3:
+					# warning-ignore:return_value_discarded
 					think_result(STATUS.FAIL,"No path")
 				return
 			if result.code != STATUS.OK:
@@ -154,6 +154,7 @@ class MoveTo extends BaseAction: # Move between cells on one map
 			else:
 				if path.size() == 1:
 					status = STATUS.DONE
+					# warning-ignore:return_value_discarded
 					think_result(STATUS.DONE,"")
 				path.remove(0)
 				progress = 0

@@ -7,7 +7,6 @@ var actions: Array = []
 
 var astar := CustomAStar.new() # Navigation mesh for this Actor. Let us meet again as stars
 
-# warning-ignore:unused_class_variable
 var sight_radius: float = 5.0
 
 class CustomAStar:
@@ -18,8 +17,7 @@ class CustomAStar:
 	func refresh() -> void:
 		clear()
 		ready = false
-		# warning-ignore:unsafe_property_access
-		var map = actor.map
+		var map = actor.get("map")
 		var map_astar: AStar = map.astar
 		if map_astar.get_point_count() > get_point_capacity():
 			reserve_space(map_astar.get_point_count())
