@@ -86,7 +86,7 @@ func _ready() -> void:
 			orphaned_things.append(child)
 			
 	for cell in cells:
-		for adj_cell in cell.get_eight_adjacent_cells():
+		for adj_cell in cell.get_ten_adjacent_cells():
 			if not astar.are_points_connected(cell.point_id,adj_cell.point_id):
 				astar.connect_points(cell.point_id,adj_cell.point_id)
 	for i in orphaned_things.size():

@@ -30,7 +30,11 @@ class CustomAStar:
 			set_point_disabled(p_id,impassable)
 		for p_id in get_points():
 			for x_id in map_astar.get_point_connections(p_id):
-				connect_points(p_id,x_id)
+				var p_pos: Vector3 = map_astar.get_point_position(p_id)
+				var x_pos: Vector3 = map_astar.get_point_position(x_id)
+				if x_pos.z > p_pos.z or x_pos.z < p_pos.z:
+					continue # Don't make connections between Z-levels. TODO: Add check for stairs/ladders/slopes and flight
+				connect_points(p_id,x_id,false)
 		ready = true
 		for a in (actor as Actor).actions:
 			a.think()
@@ -62,7 +66,8 @@ func test_move(cella: Cell,cellb: Cell) -> int: # probably needs optimization
 	if astar.is_point_disabled(cellb.point_id):
 		return MOVE_OBSTRUCTED
 	if not astar.are_points_connected(cella.point_id,cellb.point_id,false):
-		push_warning("Tested movement between disconnected tiles. Are you using move when you meant to use move_to?")
+		if not get_path().get_name(2) == "DebugContainer":
+			push_warning("Tested movement between disconnected tiles. Are you using move when you meant to use move_to?")
 		return MOVE_TILES_UNCONNECTED
 	# TODO: make astar generation account for this diagonal checking
 #	if abs(cpos_diff.x) == abs(cpos_diff.y) and abs(cpos_diff.x) == 1: # If we're moving diagonally, test the two adjacent tiles

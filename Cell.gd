@@ -57,6 +57,9 @@ func get_six_adjacent_cells() -> Array: # adjacent including up and down
 func get_eight_adjacent_cells() -> Array: # adjacent including diagonal on the same Z-Level
 	return get_four_adjacent_cells() + get_cells_in_directions([Vector3.UP+Vector3.LEFT,Vector3.UP+Vector3.RIGHT,Vector3.DOWN+Vector3.LEFT,Vector3.DOWN+Vector3.RIGHT])
 
+func get_ten_adjacent_cells() -> Array: # adjacent including diagonal-on-same-level and up and down
+	return get_eight_adjacent_cells() + get_cells_in_directions([Vector3.FORWARD,Vector3.BACK])
+
 func get_twentysix_adjacent_cells() -> Array: # this is big brain time probably. I don't even know what I'm going to use these functions for.
 	var cells = get_eight_adjacent_cells()
 	for z in [Vector3.FORWARD,Vector3.BACK]:

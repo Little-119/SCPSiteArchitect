@@ -189,13 +189,12 @@ func gravity() -> void:
 				#	return # we have support below, no fall
 		if not support:
 			falling += 1
-			force_move(below_cell)
+			below_cell.call_deferred("add_thing",self) # this is used intead of force_move to avoid a stack overflow
 		else:
 			if falling > 0:
 				if coyote_timer < coyote_time:
 					coyote_timer += 1
 				else:
-					print(falling)
 					splat()
 					falling = 0
 					coyote_timer = 0
