@@ -21,9 +21,9 @@ func add_child(node: Node, legible_unique_name: bool = false) -> void:
 	move_child($"DebugContainer",get_child_count())
 
 func _ready() -> void:
-	var gut = (load("res://tests/tests.tscn") as PackedScene).instance()
-	$"DebugContainer".add_child(gut)
-	if not OS.has_feature("standalone"):
+	if OS.is_debug_build():
+		var gut = (load("res://tests/tests.tscn") as PackedScene).instance()
+		$"DebugContainer".add_child(gut)
 		($"DebugContainer" as Control).visible = Settings.get("debug_gut_visible")
 	var autoloadmap = Settings.get("autoloadmap")
 	match autoloadmap:
@@ -36,7 +36,8 @@ func _ready() -> void:
 			var player = (load("res://Player.tscn") as PackedScene).instance()
 			add_child(universe,true)
 			add_child(player,true)
-			($"DebugContainer" as Control).rect_position = get_viewport().size/-2
+			if OS.is_debug_build():
+				($"DebugContainer" as Control).rect_position = get_viewport().size/-2
 			current_universe = universe
 
 func _unhandled_input(event: InputEvent):
@@ -48,7 +49,7 @@ func _unhandled_input(event: InputEvent):
 					get_tree().set_input_as_handled()
 					get_tree().quit(0)
 				KEY_F1:
-					if not OS.has_feature("standalone"):
+					if OS.is_debug_build():
 						var new_gut_visibility: bool = not Settings.get("debug_gut_visible")
 						Settings.set("debug_gut_visible",new_gut_visibility)
 						($"DebugContainer" as Control).visible = new_gut_visibility
