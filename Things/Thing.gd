@@ -149,6 +149,32 @@ func force_action(action: String, target: Cell) -> void:
 func can_coexist_with(_other_thing: Thing) -> bool: # check if this Thing can be on the same tile as another Thing. Used for placing, probably not for moving
 	return true
 
+func find_things_of_type(search_for: GDScript) -> Array:
+	var found: Array = []
+	if not get_map():
+		push_error("Tried to find things of type when not in a map")
+		return found
+	for cell1 in get_map().cells:
+		for thing in cell1.contents:
+			if thing == self:
+				continue
+			if thing is search_for:
+				found.append(thing)
+	return found
+
+func sort_found_things_by_distance(a: Thing,b: Thing):
+	if cell.cell_position.distance_squared_to(a.cell.cell_position) < cell.cell_position.distance_squared_to(b.cell.cell_position):
+		return true
+	else:
+		return false
+
+func find_closest_thing_of_type(search_for: GDScript):
+	var found_things = find_things_of_type(search_for)
+	if found_things.empty():
+		return null
+	found_things.sort_custom(self,"sort_found_things")
+	return found_things[0]
+
 # Start grammar-related
 
 func get_display_name() -> String:
