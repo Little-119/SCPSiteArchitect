@@ -26,19 +26,18 @@ func _ready() -> void:
 		$"DebugContainer".add_child(gut)
 		($"DebugContainer" as Control).visible = Settings.get("debug_gut_visible")
 	var autoloadmap = Settings.get("autoloadmap")
-	match autoloadmap:
-		null, false:
-			return
-		true, TYPE_STRING:
-			var universe = Universe.new(autoloadmap)
-			universe.name = "Universe"
-			universe.current_map.set_size(Vector3(32,32,2))
-			var player = (load("res://Player.tscn") as PackedScene).instance()
-			add_child(universe,true)
-			add_child(player,true)
-			if OS.is_debug_build():
-				($"DebugContainer" as Control).rect_position = get_viewport().size/-2
-			current_universe = universe
+	if not autoloadmap:
+		return
+	elif typeof(autoloadmap) == TYPE_BOOL or typeof(autoloadmap) == TYPE_STRING:
+		var universe = Universe.new(autoloadmap)
+		universe.name = "Universe"
+		universe.current_map.set_size(Vector3(32,32,2))
+		var player = (load("res://Player.tscn") as PackedScene).instance()
+		add_child(universe,true)
+		add_child(player,true)
+		if OS.is_debug_build():
+			($"DebugContainer" as Control).rect_position = get_viewport().size/-2
+		current_universe = universe
 
 func _unhandled_input(event: InputEvent):
 	if event.is_pressed():
