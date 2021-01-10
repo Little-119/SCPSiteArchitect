@@ -20,7 +20,7 @@ class TestMapCreation extends "res://addons/gut/test.gd":
 			return
 		var cell_with_stuff = map.get_cell(Vector3(1,1,0))
 		assert_eq(cell_with_stuff.contents.size(),2)
-		assert_is(cell_with_stuff.contents[0], Humanoid, "Cell does not contain expected contents")
+		assert_is(cell_with_stuff.contents.front(), Humanoid, "Cell does not contain expected contents")
 		map.free()
 	
 	func test_submap():
@@ -35,7 +35,7 @@ class TestMapCreation extends "res://addons/gut/test.gd":
 		
 		var cell_with_stuff = map.get_cell(Vector3(2,2,0))
 		assert_gt(cell_with_stuff.contents.size(),0)
-		assert_is(cell_with_stuff.contents[0], Humanoid, "Cell does not contain expected contents")
+		assert_is(cell_with_stuff.contents.front(), Humanoid, "Cell does not contain expected contents")
 		map.free()
 	
 	func test_load_from_save():

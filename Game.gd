@@ -31,7 +31,6 @@ func _ready() -> void:
 	elif typeof(autoloadmap) == TYPE_BOOL or typeof(autoloadmap) == TYPE_STRING:
 		var universe = Universe.new(autoloadmap)
 		universe.name = "Universe"
-		universe.current_map.set_size(Vector3(32,32,2))
 		var player = (load("res://Player.tscn") as PackedScene).instance()
 		add_child(universe,true)
 		add_child(player,true)

@@ -45,7 +45,7 @@ class BaseAction extends Node:
 				actioner.actions.append(self)
 		actioner.add_child(self,true)
 		if get_node_or_null("/root/Game/Player") and (actioner in $"/root/Game/Player".get("selection")) and allow_execute:
-			$"/root/Game/Player".call("update_selection_box")
+			$"/root/Game/Player".call("update_selection_card")
 			if actioner.get("map"):
 				actioner.get("map").update()
 	func _to_string() -> String:

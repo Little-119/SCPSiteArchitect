@@ -15,7 +15,7 @@ func set_current_map(map: Map):
 			if m is Map and m != map:
 				m.visible = false
 
-func _init(to_load) -> void:
+func _init(to_load = null) -> void:
 	if to_load:
 		var map = Map.load_map(to_load)
 		add_child(map,true)
