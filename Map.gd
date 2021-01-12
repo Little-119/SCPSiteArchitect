@@ -18,6 +18,13 @@ var astar := AStar.new() # Let us meet again as stars.
 func _to_string():
 	return "Map"
 
+var is_debug: bool setget ,get_is_debug
+
+func get_is_debug() -> bool: # get whether this map is being used in automated testing, cache the result permanently
+	if is_debug != null:
+		is_debug = get_path().get_name(2) == "DebugContainer"
+	return is_debug
+
 var orphaned_things: Array = [] # Array of Things not in a cell, presumably because they were added in editor
 
 func set_size(newsize: Vector3) -> void:
@@ -36,7 +43,7 @@ func set_size(newsize: Vector3) -> void:
 			# warning-ignore:narrowing_conversion
 			x.resize(clamp(size.x,x.size(),max_size.x))
 			for xn in size.x:
-				if x[xn] is Cell:
+				if x[xn]:
 					continue
 				var nc: Cell = Cell.new()
 				cells.append(nc)
@@ -69,7 +76,6 @@ static func load_map(from) -> Map:
 					if instance.get_script() != load("res://Map.gd"):
 						push_error("Error when loading map: Found scene, but scene is not map. Path: " + str(from))
 					else:
-						instance.set_size(instance.size)
 						instance.collect_orphans()
 						return instance
 	return (load("res://Map.gd") as GDScript).new() # If we are otherwise unable to create a map, return a basic one
@@ -157,7 +163,15 @@ func get_cell_from_screen_position(from_position: Vector2,z:int = 0) -> Cell: # 
 	from_position += ($"/root/Game/Player/Camera2D" as Camera2D).get_camera_position() - ($"/root" as Viewport).size/2
 	return get_cell_from_position(from_position,z)
 
+func get_visibility() -> bool:
+	if get_is_debug() or (not visible) or (not $"..".visible):
+		return false
+	else:
+		return true
+
 func _unhandled_input(event: InputEvent) -> void:
+	if not get_visibility(): # seems like there should be a better way to not have input go to maps that aren't visible
+		return
 	if event is InputEventMouse:
 		# event.global_position does not contain the actual global position, or at least not the global position that's needed here
 		var cell_at_pos: Cell = get_cell_from_position(get_global_mouse_position(),current_zlevel)
