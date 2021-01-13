@@ -37,6 +37,7 @@ func _ready() -> void:
 		if OS.is_debug_build():
 			($"DebugContainer" as Control).rect_position = get_viewport().size/-2
 		current_universe = universe
+		universe.turn_timer.start()
 
 func _unhandled_input(event: InputEvent):
 	if event.is_pressed():
