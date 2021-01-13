@@ -56,6 +56,10 @@ func set_size(newsize: Vector3) -> void:
 			y[yn] = x
 		cells_matrix[zn] = y
 	update()
+	for cell in cells:
+		for adj_cell in cell.get_ten_adjacent_cells():
+			if not astar.are_points_connected(cell.point_id,adj_cell.point_id,false):
+				astar.connect_points(cell.point_id,adj_cell.point_id,false)
 
 func _init(newsize = null) -> void:
 	if newsize:
@@ -90,11 +94,7 @@ func _ready() -> void:
 			remove_child(child)
 			child.request_ready()
 			orphaned_things.append(child)
-			
-	for cell in cells:
-		for adj_cell in cell.get_ten_adjacent_cells():
-			if not astar.are_points_connected(cell.point_id,adj_cell.point_id):
-				astar.connect_points(cell.point_id,adj_cell.point_id)
+	
 	for i in orphaned_things.size():
 		var thing = orphaned_things[i]
 		if not thing: continue
