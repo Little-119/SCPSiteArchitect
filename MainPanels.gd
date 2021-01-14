@@ -15,7 +15,7 @@ class MainPanel extends Panel:
 	func _ready() -> void:
 		resize()
 	func equip_buildable(button,buildable) -> void:
-		button.get_node("/root/Game/Player").mousetool = buildable
+		button.get_node("../../..").mousetool = buildable # @./UI/Camera2D/Player
 		queue_free()
 
 class ArchitectPanel extends MainPanel:
