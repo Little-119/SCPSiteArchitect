@@ -79,8 +79,8 @@ func get_cells_in_radius(radius: float,multi_z: bool = false) -> Array: # TODO: 
 func on_left_click(event: InputEventWithModifiers) -> void: # called in Map.gd. Probably could be called here, too bad!
 	var thing_to_select
 	var selected_at: int = contents.size()
-	if $"/root/Game/Player".get("selection").size() > 0:
-		for selected in $"/root/Game/Player".get("selection"):
+	if map.player.get("selection").size() > 0:
+		for selected in map.player.get("selection"):
 			var found_at = contents.find(selected)
 			if found_at >= 0 and found_at < selected_at:
 				selected_at = found_at
@@ -98,16 +98,16 @@ func on_left_click(event: InputEventWithModifiers) -> void: # called in Map.gd. 
 		if thing_to_select:
 			break
 	if thing_to_select:
-		$"/root/Game/Player".call("select",thing_to_select,not event.shift)
+		map.player.call("select",thing_to_select,not event.shift)
 		get_tree().set_input_as_handled()
 
 func on_right_click(event: InputEventWithModifiers) -> void:
 	var actions: Array = []
 	var actionable_results: Dictionary = {}
 	var actions_script: GDScript = load("res://Actions.gd")
-	if $"/root/Game/Player".get("selection").empty():
+	if map.player.get("selection").empty():
 		return
-	for selected in $"/root/Game/Player".get("selection"):
+	for selected in map.player.get("selection"):
 		if not selected:
 			continue
 		if selected.get("actions") == null: # check if selected is an Actor
@@ -141,23 +141,24 @@ func on_right_click(event: InputEventWithModifiers) -> void:
 				if actionable_results[action].code == actions_script.STATUS.DONE:
 					continue
 			var button = Button.new()
+			button.name = str(action)
 			button.text = " " + action if not actionable_results.has(action) else " %s (%s)" % [action,actionable_results[action].details]
 			if actionable_results.has(action):
 				# warning-ignore:unsafe_property_access
 				# warning-ignore:unsafe_property_access
 				if actionable_results[action].code == actions_script.STATUS.FAIL or actionable_results[action].code == actions_script.STATUS.ERROR:
 					button.disabled = true
-			panel.add_child(button)
+			panel.add_child(button,true)
 			button.rect_size = Vector2(128,30)
 			button.rect_position += Vector2(0,20 * (get_child_count()-1))
 			button.align = Button.ALIGN_LEFT
 			button.connect("pressed", panel, "queue_free")
-			for selected in $"/root/Game/Player".get("selection"):
+			for selected in map.player.get("selection"):
 				button.connect("pressed", selected, "force_action", [action,self], CONNECT_ONESHOT)
-		$"/root/Game/Player/Camera2D/UI".add_child(panel,true)
+		map.player.get_node("Camera2D/UI").add_child(panel,true)
 		panel.name = "ActionsCard"
 
-		panel.rect_position = get_global_mouse_position() + (get_viewport().size/2) - ($"/root/Game/Player/Camera2D" as Camera2D).position # TODO: I forget how to get the screen position of a cell.
+		panel.rect_position = get_global_mouse_position() + (get_viewport().size/2) - (map.player.get_node("Camera2D") as Camera2D).position # TODO: I forget how to get the screen position of a cell.
 
 func on_mouseonto() -> void:
 	pass

@@ -50,10 +50,26 @@ func get_parent_cell() -> Cell:
 
 func get_map():
 	var parent_cell = get_parent_cell()
-	if parent_cell:
-		return parent_cell.map
-	else:
+	return parent_cell.map if parent_cell else null
+
+func get_relative(where: String,path_from_there: String): # helper function for the below three functions.
+	# 'where' should be the name of a method that returns a node
+	assert(has_method(where),"get_relative called without valid method name.")
+	var there = call(where)
+	assert((there == null) or (there is Node),"Method passed to get_relative returned unexpected result.")
+	if not there:
 		return null
+	else:
+		return there.get_node_or_null(path_from_there)
+
+func get_universe():
+	return get_relative("get_map","..")
+
+func get_game():
+	return get_relative("get_universe","..")
+
+func get_player():
+	return get_relative("get_game","Player")
 
 func _init() -> void:
 	var collider = StaticBody.new()

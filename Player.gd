@@ -16,7 +16,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		var z_delta: float
 		match (event as InputEventMouseButton).button_index:
 			BUTTON_LEFT,BUTTON_RIGHT:
-				var old_actions_panel = get_node_or_null("/root/Game/Player/Camera2D/UI/ActionsCard")
+				var old_actions_panel = get_node_or_null("Camera2D/UI/ActionsCard")
 				if old_actions_panel:
 					old_actions_panel.visible = false
 					old_actions_panel.name += "Freed"
@@ -30,7 +30,7 @@ func _unhandled_input(event: InputEvent) -> void:
 					set_mousetool(null)
 				continue
 			BUTTON_LEFT, BUTTON_RIGHT:
-				var old_panel = get_node_or_null("/root/Game/Player/Camera2D/UI/ActionsCard")
+				var old_panel = get_node_or_null("Camera2D/UI/ActionsCard")
 				if old_panel:
 					old_panel.visible = false
 					old_panel.name += "Freed"
@@ -47,7 +47,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.is_pressed():
 		match (event as InputEventKey).scancode:
 			KEY_SPACE:
-				$"/root/Game".set_process(not $"/root/Game".is_processing())
+				$"..".set_process(not $"..".is_processing())
 			KEY_ESCAPE:
 				if mousetool:
 					set_mousetool(null)
@@ -64,19 +64,20 @@ func _process(delta: float) -> void:
 		move_dir *= delta
 		var new_pos: Vector2 = ($"Camera2D" as Camera2D).get_camera_position() + move_dir
 		var lowers = Vector2.ZERO
-		var uppers: Vector2 = $"/root/Game".get("current_map").get_pixel_size() if get_node_or_null("/root/Game") and $"/root/Game".get("current_map") else Vector2.ZERO
+		var uppers: Vector2 = $"..".get("current_map").get_pixel_size() if get_node_or_null("..") and $"..".get("current_map") else Vector2.ZERO
 		($"Camera2D" as Camera2D).position = Vector2(clamp(new_pos.x,lowers.x,uppers.x),clamp(new_pos.y,lowers.y,uppers.y))
 		($"Camera2D" as Camera2D).force_update_scroll() # ensures UI is properly attached to camera, otherwise it lags behind when moving
 		($"/root/Game/DebugContainer" as Control).rect_position = ($"Camera2D" as Camera2D).position - get_viewport().size/2
 		emit_signal("camera_moved")
 
 func _ready() -> void:
-	($"Camera2D" as Camera2D).make_current()
+	if get_path().get_name(2) != "DebugContainer":
+		($"Camera2D" as Camera2D).make_current()
 
 func set_mousetool(new_mousetool) -> void:
 	if new_mousetool == null:
-		if $"/root/Game".get("current_map"):
-			$"/root/Game".get("current_map").call("update")
+		if $"..".get("current_map"):
+			$"..".get("current_map").call("update")
 	mousetool = new_mousetool
 
 func select(new_selection = null,clear_old_selection: bool = true) -> void:
@@ -99,8 +100,8 @@ func select(new_selection = null,clear_old_selection: bool = true) -> void:
 		if not thing:
 			continue
 		thing.update()
-	if get_node_or_null("/root/Game").get("current_map"):
-		$"/root/Game".get("current_map").call("update")
+	if get_node_or_null("..").get("current_map"):
+		$"..".get("current_map").call("update")
 
 func update_selection_card() -> void:
 	var selection_card: Panel = get_node_or_null("Camera2D/UI/SelectionCard")

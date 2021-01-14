@@ -1,4 +1,5 @@
 extends Node
+class_name Game
 
 var current_universe: Universe setget set_current_universe
 # warning-ignore:unused_class_variable
@@ -20,8 +21,18 @@ func add_child(node: Node, legible_unique_name: bool = false) -> void:
 	.add_child(node, legible_unique_name)
 	move_child($"DebugContainer",get_child_count())
 
-func _ready() -> void:
-	if OS.is_debug_build():
+func setup_universe(from) -> Universe:
+	var universe = Universe.new(from)
+	universe.name = "Universe"
+	var player = (load("res://Player.tscn") as PackedScene).instance()
+	add_child(universe,true)
+	add_child(player,true)
+	if $"DebugContainer".get_child_count() > 0:
+		($"DebugContainer" as Control).rect_position = get_viewport().size/-2
+	return universe
+
+func ready() -> void:
+	if OS.is_debug_build(): 
 		var gut = (load("res://tests/tests.tscn") as PackedScene).instance()
 		$"DebugContainer".add_child(gut)
 		($"DebugContainer" as Control).visible = Settings.get("debug_gut_visible")
@@ -29,15 +40,12 @@ func _ready() -> void:
 	if not autoloadmap:
 		return
 	elif typeof(autoloadmap) == TYPE_BOOL or typeof(autoloadmap) == TYPE_STRING:
-		var universe = Universe.new(autoloadmap)
-		universe.name = "Universe"
-		var player = (load("res://Player.tscn") as PackedScene).instance()
-		add_child(universe,true)
-		add_child(player,true)
-		if OS.is_debug_build():
-			($"DebugContainer" as Control).rect_position = get_viewport().size/-2
+		var universe: Universe = setup_universe(autoloadmap)
 		current_universe = universe
 		universe.turn_timer.start()
+
+func _ready() -> void:
+	ready() # allows correctly overriding this in DebugGame
 
 func _unhandled_input(event: InputEvent):
 	if event.is_pressed():

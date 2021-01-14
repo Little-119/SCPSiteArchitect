@@ -18,6 +18,11 @@ var astar := AStar.new() # Let us meet again as stars.
 func _to_string():
 	return "Map"
 
+var player setget ,get_player
+
+func get_player():
+	return get_node_or_null("../../Player") # @./Universe/Game/Player
+
 var is_debug: bool setget ,get_is_debug
 
 func get_is_debug() -> bool: # get whether this map is being used in automated testing, cache the result permanently
@@ -104,9 +109,9 @@ func _ready() -> void:
 			orphaned_things.remove(i)
 			i -= 1
 	
-	if get_node_or_null("/root/Game/Player"):
+	if get_player():
 		# warning-ignore:return_value_discarded
-		$"/root/Game/Player".connect("camera_moved",self,"update")
+		get_player().connect("camera_moved",self,"update")
 
 func collect_orphans(orphanage: Map = self) -> void:
 	var orphans: Array = []
@@ -160,7 +165,7 @@ func get_cell_from_position(from_position: Vector2,z:int = 0) -> Cell:
 	return get_cell(rounded_position)
 
 func get_cell_from_screen_position(from_position: Vector2,z:int = 0) -> Cell: # get cell from local screen position
-	from_position += ($"/root/Game/Player/Camera2D" as Camera2D).get_camera_position() - ($"/root" as Viewport).size/2
+	from_position += (get_player().get_node("Camera2D") as Camera2D).get_camera_position() - ($"/root" as Viewport).size/2
 	return get_cell_from_position(from_position,z)
 
 func get_visibility() -> bool:
@@ -170,13 +175,13 @@ func get_visibility() -> bool:
 		return true
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not get_visibility(): # seems like there should be a better way to not have input go to maps that aren't visible
+	if not get_player():
 		return
 	if event is InputEventMouse:
 		# event.global_position does not contain the actual global position, or at least not the global position that's needed here
 		var cell_at_pos: Cell = get_cell_from_position(get_global_mouse_position(),current_zlevel)
 		if event is InputEventMouseMotion:
-			if get_node_or_null("/root/Game/Player") and $"/root/Game/Player".get("mousetool"):
+			if get_player() and get_player().get("mousetool"):
 				update()
 			if cell_at_pos and (not cell_at_pos.is_default_cell):
 				cell_at_pos.on_mouseonto()
@@ -184,9 +189,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event is InputEventMouseButton:
 			if (event as InputEventMouseButton).pressed:
 				if cell_at_pos and (not cell_at_pos.is_default_cell):
-					if get_node_or_null("/root/Game/Player") and $"/root/Game/Player".get("mousetool"):
+					if get_player() and get_player().get("mousetool"):
 						match (event as InputEventMouseButton).button_index:
-							1: $"/root/Game/Player".get("mousetool").tool_lclick_oncell(cell_at_pos,event)
+							1: get_player().get("mousetool").tool_lclick_oncell(cell_at_pos,event)
 							2: pass
 					else:
 						match (event as InputEventMouseButton).button_index:
@@ -206,15 +211,15 @@ func view_zlevel_incr(delta: int) -> void: # change map view to a different z-le
 	view_zlevel(current_zlevel + delta)
 
 func _draw() -> void:
-	if get_node_or_null("/root/Game/Player"):
-		if $"/root/Game/Player".get("mousetool"):
+	if get_player():
+		if get_player().get("mousetool"):
 			var cell: Cell = get_cell_from_position(get_global_mouse_position(),current_zlevel)
 			if not cell.is_default_cell:
 				var box_pos: Vector2 = cell.position
 				draw_rect(Rect2(box_pos,Vector2.ONE * cell.scale.x * 32),Color.white,false)
-		if not ($"/root/Game/Player" as Player).selection.empty():
-			for selected_i in ($"/root/Game/Player" as Player).selection.size():
-				var selected = ($"/root/Game/Player" as Player).selection[selected_i]
+		if not get_player().selection.empty():
+			for selected_i in get_player().selection.size():
+				var selected = get_player().selection[selected_i]
 				if not selected:
 					continue
 				if selected.get("actions"):
