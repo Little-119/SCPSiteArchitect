@@ -11,7 +11,6 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 _font_size = 16
-_run_on_load = true
 _should_maximize = true
 _should_print_to_console = false
 _include_subdirectories = true

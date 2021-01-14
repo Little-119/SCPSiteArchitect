@@ -19,10 +19,20 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Cell.gd"
 }, {
+"base": "Game",
+"class": "DebugGame",
+"language": "GDScript",
+"path": "res://tests/assets/DebugGame.gd"
+}, {
 "base": "Turf",
 "class": "Dirt",
 "language": "GDScript",
 "path": "res://Things/Turf/Dirt.gd"
+}, {
+"base": "Node",
+"class": "Game",
+"language": "GDScript",
+"path": "res://Game.gd"
 }, {
 "base": "",
 "class": "GitAPI",
@@ -102,7 +112,9 @@ _global_script_classes=[ {
 _global_script_class_icons={
 "Actor": "",
 "Cell": "",
+"DebugGame": "",
 "Dirt": "",
+"Game": "",
 "GitAPI": "",
 "Humanoid": "",
 "Item": "",
