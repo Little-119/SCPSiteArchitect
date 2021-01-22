@@ -37,7 +37,10 @@ func _init() -> void:
 		var thing: Thing = (load(file_name) as GDScript).new()
 		thing.set_process(false)
 		things_list.append(thing)
-		things[thing.type] = thing
+		if thing.type != file_name.get_file().substr(0,len(file_name.get_file())-3):
+			push_error("Thing Class in %s does not have type matching file name" % file_name)
+		else:
+			things[thing.type] = thing
 
 func get_thing_script(typename: String) -> GDScript:
 	if not things.has(typename):

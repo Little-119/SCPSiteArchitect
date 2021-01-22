@@ -23,6 +23,7 @@ static func generate_name(gender: int,from_culture: String) -> PoolStringArray:
 	return PoolStringArray(["Bong","Bong","Bong Bong"])
 
 func _init():
+	type = "Humanoid"
 	var new_name = generate_name(gender, culture)
 	first_name = new_name[0]
 	last_name = new_name[1]
