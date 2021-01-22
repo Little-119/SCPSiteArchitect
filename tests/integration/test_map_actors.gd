@@ -14,7 +14,7 @@ func test_actor_moveto():
 	universe.name = "TestBasicMoveTo"
 	map.get_cell(Vector3(2,2,0)).add_thing(actor)
 	var target = Vector3(15,15,0)
-	var action: Actions.MoveTo = actor.force_action("MoveTo",map.get_cell(target))
+	var action: Actions.MoveTo = actor.act("MoveTo",map.get_cell(target),true)
 	action.move_turns = 0
 	universe.turn_timer.start()
 	
@@ -30,7 +30,7 @@ func test_actor_pathfinding():
 	for position in [Vector3(3,1,0),Vector3(3,2,0),Vector3(3,3,0)]:
 		map.get_cell(position).add_thing(Wall)
 	var target = Vector3(4,2,0)
-	var action: Actions.MoveTo = actor.force_action("MoveTo",map.get_cell(target))
+	var action: Actions.MoveTo = actor.act("MoveTo",map.get_cell(target),true)
 	action.move_turns = 0
 	universe.turn_timer.start()
 	
@@ -48,7 +48,7 @@ func test_actor_imprisonment(params=use_parameters(prisons)): # Encase actor in 
 	for cell in start_cell.call(params[0]):
 		cell.add_thing(Wall)
 	var target = map.get_cell(Vector3(4,4,0))
-	var action = actor.force_action("MoveTo",null)
+	var action = actor.act("MoveTo",null,true)
 	action.target = target
 	action.move_turns = 0
 	universe.turn_timer.start()
@@ -65,7 +65,7 @@ func test_actor_groundedness():
 	universe.name = "TestGroundedMoveTo"
 	var start_cell: Cell = map.get_cell(Vector3(2,2,0))
 	start_cell.add_thing(actor)
-	var action = actor.force_action("MoveTo",null)
+	var action = actor.act("MoveTo",null,true)
 	action.move_turns = 0
 	action.target = map.get_cell(Vector3(2,2,1))
 	universe.turn_timer.start()
@@ -82,7 +82,7 @@ func test_actor_moveto_invalid():
 	universe.name = "TestInvalidMoveTo"
 	var start_cell: Cell = map.get_cell(Vector3(2,2,0))
 	start_cell.add_thing(actor)
-	var action = actor.force_action("MoveTo",null)
+	var action = actor.act("MoveTo",null,true)
 	watch_signals(action)
 	action.move_turns = 0
 	action.target = map.get_cell(Vector3(-3,-5,-4))

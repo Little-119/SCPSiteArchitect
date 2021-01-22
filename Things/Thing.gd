@@ -159,13 +159,10 @@ func on_moved(_old_cell: Cell = null) -> void:
 func tool_lclick_oncell(clicked_cell: Cell, event: InputEvent) -> void: # called in Map._unhanded_input()
 	pass
 
-func force_action(action: String, target: Cell) -> void:
-	pass
-
 func can_coexist_with(_other_thing: Thing) -> bool: # check if this Thing can be on the same tile as another Thing. Used for placing, probably not for moving
 	return true
 
-func find_things_of_type(search_for: GDScript) -> Array:
+func find_things_custom(filter_func_holder, filter_func_name, filter_args) -> Array:
 	var found: Array = []
 	if not get_map():
 		push_error("Tried to find things of type when not in a map")
@@ -174,9 +171,15 @@ func find_things_of_type(search_for: GDScript) -> Array:
 		for thing in cell1.contents:
 			if thing == self:
 				continue
-			if thing is search_for:
+			if filter_func_holder.callv(filter_func_name,[thing] + filter_args):
 				found.append(thing)
 	return found
+
+static func func_is(thing, script): # helper function for below
+	return thing is script
+
+func find_things_of_type(search_for: GDScript) -> Array:
+	return find_things_custom(self,"func_is",[search_for])
 
 func sort_found_things_by_distance(a: Thing,b: Thing):
 	if cell.cell_position.distance_squared_to(a.cell.cell_position) < cell.cell_position.distance_squared_to(b.cell.cell_position):
@@ -184,12 +187,22 @@ func sort_found_things_by_distance(a: Thing,b: Thing):
 	else:
 		return false
 
-func find_closest_thing_of_type(search_for: GDScript):
+func get_things_in_self() -> Array:
+	var list: Array = []
+	for item in get_children():
+		if item is get_script():
+			list.append(item)
+	return list
+
+func find_closest_thing_of_type(search_for: GDScript, search_self: bool = false):
 	var found_things = find_things_of_type(search_for)
+	if search_self:
+		found_things = get_things_in_self() + found_things
 	if found_things.empty():
 		return null
-	found_things.sort_custom(self,"sort_found_things")
-	return found_things[0]
+	if found_things.size() != 1:
+		found_things.sort_custom(self,"sort_found_things_by_distance")
+	return found_things.front()
 
 # Start grammar-related
 

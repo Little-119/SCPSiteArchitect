@@ -1,5 +1,6 @@
-extends Node
+extends Node # Making this Object or Reference causes opcode #12 internal script error
 
+enum {NO_EXECUTE=-1,DO_NOW,ADD_TO_QUEUE}
 enum STATUS {OK,NEW,DONE=4,FAIL,ERROR}
 
 class ThinkResult extends Reference:
@@ -19,12 +20,15 @@ class BaseAction extends Node:
 	var last_think_result: ThinkResult = null
 	var allowed_execute: bool = true # checked in Actor.gd before calling execute
 	var actioner: Actor
+	var forced: bool = false # Whether player is making the actor perform this action
+	var subaction
 	# warning-ignore:unused_class_variable
 	var target = null setget set_target
 	func set_target(new_target) -> void:
 		target = new_target
-		if get_node_or_null("/root/Game/Player") and actioner in $"/root/Game/Player".get("selection"):
-			$"/root/Game/Player".call("update_selection_card")
+		if is_inside_tree():
+			if get_node_or_null("/root/Game/Player") and actioner in $"/root/Game/Player".get("selection"):
+				$"/root/Game/Player".call("update_selection_card")
 	func is_debug_mode() -> bool: # checks if this action is part of automated testing
 		return get_path().get_name(2) == "DebugContainer"
 	# warning-ignore:unused_class_variable
@@ -34,20 +38,35 @@ class BaseAction extends Node:
 	enum FAILURE {NO_PATH}
 	# warning-ignore:unused_class_variable
 	var failures: Array = []
-	func _init(new_actioner: Actor = null,allow_execute: bool = true,add_to_queue: bool = false) -> void:
-		allowed_execute = allow_execute
-		actioner = new_actioner
-		if allow_execute:
-			if not add_to_queue:
+	func _init(parent: Node = null,behavior: int = DO_NOW,force: bool = false) -> void:
+		allowed_execute = behavior != NO_EXECUTE
+		forced = force
+		parent.call_deferred("add_child",self,true)
+		if parent is Actor:
+			actioner = parent
+		else:
+			actioner = parent.actioner
+			parent.subaction = self
+			return
+		match behavior:
+			NO_EXECUTE:
+				allowed_execute = false
+			ADD_TO_QUEUE:
+				actioner.actions.append(self)
+			DO_NOW:
 				actioner.actions.clear()
 				actioner.actions.insert(0,self)
-			else:
-				actioner.actions.append(self)
-		actioner.add_child(self,true)
-		if get_node_or_null("/root/Game/Player") and (actioner in $"/root/Game/Player".get("selection")) and allow_execute:
-			$"/root/Game/Player".call("update_selection_card")
-			if actioner.get("map"):
-				actioner.get("map").update()
+		
+		if is_inside_tree():
+			if get_node_or_null("/root/Game/Player") and (actioner in $"/root/Game/Player".get("selection")) and allowed_execute:
+				$"/root/Game/Player".call("update_selection_card")
+				if actioner.get("map"):
+					actioner.get("map").update()
+	func process() -> void:
+		if subaction:
+			subaction.process()
+		else:
+			execute()
 	func _to_string() -> String:
 		var text: String = "[%s:%s (Owner: %s)]" % [get_class(),get_instance_id(),actioner]
 		if not allowed_execute:
@@ -70,10 +89,11 @@ class BaseAction extends Node:
 		pass
 	func finish() -> void:
 		emit_signal("finished")
-		if get_node_or_null("/root/Game/Player") and actioner in $"/root/Game/Player".get("selection"):
-			$"/root/Game/Player".call("update_selection_card")
-		if not is_debug_mode(): # automated tests need actions to stick around to check their result
-			queue_free()
+		if is_inside_tree():
+			if get_node_or_null("/root/Game/Player") and actioner in $"/root/Game/Player".get("selection"):
+				$"/root/Game/Player".call("update_selection_card")
+			if not is_debug_mode(): # automated tests need actions to stick around to check their result
+				queue_free()
 	func fail() -> void:
 		finish()
 	func is_actionable(_tgt) -> bool:
@@ -81,8 +101,8 @@ class BaseAction extends Node:
 
 class MoveTo extends BaseAction: # Move between cells on one map
 	var move_turns: int = 10
-	func _init(new_actioner: Actor,allow_execute: bool = false,add_to_queue: bool = false).(new_actioner,allow_execute,add_to_queue):
-		allowed_execute = allow_execute
+	func _init(parent: Node = null,behavior: int = DO_NOW,force: bool = false).(parent,behavior,force) -> void:
+		pass
 	func set_target(new_target) -> void:
 		if new_target is Vector3:
 			push_warning("MoveTo should be given a cell as a target")
@@ -158,3 +178,42 @@ class MoveTo extends BaseAction: # Move between cells on one map
 					think_result(STATUS.DONE,"")
 				path.remove(0)
 				progress = 0
+
+class TakeItem extends BaseAction:
+	func get_class() -> String: return "TakeItem"
+	func _init(parent: Node = null,behavior: int = DO_NOW,force: bool = false).(parent,behavior,force) -> void:
+		pass
+	func think() -> ThinkResult:
+		var target_parent = target.get_parent()
+		if target_parent == actioner:
+			finish()
+			return think_result(STATUS.DONE,"Item in inventory")
+		elif target_parent is Cell:
+			return think_result(STATUS.OK)
+		else:
+			return think_result(STATUS.FAIL)
+	func execute() -> void:
+		var target_parent = target.get_parent()
+		if target_parent == actioner.get_parent():
+			actioner.call_deferred("add_child",target)
+			finish()
+		elif target_parent != actioner:
+			if not subaction:
+				subaction = MoveTo.new(self,DO_NOW,forced)
+				subaction.target = target.get_parent()
+
+class UseItem extends BaseAction:
+	func get_class() -> String: return "UseItem"
+	func _init(parent: Node = null,behavior: int = DO_NOW,force: bool = false).(parent,behavior,force) -> void:
+		pass
+	func execute() -> void:
+		if target.get_parent() == actioner:
+			if progress >= 100:
+				target.use(actioner)
+				finish()
+				return
+			progress += 1
+		else:
+			if not subaction:
+				subaction = TakeItem.new(self,DO_NOW,forced)
+				subaction.target = target

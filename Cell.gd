@@ -124,7 +124,7 @@ func on_right_click(event: InputEventWithModifiers) -> void:
 			if not action_name in actions:
 				actions.append(action_name)
 			if actions_script[action_name]:
-				var action_node = actions_script[action_name].new(selected,false)
+				var action_node = actions_script[action_name].new(selected,-1)
 				var actionable_result = action_node.is_actionable(self)
 				# warning-ignore:unsafe_property_access
 				if actionable_result.code != actions_script.STATUS.OK:
@@ -154,7 +154,7 @@ func on_right_click(event: InputEventWithModifiers) -> void:
 			button.align = Button.ALIGN_LEFT
 			button.connect("pressed", panel, "queue_free")
 			for selected in map.player.get("selection"):
-				button.connect("pressed", selected, "force_action", [action,self], CONNECT_ONESHOT)
+				button.connect("pressed", selected, "act", [action,self,true], CONNECT_ONESHOT)
 		map.player.get_node("Camera2D/UI").add_child(panel,true)
 		panel.name = "ActionsCard"
 
