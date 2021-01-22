@@ -150,10 +150,40 @@ func force_move(to,dest_map = get_map()) -> void:
 func _enter_tree() -> void:
 	on_moved()
 
-func on_moved(_old_cell: Cell = null) -> void:
+var icon_offset: Vector2 = Vector2.ZERO setget set_icon_offset
+
+func set_icon_offset(value: Vector2):
+	icon_offset = value
+	$"Sprite".position = value
+	$"Label".rect_position = value
+
+class IconLerper extends Node:
+	var start: Vector2 = Vector2.ZERO
+	var end: Vector2 = Vector2.ZERO
+	var t: float = 0.0
+	func _notification(what):
+		if what == NOTIFICATION_PARENTED:
+			update()
+	func update() -> void:
+		t += .1
+		if t > 1:
+			$"..".set_icon_offset(Vector2.ZERO)
+		else:
+			$"..".set_icon_offset(start.linear_interpolate(end,t) * Constants.cell_size)
+	func _process(_delta: float) -> void:
+		update()
+
+func on_moved(old_cell: Cell = null) -> void:
 	if not get_parent_cell():
 		return
 	var new_position = get_parent_cell().cell_position
+	if old_cell:
+		var old_position = old_cell.cell_position
+		var position_difference = (new_position - old_position)
+		if abs(position_difference.x) <= 1 and abs(position_difference.y) <= 1:
+			var lerper: IconLerper = IconLerper.new()
+			lerper.start = Vector2(position_difference.x,position_difference.y) * -1
+			add_child(lerper)
 	($"Collider" as StaticBody).transform.origin = Vector3(new_position.x,new_position.z,new_position.y)
 
 func tool_lclick_oncell(clicked_cell: Cell, event: InputEvent) -> void: # called in Map._unhanded_input()
