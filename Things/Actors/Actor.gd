@@ -46,6 +46,22 @@ func _init().():
 	astar.actor = self
 	select_priority = 2
 
+func _ready():
+	ai_init()
+
+func add_child(node: Node, legible_unique_name: bool = false) -> void:
+	if node.get_node_or_null(".."):
+		node.get_node("..").remove_child(node)
+	if node is Thing:
+		node.set_meta("initial_visibility",node.visible)
+		node.visible = false
+	.add_child(node, legible_unique_name)
+
+func remove_child(node: Node) -> void:
+	if node is Thing:
+		node.visible = node.get_meta("initial_visibility")
+		node.set_meta("initial_visibility",null)
+
 func is_cell_impassable(cell: Cell) -> bool:
 	for thing in cell.contents:
 		if thing == self:
@@ -135,6 +151,7 @@ func _physics_process(_delta):
 	#see()
 
 func on_turn():
+	ai_process()
 	.on_turn()
 	var actions_tmp = actions.duplicate() # protects against the actions list being modified
 	for i in actions_tmp.size():
@@ -142,7 +159,7 @@ func on_turn():
 		if not action:
 			continue
 		if action.allowed_execute:
-			action.execute()
+			action.process()
 			break
 
 func get_current_action():
@@ -157,12 +174,57 @@ func get_current_action():
 			return action
 	return null
 
-func force_action(action: String, target): # called when player is commanding that this actor do a thing
-	var new_action = (load("res://Actions.gd") as GDScript)[action].new(self,true,false)
+func act(action: String, target=null, force:bool=false):
+	var new_action = (load("res://Actions.gd") as GDScript)[action].new(self,0,force)
 	if target != null:
 		new_action.target = target
 	return new_action
 
-# Start AI-related
+func do_action(action: String, target=null):
+	for existing_action in actions:
+		if not existing_action:
+			continue
+		if (existing_action.type == action and existing_action.target == target) or existing_action.forced:
+			return
+	act(action, target, false)
 
-# End AI-related
+# AI-related start
+
+enum PRIORITY {IDLE=0,WANT=5,WORK=25,NEED=75,CRITICAL=100}
+var needs: Array = ["Hunger"]
+var needs_dict: Dictionary = {}
+var drives: Array = []
+
+func drives_sorter(a: Object,b: Object):
+	return a.priority > b.priority
+
+func add_drive(new_drive_name: String,priority: float,unique: bool = false):
+	var new_drive: Reference = ((load("res://AI/Drives.gd") as GDScript).get(new_drive_name) as GDScript).new()
+	new_drive.actor = self
+	new_drive.priority = priority
+	if unique:
+		for other_drive in drives:
+			if other_drive.type == new_drive.type:
+				other_drive.priority = priority
+				return
+	drives.append(new_drive)
+
+func ai_init():
+	for i in needs.size():
+		var new_need = load("res://AI/Needs.gd").get(needs[i]).new()
+		new_need.actor = self
+		needs_dict[needs[i]] = new_need
+		needs[i] = new_need
+
+func ai_process():
+	for need in needs:
+		for type in ["life","ai"]:
+			var funcname = "on_%s_process_%s" % [type,need.type]
+			if has_method(funcname):
+				call(funcname)
+			else:
+				need.call("on_%s_process" % type)
+	drives.sort_custom(self,"drives_sorter")
+	if not drives.empty():
+		for drive in drives:
+			var result = drive.act()
