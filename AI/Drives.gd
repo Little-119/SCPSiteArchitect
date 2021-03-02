@@ -19,7 +19,7 @@ class Eat extends BaseDrive:
 	
 	func act():
 		.act()
-		var food = actor.find_closest_thing_of_type(ThingsManager.get_thing_script("Food"),true)
+		var food = actor.find_closest_thing_of_type(ThingsManager.get_thing_script("Food"),true,true)
 		if not food:
 			return false
 		else:

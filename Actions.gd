@@ -26,6 +26,8 @@ class BaseAction extends Node:
 	var target = null setget set_target
 	func set_target(new_target) -> void:
 		target = new_target
+		if target is Thing:
+			target.set("reserved_in",self)
 		if is_inside_tree():
 			if get_node_or_null("/root/Game/Player") and actioner in $"/root/Game/Player".get("selection"):
 				$"/root/Game/Player".call("update_selection_card")
