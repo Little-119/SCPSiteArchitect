@@ -9,6 +9,8 @@ var astar := CustomAStar.new() # Navigation mesh for this Actor. Let us meet aga
 
 var sight_radius: float = 5.0
 
+var has_fine_manipulation: bool = true
+
 class CustomAStar:
 	extends AStar
 	var ready: bool = false
@@ -66,7 +68,10 @@ func is_cell_impassable(cell: Cell) -> bool:
 	for thing in cell.contents:
 		if thing == self:
 			continue
-		if thing.layer >= LAYER.STRUCTURE:
+		if thing is Door:
+			if thing.get("requires_fine_manipulation") and not has_fine_manipulation:
+				return true
+		elif thing.layer >= LAYER.STRUCTURE:
 			return true
 	return false
 

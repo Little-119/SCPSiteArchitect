@@ -1,8 +1,11 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Things/Actors/Humanoid.gd" type="Script" id=1]
 [ext_resource path="res://Map.gd" type="Script" id=2]
 [ext_resource path="res://Things/Items/Food.gd" type="Script" id=3]
+[ext_resource path="res://Things/Structures/Wall.gd" type="Script" id=4]
+[ext_resource path="res://Things/Structures/Door.gd" type="Script" id=5]
+[ext_resource path="res://Things/Actors/SCPs/TrainingFox.gd" type="Script" id=6]
 
 [node name="Map" type="Node2D"]
 script = ExtResource( 2 )
@@ -13,5 +16,61 @@ position = Vector2( 2, 2 )
 script = ExtResource( 1 )
 
 [node name="Food" type="Node2D" parent="."]
-position = Vector2( 2, 8 )
+position = Vector2( 8, 8 )
 script = ExtResource( 3 )
+
+[node name="Wall" type="Node2D" parent="."]
+position = Vector2( 7, 7 )
+script = ExtResource( 4 )
+
+[node name="Wall2" type="Node2D" parent="."]
+position = Vector2( 7, 8 )
+script = ExtResource( 4 )
+
+[node name="Wall3" type="Node2D" parent="."]
+position = Vector2( 7, 10 )
+script = ExtResource( 4 )
+
+[node name="Wall4" type="Node2D" parent="."]
+position = Vector2( 7, 11 )
+script = ExtResource( 4 )
+
+[node name="Wall5" type="Node2D" parent="."]
+position = Vector2( 8, 11 )
+script = ExtResource( 4 )
+
+[node name="Wall6" type="Node2D" parent="."]
+position = Vector2( 9, 11 )
+script = ExtResource( 4 )
+
+[node name="Wall7" type="Node2D" parent="."]
+position = Vector2( 10, 11 )
+script = ExtResource( 4 )
+
+[node name="Wall8" type="Node2D" parent="."]
+position = Vector2( 10, 10 )
+script = ExtResource( 4 )
+
+[node name="Wall9" type="Node2D" parent="."]
+position = Vector2( 10, 9 )
+script = ExtResource( 4 )
+
+[node name="Wall10" type="Node2D" parent="."]
+position = Vector2( 10, 8 )
+script = ExtResource( 4 )
+
+[node name="Wall11" type="Node2D" parent="."]
+position = Vector2( 10, 7 )
+script = ExtResource( 4 )
+
+[node name="Wall12" type="Node2D" parent="."]
+position = Vector2( 9, 7 )
+script = ExtResource( 4 )
+
+[node name="Wall13" type="Node2D" parent="."]
+position = Vector2( 8, 7 )
+script = ExtResource( 4 )
+
+[node name="Door" type="Node2D" parent="."]
+position = Vector2( 7, 9 )
+script = ExtResource( 5 )

@@ -165,7 +165,7 @@ class IconLerper extends Node:
 		if what == NOTIFICATION_PARENTED:
 			update()
 	func update() -> void:
-		t += .1
+		t += .05
 		if t > 1:
 			$"..".set_icon_offset(Vector2.ZERO)
 		else:
