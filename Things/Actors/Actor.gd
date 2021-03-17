@@ -247,8 +247,8 @@ func ai_process():
 	for need in needs:
 		for type in ["life","ai"]:
 			var funcname = "on_%s_process_%s" % [type,need.type]
-			if has_method(funcname):
-				call(funcname)
+			if has_method(funcname): # This allows Actor classes to override how specific needs are processed
+				call(funcname,need) # Need is passed so that override can also invoke normal behavior
 			else:
 				need.call("on_%s_process" % type)
 	drives.sort_custom(self,"drives_sorter")

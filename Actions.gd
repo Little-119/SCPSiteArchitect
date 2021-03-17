@@ -63,7 +63,7 @@ class BaseAction extends Node:
 		if is_inside_tree():
 			if get_node_or_null("/root/Game/Player") and (actioner in $"/root/Game/Player".get("selection")) and allowed_execute:
 				if actioner.get("map"):
-					actioner.get("map").update()
+					actioner.get("map").update() # for drawing path lines, etc
 	func process() -> void:
 		if subaction:
 			subaction.process()

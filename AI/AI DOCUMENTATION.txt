@@ -1,0 +1,36 @@
+This text document aims to document the AI system that has been implemented into this project.
+
+...to drop the academic-ish language for a sec. Even I don't understand how it works and I made it. I didn't write out any sort of design before writing it, or do any theorizing like that. This is the closest thing to that document and will probably help me understand and improve the system by acting as a rubber duck.
+
+Concepts:
+	Actors: Actors are a subtype of Thing that can move on their own, can take actions, and have AI. Humans are an example of what would be a subtype of Actor.
+	
+	Components of AI:
+		Needs: These represent concepts like hunger. Under certain conditions, such as being unfulfilled, they'll create Drives.
+			e.g. for 'Hunger', when nutrition is too low, the 'Eat' drive will be created (and cleared if it's satisifed)
+			
+		Drives: These vaguely represent psychological drives, things that intelligent beings will do on their own; concepts such as eating and doing work.
+			e.g. for 'Eat', the drive will find usable food and have the actor 'use' (eat) the food by calling Actor.do_action("UseItem").
+			
+		For both Needs and Drives, adding the names of them to their respective arrays (Actor.needs and Actor.drives) in the _init functions of actors will have them added in ai_init
+		e.g. if drives.append("Wander") is included in Humanoid._init, Humanoids will by default have a drive to wander.
+			
+		Actions: These are the actual executions of, well, doing things, including walking to a tile or using an item.
+			Actions can be nested, with actions calling other actions which must be finished before the action can be resumed. One could call it a recursive action system.
+			Actions can also be started directly by the player, ...which as I write this gives me the idea of moving the concept of 'forcing' actions to a very high-priority Drive for the sake of making that feature less snowflakey.
+			e.g. for 'Use Item' (which would be started by the 'Eat' drive with food as a target) would have the actor bring the item into their inventory by starting the action 'TakeItem' (which might itself start MoveTo if the Actor isn't already close enough to the item to bring it into their inventory)
+
+		Jobs: TBD.
+
+AI-related functions:
+	Actor.act: Create and start an action
+
+	Actor.do_action: Finds if a forced action or an action with the same type and target exists in Actor.actions. If no such action is found, call Actor.act.
+		Actor.actions: Array. Holds all actions being executed, don't know if it includes subactions. I don't know exactly how this works, I think it was intended to be a sort of queue.
+	
+	Actor.ai_init:
+		Called within _ready, meant to setup AI-related things like inherent needs and inherent drives (see note about this in Components of AI)
+
+	Actor.ai_process:
+		Called within on_turn. Runs through Actor.needs and Actor.drives.
+			For Actor.needs: Calls Need.on_life_process and Need.on_ai_process. Actor classes can override these individually by having functions
