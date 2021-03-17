@@ -40,6 +40,9 @@ class CustomAStar:
 		ready = true
 		for a in (actor as Actor).actions:
 			a.think()
+	
+	func test_path_to(destination: Cell) -> bool:
+		return actor.astar.get_point_path(actor.cell.point_id,destination.point_id).size() != 0
 
 func _init().():
 	type = "Actor"
@@ -179,34 +182,40 @@ func get_current_action():
 			return action
 	return null
 
-func act(action: String, target=null, force:bool=false):
+func act(action: String, target=null, force:bool=false, driver=null):
 	var new_action = (load("res://Actions.gd") as GDScript)[action].new(self,0,force)
 	if target != null:
 		new_action.target = target
+	if driver != null:
+		new_action.driver = driver
+	if is_inside_tree():
+		if get_node_or_null("/root/Game/Player") and self in $"/root/Game/Player".get("selection"):
+			$"/root/Game/Player".call("update_selection_card")
 	return new_action
 
-func do_action(action: String, target=null):
+func do_action(action: String, target=null, driver=null):
 	for existing_action in actions:
 		if not existing_action:
 			continue
 		if (existing_action.type == action and existing_action.target == target) or existing_action.forced:
 			return
-	act(action, target, false)
+	return act(action, target, false, driver)
 
 # AI-related start
 
 enum PRIORITY {IDLE=0,WANT=5,WORK=25,NEED=75,CRITICAL=100}
-var needs: Array = ["Hunger"]
+var needs: Array = []
 var needs_dict: Dictionary = {}
 var drives: Array = []
 
-func drives_sorter(a: Object,b: Object):
+func drives_sorter(a: Object,b: Object) -> bool:
 	return a.priority > b.priority
 
-func add_drive(new_drive_name: String,priority: float,unique: bool = false):
+func add_drive(new_drive_name: String,priority = null,unique: bool = false):
 	var new_drive: Reference = ((load("res://AI/Drives.gd") as GDScript).get(new_drive_name) as GDScript).new()
 	new_drive.actor = self
-	new_drive.priority = priority
+	if priority:
+		new_drive.priority = priority
 	if unique:
 		for other_drive in drives:
 			if other_drive.type == new_drive.type:
@@ -214,12 +223,25 @@ func add_drive(new_drive_name: String,priority: float,unique: bool = false):
 				return
 	drives.append(new_drive)
 
+func remove_drive(drive_name: String) -> void:
+	drive_name = drive_name.to_lower()
+	for i in drives.size():
+		if drives[i].type == drive_name:
+			drives.remove(i)
+			break
+
 func ai_init():
-	for i in needs.size():
-		var new_need = load("res://AI/Needs.gd").get(needs[i]).new()
+	var inherent_needs = needs.duplicate()
+	needs.clear()
+	for need_to_add in inherent_needs:
+		var new_need = load("res://AI/Needs.gd").get(need_to_add).new()
 		new_need.actor = self
-		needs_dict[needs[i]] = new_need
-		needs[i] = new_need
+		needs_dict[(need_to_add as String)] = new_need
+		needs.append(new_need)
+	var inherent_drives = drives.duplicate()
+	drives.clear()
+	for drive_to_add in inherent_drives:
+		add_drive(drive_to_add)
 
 func ai_process():
 	for need in needs:
@@ -233,3 +255,5 @@ func ai_process():
 	if not drives.empty():
 		for drive in drives:
 			var result = drive.act()
+			if result:
+				break

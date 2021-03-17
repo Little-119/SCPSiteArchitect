@@ -21,6 +21,8 @@ class Hunger extends BaseNeed:
 	func on_ai_process():
 		if get_magnitude() <= .4:
 			actor.add_drive("Eat",Actor.PRIORITY.NEED + 5,true)
+		else:
+			actor.remove_drive("Eat")
 		.on_ai_process()
 	func get_magnitude():
 		magnitude = (nutrition / nutrition_capacity)

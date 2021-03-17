@@ -110,11 +110,15 @@ func update_selection_card() -> void:
 	if selection.size() == 1:
 		var selected: Thing = selection[0]
 		(selection_card.get_node("Title") as RichTextLabel).text = (selected as Thing).get_display_name()
-		var action_text = "Idle"
+		var action_text
 		if selected is Actor:
-			if (selected as Actor).actions.size() > 0:
-				var current_action: Actions.BaseAction = (selected as Actor).get_current_action()
-				if current_action is Actions.BaseAction:
+			var current_action: Actions.BaseAction = (selected as Actor).get_current_action()
+			if not current_action:
+				action_text = "Idle"
+			else:
+				if current_action.driver:
+					action_text = current_action.driver.get_display_name()
+				else:
 					action_text = current_action.get_display_name()
 		(selection_card.get_node("CurrentAction") as RichTextLabel).text = action_text
 	elif selection.size() > 1:

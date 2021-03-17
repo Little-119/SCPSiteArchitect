@@ -20,6 +20,7 @@ class BaseAction extends Node:
 	var last_think_result: ThinkResult = null
 	var allowed_execute: bool = true # checked in Actor.gd before calling execute
 	var actioner: Actor
+	var driver
 	var forced: bool = false # Whether player is making the actor perform this action
 	var subaction
 	# warning-ignore:unused_class_variable
@@ -61,7 +62,6 @@ class BaseAction extends Node:
 		
 		if is_inside_tree():
 			if get_node_or_null("/root/Game/Player") and (actioner in $"/root/Game/Player".get("selection")) and allowed_execute:
-				$"/root/Game/Player".call("update_selection_card")
 				if actioner.get("map"):
 					actioner.get("map").update()
 	func process() -> void:
