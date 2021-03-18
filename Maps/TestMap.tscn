@@ -1,11 +1,10 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://Things/Actors/Humanoid.gd" type="Script" id=1]
 [ext_resource path="res://Map.gd" type="Script" id=2]
 [ext_resource path="res://Things/Items/Food.gd" type="Script" id=3]
 [ext_resource path="res://Things/Structures/Wall.gd" type="Script" id=4]
 [ext_resource path="res://Things/Structures/Door.gd" type="Script" id=5]
-[ext_resource path="res://Things/Actors/SCPs/TrainingFox.gd" type="Script" id=6]
 
 [node name="Map" type="Node2D"]
 script = ExtResource( 2 )

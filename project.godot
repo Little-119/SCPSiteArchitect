@@ -14,11 +14,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Things/Actors/Actor.gd"
 }, {
-"base": "Reference",
-"class": "BaseDrive",
-"language": "GDScript",
-"path": "res://AI/Drive.gd"
-}, {
 "base": "Node2D",
 "class": "Cell",
 "language": "GDScript",
@@ -38,6 +33,11 @@ _global_script_classes=[ {
 "class": "Door",
 "language": "GDScript",
 "path": "res://Things/Structures/Door.gd"
+}, {
+"base": "Reference",
+"class": "Drive",
+"language": "GDScript",
+"path": "res://AI/Drive.gd"
 }, {
 "base": "Item",
 "class": "Food",
@@ -126,11 +126,11 @@ _global_script_classes=[ {
 } ]
 _global_script_class_icons={
 "Actor": "",
-"BaseDrive": "",
 "Cell": "",
 "DebugGame": "",
 "Dirt": "",
 "Door": "",
+"Drive": "",
 "Food": "",
 "Game": "",
 "GitAPI": "",
