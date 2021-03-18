@@ -33,4 +33,4 @@ AI-related functions:
 
 	Actor.ai_process:
 		Called within on_turn. Runs through Actor.needs and Actor.drives.
-			For Actor.needs: Calls Need.on_life_process and Need.on_ai_process. Actor classes can override these individually by having functions
+			For Actor.needs: Calls Need.on_life_process and Need.on_ai_process. Actor classes can override these individually by having functions with _[name of need to override] appended to the function name.
