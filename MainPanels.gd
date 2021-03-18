@@ -3,8 +3,6 @@ class MainPanel extends Panel:
 	func _init(UI: Control) -> void:
 		name = "MainPanel"
 		light_mask = 0
-		# the below line produces two warnings but I don't know how to ignore both without ignoring warnings in the whole file
-		# fixing the warning would require making UI a class, which is probably unnecessary
 		margin_bottom = (UI.get("mainbutton_margin") * -1.5) - UI.get("mainbutton_size")
 		margin_left = UI.get("mainbutton_margin")
 		anchor_bottom = 1
@@ -15,7 +13,7 @@ class MainPanel extends Panel:
 	func _ready() -> void:
 		resize()
 	func equip_buildable(button,buildable) -> void:
-		button.get_node("../../..").mousetool = buildable # @./UI/Camera2D/Player
+		button.get_node("../../../..").mousetool = buildable # @./ArchitectPanel/UI/Camera2D/Player
 		queue_free()
 
 class ArchitectPanel extends MainPanel:
