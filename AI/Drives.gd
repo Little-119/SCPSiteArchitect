@@ -8,10 +8,12 @@ class Eat extends Drive:
 		.act()
 		var food = actor.find_closest_thing_of_type(ThingsManager.get_thing_script("Food"),true,true)
 		if not food:
-			return false
+			return 1
+		elif actor.doing_action("UseItem",food,self):
+			return 0
 		else:
 			actor.do_action("UseItem",food,self)
-			return true
+			return 0
 
 class Wander extends Drive:
 	var moveto
@@ -22,6 +24,8 @@ class Wander extends Drive:
 	
 	func act():
 		.act()
+		if not moveto in actor.actions:
+			moveto = null
 		if not moveto:
 			var destinations = []
 			for cell in actor.cell.get_cells_in_radius(3):

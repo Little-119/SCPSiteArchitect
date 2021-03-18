@@ -193,12 +193,16 @@ func act(action: String, target=null, force:bool=false, driver=null):
 			$"/root/Game/Player".call("update_selection_card")
 	return new_action
 
-func do_action(action: String, target=null, driver=null):
+func doing_action(action: String, target=null, driver=null) -> bool:
 	for existing_action in actions:
-		if not existing_action:
+		if not existing_action: # skip deleted objects
 			continue
-		if (existing_action.type == action and existing_action.target == target) or existing_action.forced:
-			return
+		if existing_action.type == action and existing_action.target == target and existing_action.driver == driver:
+			return true
+	return false
+
+func do_action(action: String, target=null, driver=null):
+	doing_action(action,target,driver)
 	return act(action, target, false, driver)
 
 # AI-related start
@@ -255,5 +259,5 @@ func ai_process():
 	if not drives.empty():
 		for drive in drives:
 			var result = drive.act()
-			if result:
+			if result == 0:
 				break
