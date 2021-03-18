@@ -1,5 +1,5 @@
 
-class Eat extends BaseDrive:
+class Eat extends Drive:
 	func _init():
 		type = "eat"
 		display_name = "Eating"
@@ -13,7 +13,7 @@ class Eat extends BaseDrive:
 			actor.do_action("UseItem",food,self)
 			return true
 
-class Wander extends BaseDrive:
+class Wander extends Drive:
 	var moveto
 	
 	func _init():
@@ -36,7 +36,7 @@ class Wander extends BaseDrive:
 				var destination = destinations[randi() % destinations.size()]
 				moveto = actor.do_action("MoveTo",destination,self)
 
-class Labor extends BaseDrive:
+class Labor extends Drive:
 	func _init():
 		type = "labor"
 
