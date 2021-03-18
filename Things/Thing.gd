@@ -210,8 +210,11 @@ func find_things_custom(filter_func_holder, filter_func_name, filter_args) -> Ar
 static func func_is(thing, script): # helper function for below
 	return thing is script
 
-static func func_is_and_unreserved(thing,script):
-	return thing is script and thing.get("reserved_in") == null
+static func func_is_and_unreserved(thing,script,exclude):
+	if exclude:
+		return thing is script and thing.get("reserved_in") != exclude
+	else:
+		return thing is script and thing.get("reserved_in") == null
 
 func find_things_of_type(search_for: GDScript) -> Array:
 	return find_things_custom(self,"func_is",[search_for])
@@ -230,7 +233,7 @@ func get_things_in_self() -> Array:
 	return list
 
 func find_closest_thing_of_type(search_for: GDScript, search_self: bool = false, ignore_reserved: bool = false):
-	var found_things = find_things_of_type(search_for) if not ignore_reserved else find_things_custom(self,"func_is_and_unreserved",[search_for])
+	var found_things = find_things_of_type(search_for) if not ignore_reserved else find_things_custom(self,"func_is_and_unreserved",[search_for,self])
 	if search_self:
 		found_things = get_things_in_self() + found_things
 	if found_things.empty():
