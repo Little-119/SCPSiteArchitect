@@ -225,21 +225,22 @@ func sort_found_things_by_distance(a: Thing,b: Thing):
 	else:
 		return false
 
-func get_things_in_self() -> Array:
-	var list: Array = []
-	for item in get_children():
-		if item is get_script():
-			list.append(item)
-	return list
+func find_things_in_self(filter_func_holder, filter_func_name, filter_args) -> Array:
+	var found: Array = []
+	for node in get_children():
+		if filter_func_holder.callv(filter_func_name,[node] + filter_args):
+			found.append(node)
+	return found
 
 func find_closest_thing_of_type(search_for: GDScript, search_self: bool = false, ignore_reserved: bool = false):
 	var found_things = find_things_of_type(search_for) if not ignore_reserved else find_things_custom(self,"func_is_and_unreserved",[search_for,self])
+	if found_things.size() > 1:
+		found_things.sort_custom(self,"sort_found_things_by_distance")
 	if search_self:
-		found_things = get_things_in_self() + found_things
+		found_things = find_things_in_self(self,"func_is",[search_for]) + found_things
 	if found_things.empty():
 		return null
-	if found_things.size() != 1:
-		found_things.sort_custom(self,"sort_found_things_by_distance")
+	
 	return found_things.front()
 
 # Start grammar-related
