@@ -210,7 +210,7 @@ class UseItem extends BaseAction:
 		pass
 	func execute() -> void:
 		if target.get_parent() == actioner:
-			if progress >= 10:
+			if progress >= target.use_time:
 				target.use(actioner)
 				finish()
 				return
