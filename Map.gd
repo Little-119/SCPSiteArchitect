@@ -223,15 +223,20 @@ func _draw() -> void:
 				if not selected:
 					continue
 				if selected.get("actions"):
-					if selected.actions.front() is Actions.MoveTo:
-						var path: Array = selected.actions.front().path
-						if not path.empty():
-							var path_copy = path.duplicate()
-							path_copy.insert(0,selected.cell.cell_position)
-							for point_i in range(1,path_copy.size()):
-								var from: Vector2 = (Vector2(path_copy[point_i-1].x,path_copy[point_i-1].y) + Vector2(.5,.5)) * Constants.cell_size
-								var to: Vector2 = (Vector2(path_copy[point_i].x,path_copy[point_i].y) + Vector2(.5,.5)) * Constants.cell_size
-								draw_line(from,to,Color.white,1,true)
+					var action = selected.actions.front()
+					while true:
+						if action is Actions.MoveTo:
+							var path: Array = action.path
+							if not path.empty():
+								var path_copy = path.duplicate()
+								path_copy.insert(0,selected.cell.cell_position)
+								for point_i in range(1,path_copy.size()):
+									var from: Vector2 = (Vector2(path_copy[point_i-1].x,path_copy[point_i-1].y) + Vector2(.5,.5)) * Constants.cell_size
+									var to: Vector2 = (Vector2(path_copy[point_i].x,path_copy[point_i].y) + Vector2(.5,.5)) * Constants.cell_size
+									draw_line(from,to,Color.white,1,true)
+							break
+						elif action.get_child(0):
+							action = action.get_child(0)
 
 # warning-ignore:unsafe_property_access
 func get_local_time(turn: int = $"..".turn) -> Dictionary:
