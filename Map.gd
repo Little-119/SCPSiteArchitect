@@ -237,6 +237,8 @@ func _draw() -> void:
 							break
 						elif action.get_child(0):
 							action = action.get_child(0)
+						else:
+							break
 
 # warning-ignore:unsafe_property_access
 func get_local_time(turn: int = $"..".turn) -> Dictionary:
