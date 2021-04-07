@@ -18,8 +18,6 @@ var astar := AStar.new() # Let us meet again as stars.
 func _to_string():
 	return "Map"
 
-var player setget ,get_player
-
 func get_player():
 	return get_node_or_null("../../Player") # @./Universe/Game/Player
 
