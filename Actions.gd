@@ -1,4 +1,5 @@
 extends Node # Making this Object or Reference causes opcode #12 internal script error
+# see AI/AI DOCUMENTATION.txt for documentation on this
 
 enum {NO_EXECUTE=-1,DO_NOW,ADD_TO_QUEUE}
 enum STATUS {OK,NEW,DONE=4,FAIL,ERROR}

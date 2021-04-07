@@ -1,5 +1,6 @@
 extends Node
 # This is a helper class that can be used to get collections of Things, and such
+# Can also be used to get Things without creating them or Thing classes (scripts) while avoiding circular loading
 
 var things: Dictionary = {}
 var things_list: Array = []

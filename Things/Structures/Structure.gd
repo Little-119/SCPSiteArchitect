@@ -1,5 +1,6 @@
 extends Thing
 class_name Structure
+# Structures are structures like walls and furniture
 
 func _init().():
 	type = "Structure"

@@ -1,5 +1,6 @@
 extends Reference
 class_name Drive
+# see AI/AI DOCUMENTATION.txt for documentation on this
 
 # warning-ignore:unused_class_variable
 var actor: Actor

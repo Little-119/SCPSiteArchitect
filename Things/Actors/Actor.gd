@@ -1,5 +1,7 @@
 extends Thing
 class_name Actor
+# Actors encompass any Thing that acts on its own, hence the name.
+# Could also be called Mobs or Pawns
 
 enum {MOVE_OK, MOVE_DIFFERENT_MAP, MOVE_FAIL_GENERIC, MOVE_INVALID_CELL, MOVE_OBSTRUCTED, MOVE_TILES_UNCONNECTED}
 
@@ -206,6 +208,7 @@ func do_action(action: String, target=null, driver=null):
 	return act(action, target, false, driver)
 
 # AI-related start
+# see AI/AI DOCUMENTATION.txt for documentation on some AI and action-related things
 
 enum PRIORITY {IDLE=0,WANT=5,WORK=25,NEED=75,CRITICAL=100}
 var needs: Array = []

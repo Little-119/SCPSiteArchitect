@@ -1,19 +1,21 @@
 extends Node2D
 class_name Map
+# Maps are, well, maps. Areas in which things exist and do stuff. They are three-dimensional grids of Cells.
 
 # warning-ignore:unused_signal
 signal thing_added # emitted in Cell.add_child
 # warning-ignore:unused_signal
 signal thing_removed
 
-const max_size := Vector3(512,512,32)
-export(Vector3) var size: Vector3 setget set_size
+const max_size := Vector3(512,512,32) # maximum allowed size
+export(Vector3) var size: Vector3 setget set_size # size is the amount of columns/rows/layers of Cells
 var cells_matrix := [] # 3-D array of cells. In order of Z(-levels), then Y, then X
 var cells := [] # 1-D list of all cells in map
 
-var current_zlevel: int = 0 # displayed z-level
+var current_zlevel: int = 0 # z-level currently being displayed to the player
 
-var astar := AStar.new() # Let us meet again as stars.
+var astar := AStar.new() # AStar resource which contains points that mobs can copy from for their own CustomAStar
+# Let us meet again as stars.
 
 func _to_string():
 	return "Map"
@@ -21,7 +23,7 @@ func _to_string():
 func get_player():
 	return get_node_or_null("../../Player") # @./Universe/Game/Player
 
-var is_debug: bool setget ,get_is_debug
+var is_debug: bool setget ,get_is_debug # cache and convenience variable for below function
 
 func get_is_debug() -> bool: # get whether this map is being used in automated testing, cache the result permanently
 	if is_debug != null:
@@ -30,7 +32,8 @@ func get_is_debug() -> bool: # get whether this map is being used in automated t
 
 var orphaned_things: Array = [] # Array of Things not in a cell, presumably because they were added in editor
 
-func set_size(newsize: Vector3) -> void:
+func set_size(newsize: Vector3) -> void: # Change the size of the map, which is the amount of colums/rows/layers.
+	# Creates new cells if needed, but can't remove them.
 	size = newsize
 	# warning-ignore:narrowing_conversion
 	if astar.get_point_capacity() < newsize.x*newsize.y*newsize.z:
@@ -71,7 +74,7 @@ func _init(newsize = null) -> void:
 		set_size(size)
 	z_index = -1
 
-static func load_map(from) -> Map:
+static func load_map(from) -> Map: # load a map from ones made in the editor or saves (to be implemented)
 	if typeof(from) == TYPE_STRING:
 		match from.get_extension():
 			"tscn":
@@ -85,6 +88,7 @@ static func load_map(from) -> Map:
 					else:
 						instance.collect_orphans()
 						return instance
+			# TODO: add loading from saves. And also save creations.
 	return (load("res://Map.gd") as GDScript).new() # If we are otherwise unable to create a map, return a basic one
 
 func get_pixel_size() -> Vector2:
@@ -92,13 +96,13 @@ func get_pixel_size() -> Vector2:
 	return Vector2(size.x * cell_size,size.y * cell_size)
 
 func _ready() -> void:
-	for child in get_children():
+	for child in get_children(): # collects orphaned things, almost certainly things that were added to the map in-editor
 		if child is Thing:
 			remove_child(child)
 			child.request_ready()
 			orphaned_things.append(child)
 	
-	for i in orphaned_things.size():
+	for i in orphaned_things.size(): # move orphaned things to their proper cells
 		var thing = orphaned_things[i]
 		if not thing: continue
 		var adoptive_cell: Cell = get_cell(Vector3(thing.position.x,thing.position.y,thing.position_z))
@@ -124,7 +128,7 @@ func collect_orphans(orphanage: Map = self) -> void:
 			orphan.position_z = 0 # reset to 0 because this isn't used outside of creating maps in editor ...I think?
 			adoptive_cell.add_child(orphan)
 
-func load_submap(submap: Map, offset: Vector3) -> void: # offset defines position of the upper left corner of the submap
+func load_submap(submap: Map, offset: Vector3) -> void: # Take another map, merge it with this one. offset defines position of the upper left corner of the submap
 	for child in submap.get_children():
 		if not (child is Cell):
 			child.position += Vector2(offset.x,offset.y)
@@ -145,7 +149,7 @@ func get_cell(pos: Vector3) -> Cell: # get cell with cell_position
 	else:
 		return Constants.default_cell
 
-func get_cell_or_null(pos: Vector3) -> Cell:
+func get_cell_or_null(pos: Vector3) -> Cell: # like get_cell, but returns null instead of default_cell
 	var c: Cell = get_cell(pos)
 	if c.is_default_cell:
 		return null
@@ -155,7 +159,7 @@ func get_cell_or_null(pos: Vector3) -> Cell:
 func clamp_to_cell_grid(num: float) -> int:
 	return int(floor(num / Constants.cell_size))
 
-func get_cell_from_position(from_position: Vector2,z:int = 0) -> Cell:
+func get_cell_from_position(from_position: Vector2,z:int = 0) -> Cell: # get cell with absolute pixel position
 	var rounded_position = Vector3.ZERO
 	rounded_position.x = clamp_to_cell_grid(from_position.x)
 	rounded_position.y = clamp_to_cell_grid(from_position.y)
@@ -166,7 +170,7 @@ func get_cell_from_screen_position(from_position: Vector2,z:int = 0) -> Cell: # 
 	from_position += (get_player().get_node("Camera2D") as Camera2D).get_camera_position() - ($"/root" as Viewport).size/2
 	return get_cell_from_position(from_position,z)
 
-func get_visibility() -> bool:
+func get_visibility() -> bool: # get if the cell is visible to the player
 	if get_is_debug() or (not visible) or (not $"..".visible):
 		return false
 	else:

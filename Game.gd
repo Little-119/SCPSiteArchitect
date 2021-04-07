@@ -1,5 +1,6 @@
 extends Node
 class_name Game
+# 'Main' node for managing the whole game
 
 var current_universe: Universe setget set_current_universe
 # warning-ignore:unused_class_variable
@@ -52,10 +53,11 @@ func _unhandled_input(event: InputEvent):
 		if event is InputEventKey:
 			match (event as InputEventKey).scancode:
 				KEY_ESCAPE:
-					# TODO: Add exit confirmation of some kind
+					# TODO: Add exit confirmation of some kind.
+					# Overlaps with use of KEY_ESCAPE in Player
 					get_tree().set_input_as_handled()
 					get_tree().quit(0)
-				KEY_F1:
+				KEY_F1: # Toggles GUT visibility
 					if OS.is_debug_build():
 						var new_gut_visibility: bool = not Settings.get("debug_gut_visible")
 						Settings.set("debug_gut_visible",new_gut_visibility)

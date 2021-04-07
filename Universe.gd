@@ -1,5 +1,6 @@
 extends Node2D
 class_name Universe
+# Universes are collections of maps, with their own turn timer
 
 var maps: Array = []
 var current_map = null setget set_current_map

@@ -1,5 +1,6 @@
 extends Node2D
 class_name Thing
+# Things encompass things, things which usually exist inside of cells. Things include structures, turfs, items, and mobs.
 
 const theme = preload("res://Gfx/ThingTheme.tres")
 const LAYER = preload("res://LayersEnum.gd")

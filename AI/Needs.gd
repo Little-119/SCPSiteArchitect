@@ -1,3 +1,5 @@
+# see AI/AI DOCUMENTATION.txt for documentation on this
+
 class BaseNeed extends Reference:
 	var type: String
 	var actor: Actor

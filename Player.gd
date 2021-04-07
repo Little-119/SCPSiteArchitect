@@ -1,5 +1,7 @@
 extends Node
 class_name Player
+# Abstract representation of the player. Since this is a mangagement game, there is no player mob (or, actor)
+# Includes camera functionality and some input functionality
 
 const zoom_min: float = .5
 const zoom_max: float = 5.0
@@ -47,7 +49,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.is_pressed():
 		match (event as InputEventKey).scancode:
 			KEY_SPACE:
-				$"..".set_process(not $"..".is_processing())
+				$"..".set_process(not $"..".is_processing()) # toggle pause
 			KEY_ESCAPE:
 				if mousetool:
 					set_mousetool(null)

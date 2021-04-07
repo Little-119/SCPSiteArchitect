@@ -1,6 +1,6 @@
 extends Node
 # warning-ignore-all:unused_class_variable
-# the very purpose of this script is to have its variables accessed by other scripts
+# Contains global variables to be accessed by other scripts
 
 var cell_size: int = 32 # Width/height of cells, in pixels
 
