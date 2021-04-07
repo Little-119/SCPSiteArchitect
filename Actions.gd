@@ -4,9 +4,9 @@ extends Node # Making this Object or Reference causes opcode #12 internal script
 enum {NO_EXECUTE=-1,DO_NOW,ADD_TO_QUEUE}
 enum STATUS {OK,NEW,DONE=4,FAIL,ERROR}
 
-class ThinkResult extends Reference:
-	var code: int = STATUS.NEW
-	var details: String = "Generic reason"
+class ThinkResult extends Reference: # Contains data on the result of an action's think()
+	var code: int = STATUS.NEW # status code
+	var details: String = "Generic reason" # contains message detailing status
 	func _init(c: int = STATUS.NEW,d: String = details):
 		code = c
 		details = d
@@ -17,13 +17,13 @@ class BaseAction extends Node:
 	var type: String setget ,get_class
 	func get_class() -> String: return "BaseAction"
 	# warning-ignore:unused_class_variable
-	var status: int = STATUS.NEW
+	var status: int = STATUS.NEW # status code
 	var last_think_result: ThinkResult = null
 	var allowed_execute: bool = true # checked in Actor.gd before calling execute
-	var actioner: Actor
-	var driver
+	var actioner: Actor # Actor acting this action
+	var driver # Drive that created this action
 	var forced: bool = false # Whether player is making the actor perform this action
-	var subaction
+	var subaction # Nested action. Processed instead of this action until it's finished
 	# warning-ignore:unused_class_variable
 	var target = null setget set_target
 	func set_target(new_target) -> void:
@@ -36,9 +36,9 @@ class BaseAction extends Node:
 	func is_debug_mode() -> bool: # checks if this action is part of automated testing
 		return get_path().get_name(2) == "DebugContainer"
 	# warning-ignore:unused_class_variable
-	var path: PoolVector3Array
+	var path: PoolVector3Array # Path to target, if needed
 	# warning-ignore:unused_class_variable
-	var progress: int = 0
+	var progress: int = 0 # Some actions take time, this is used to track that
 	enum FAILURE {NO_PATH}
 	# warning-ignore:unused_class_variable
 	var failures: Array = []
@@ -75,7 +75,7 @@ class BaseAction extends Node:
 		if not allowed_execute:
 			text += " (nonexecutable)"
 		return text
-	func get_display_name() -> String:
+	func get_display_name() -> String: # name to be displayed to the player
 		return "BaseAction"
 	func think() -> ThinkResult:
 		return ThinkResult.new()
