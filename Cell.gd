@@ -35,18 +35,15 @@ func set_cell_position(newpos: Vector3 = cell_position) -> void:
 
 func get_adjacent_cell(offset: Vector3) -> Cell:
 	if map:
-		return map.get_cell(Vector3(cell_position.x+offset.x,cell_position.y-offset.y,cell_position.z-offset.z))
+		return map.get_cell_or_null(Vector3(cell_position.x+offset.x,cell_position.y-offset.y,cell_position.z-offset.z))
 	else:
-		# warning-ignore:unsafe_cast
-		return (Constants.default_cell as Cell)
+		return null
 
 func get_cells_in_directions(directions: Array) -> Array:
 	var adjacent_cells = []
 	for direction in directions:
 		if direction == Vector3.ZERO: continue
-		var adj_cell = get_adjacent_cell(direction)
-		if not adj_cell.is_default_cell: # collect only non-default cells
-			adjacent_cells.append(adj_cell)
+		adjacent_cells.append(get_adjacent_cell(direction))
 	return adjacent_cells
 
 func get_four_adjacent_cells() -> Array: # adjacent, excluding diagonals
