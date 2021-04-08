@@ -92,8 +92,7 @@ static func load_map(from) -> Map: # load a map from ones made in the editor or 
 	return (load("res://Map.gd") as GDScript).new() # If we are otherwise unable to create a map, return a basic one
 
 func get_pixel_size() -> Vector2:
-	var cell_size = Constants.cell_size
-	return Vector2(size.x * cell_size,size.y * cell_size)
+	return Vector2(size.x * ProjectSettings.get_setting("Game/cell_size"),size.y * ProjectSettings.get_setting("Game/cell_size"))
 
 func _ready() -> void:
 	for child in get_children(): # collects orphaned things, almost certainly things that were added to the map in-editor
@@ -157,7 +156,7 @@ func get_cell_or_null(pos: Vector3) -> Cell: # like get_cell, but returns null i
 		return c
 
 func clamp_to_cell_grid(num: float) -> int:
-	return int(floor(num / Constants.cell_size))
+	return int(floor(num / ProjectSettings.get_setting("Game/cell_size")))
 
 func get_cell_from_position(from_position: Vector2,z:int = 0) -> Cell: # get cell with absolute pixel position
 	var rounded_position = Vector3.ZERO
@@ -233,8 +232,8 @@ func _draw() -> void:
 								var path_copy = path.duplicate()
 								path_copy.insert(0,selected.cell.cell_position)
 								for point_i in range(1,path_copy.size()):
-									var from: Vector2 = (Vector2(path_copy[point_i-1].x,path_copy[point_i-1].y) + Vector2(.5,.5)) * Constants.cell_size
-									var to: Vector2 = (Vector2(path_copy[point_i].x,path_copy[point_i].y) + Vector2(.5,.5)) * Constants.cell_size
+									var from: Vector2 = (Vector2(path_copy[point_i-1].x,path_copy[point_i-1].y) + Vector2(.5,.5)) * ProjectSettings.get_setting("Game/cell_size")
+									var to: Vector2 = (Vector2(path_copy[point_i].x,path_copy[point_i].y) + Vector2(.5,.5)) * ProjectSettings.get_setting("Game/cell_size")
 									draw_line(from,to,Color.white,1,true)
 							break
 						elif action.get_child(0):

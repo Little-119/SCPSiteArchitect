@@ -7,7 +7,7 @@ class TestWithSelection extends "res://tests/integration/test_map_virtual_game.g
 		var click_event = InputEventMouseButton.new()
 		click_event.pressed = true
 		click_event.button_index = 1
-		game.current_map.mouse_position = Vector2.ONE * 2.5 * Constants.cell_size
+		game.current_map.mouse_position = Vector2.ONE * 2.5 * ProjectSettings.get_setting("Game/cell_size")
 		cell0 = game.current_map.get_cell(Vector3(2,2,0))
 		cell0.add_thing(Actor)
 		game.current_map._unhandled_input(click_event)
@@ -23,7 +23,7 @@ class TestWithSelection extends "res://tests/integration/test_map_virtual_game.g
 		var rclick_event = InputEventMouseButton.new()
 		rclick_event.pressed = true
 		rclick_event.button_index = 2
-		game.current_map.mouse_position = Vector2(3.5,2.5) * Constants.cell_size
+		game.current_map.mouse_position = Vector2(3.5,2.5) * ProjectSettings.get_setting("Game/cell_size")
 		game.current_map._unhandled_input(rclick_event)
 		var action_button = game.get_node_or_null("Player/Camera2D/UI/ActionsCard/MoveTo")
 		assert_not_null(action_button)

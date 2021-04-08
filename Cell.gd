@@ -26,10 +26,10 @@ func _ready():
 	#add_thing(ThingsManager.things["Thing"].get_script().new())
 
 func _draw():
-	draw_rect(Rect2(Vector2.ZERO,Vector2.ONE*Constants.cell_size),Color(.15,.15,.15))
+	draw_rect(Rect2(Vector2.ZERO,Vector2.ONE*ProjectSettings.get_setting("Game/cell_size")),Color(.15,.15,.15))
 
 func set_cell_position(newpos: Vector3 = cell_position) -> void:
-	position = Vector2(newpos.x * Constants.cell_size,newpos.y * Constants.cell_size)
+	position = Vector2(newpos.x * ProjectSettings.get_setting("Game/cell_size"),newpos.y * ProjectSettings.get_setting("Game/cell_size"))
 	($"Spatial" as Spatial).transform.origin = Vector3(newpos.x,newpos.z,newpos.y)
 	cell_position = newpos
 
