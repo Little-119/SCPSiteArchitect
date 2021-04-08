@@ -80,8 +80,8 @@ func get_cells_in_radius(radius: float,multi_z: bool = false) -> Array: # TODO: 
 func on_left_click(event: InputEventWithModifiers) -> void: # called in Map.gd. Probably could be called here, too bad!
 	var thing_to_select
 	var selected_at: int = contents.size()
-	if map.player.get("selection").size() > 0:
-		for selected in map.player.get("selection"):
+	if map.get_player().get("selection").size() > 0:
+		for selected in map.get_player().get("selection"):
 			var found_at = contents.find(selected)
 			if found_at >= 0 and found_at < selected_at:
 				selected_at = found_at
@@ -99,16 +99,16 @@ func on_left_click(event: InputEventWithModifiers) -> void: # called in Map.gd. 
 		if thing_to_select:
 			break
 	if thing_to_select:
-		map.player.call("select",thing_to_select,not event.shift)
+		map.get_player().call("select",thing_to_select,not event.shift)
 		get_tree().set_input_as_handled()
 
 func on_right_click(event: InputEventWithModifiers) -> void:
 	var actions: Array = []
 	var actionable_results: Dictionary = {}
 	var actions_script: GDScript = load("res://Actions.gd")
-	if map.player.get("selection").empty():
+	if map.get_player().get("selection").empty():
 		return
-	for selected in map.player.get("selection"):
+	for selected in map.get_player().get("selection"):
 		if not selected:
 			continue
 		if selected.get("actions") == null: # check if selected is an Actor
@@ -154,12 +154,12 @@ func on_right_click(event: InputEventWithModifiers) -> void:
 			button.rect_position += Vector2(0,20 * (get_child_count()-1))
 			button.align = Button.ALIGN_LEFT
 			button.connect("pressed", panel, "queue_free")
-			for selected in map.player.get("selection"):
+			for selected in map.get_player().get("selection"):
 				button.connect("pressed", selected, "act", [action,self,true], CONNECT_ONESHOT)
-		map.player.get_node("Camera2D/UI").add_child(panel,true)
+		map.get_player().get_node("Camera2D/UI").add_child(panel,true)
 		panel.name = "ActionsCard"
 
-		panel.rect_position = get_global_mouse_position() + (get_viewport().size/2) - (map.player.get_node("Camera2D") as Camera2D).position # TODO: I forget how to get the screen position of a cell.
+		panel.rect_position = get_global_mouse_position() + (get_viewport().size/2) - (map.get_player().get_node("Camera2D") as Camera2D).position # TODO: I forget how to get the screen position of a cell.
 
 func on_mouseonto() -> void:
 	pass
