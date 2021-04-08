@@ -128,12 +128,12 @@ func _ready() -> void:
 								label.text = "?"
 						else:
 							sprite.texture = texture
-							var s = (Vector2.ONE * Constants.cell_size)/sprite.texture.get_size()
+							var s = (Vector2.ONE * ProjectSettings.get_setting("Game/cell_size"))/sprite.texture.get_size()
 							sprite.scale = s
 
 func _draw():
 	if get_node_or_null("/root/Game/Player") and self in $"/root/Game/Player".get("selection"):
-		draw_rect(Rect2(0,0,Constants.cell_size,Constants.cell_size),Color.white,false,2)
+		draw_rect(Rect2(0,0,ProjectSettings.get_setting("Game/cell_size"),ProjectSettings.get_setting("Game/cell_size")),Color.white,false,2)
 
 func queue_free() -> void:
 	if get_map():
@@ -173,6 +173,7 @@ class IconLerper extends Node:
 			$"..".set_icon_offset(Vector2.ZERO)
 		else:
 			$"..".set_icon_offset(start.linear_interpolate(end,t) * Constants.cell_size)
+			$"..".set_icon_offset(start.linear_interpolate(end,t) * ProjectSettings.get_setting("Game/cell_size"))
 	func _process(_delta: float) -> void:
 		update()
 
