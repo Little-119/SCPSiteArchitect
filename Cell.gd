@@ -43,7 +43,9 @@ func get_cells_in_directions(directions: Array) -> Array:
 	var adjacent_cells = []
 	for direction in directions:
 		if direction == Vector3.ZERO: continue
-		adjacent_cells.append(get_adjacent_cell(direction))
+		var cell: Cell = get_adjacent_cell(direction)
+		if cell:
+			adjacent_cells.append(cell)
 	return adjacent_cells
 
 func get_four_adjacent_cells() -> Array: # adjacent, excluding diagonals
