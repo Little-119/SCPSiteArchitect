@@ -143,17 +143,14 @@ func load_submap(submap: Map, offset: Vector3) -> void: # Take another map, merg
 	submap.queue_free()
 
 func get_cell(pos: Vector3) -> Cell: # get cell with cell_position
+	var c: Cell = get_cell_or_null(pos)
+	return c if (c is Cell) else Constants.default_cell
+
+func get_cell_or_null(pos: Vector3) -> Cell: # like get_cell, but returns null instead of default_cell
 	if pos.x >= 0 and pos.y >= 0 and pos.z >= 0 and cells_matrix.size() > pos.z and cells_matrix[pos.z].size() > pos.y and cells_matrix[pos.z][pos.y].size() > pos.x:
 		return cells_matrix[pos.z][pos.y][pos.x]
 	else:
-		return Constants.default_cell
-
-func get_cell_or_null(pos: Vector3) -> Cell: # like get_cell, but returns null instead of default_cell
-	var c: Cell = get_cell(pos)
-	if c.is_default_cell:
 		return null
-	else:
-		return c
 
 func clamp_to_cell_grid(num: float) -> int:
 	return int(floor(num / ProjectSettings.get_setting("Game/cell_size")))
