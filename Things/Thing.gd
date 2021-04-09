@@ -50,11 +50,11 @@ func get_parent_cell() -> Cell:
 	if get_node_or_null("..") != null:
 		return ($".." as Cell)
 	else:
-		return Constants.default_cell
+		return Constants.get("default_cell")
 
-func get_map():
+func get_map() -> Map:
 	var parent_cell = get_parent_cell()
-	return parent_cell.map if parent_cell else null
+	return parent_cell.map if parent_cell and not parent_cell.is_default_cell else null
 
 func get_relative(where: String,path_from_there: String): # helper function for the below three functions.
 	# 'where' should be the name of a method that returns a node
