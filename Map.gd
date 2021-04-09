@@ -19,7 +19,7 @@ var astar := AStar.new() # AStar resource which contains points that mobs can co
 # Let us meet again as stars.
 
 func _to_string():
-	return "Map"
+	return "[Map:%s]" % get_instance_id()
 
 func get_player():
 	return get_node_or_null("../../Player") # @./Universe/Game/Player
