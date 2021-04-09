@@ -12,7 +12,7 @@ func set_light_radius(to) -> void:
 func _init().():
 	texture.create_from_image(load("res://Gfx/FullWhite.png"))
 	type = "Lamp"
-	icon = "i"
+	character = "i"
 	light.name = "Light"
 	light.position = Vector2(16,16)
 	light.texture = texture

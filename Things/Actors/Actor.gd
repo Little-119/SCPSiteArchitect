@@ -48,7 +48,7 @@ class CustomAStar:
 
 func _init().():
 	type = "Actor"
-	icon = "A"
+	character = "A"
 	layer = LAYER.ACTOR
 	astar.actor = self
 	select_priority = 2

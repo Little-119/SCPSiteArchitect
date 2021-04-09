@@ -6,4 +6,4 @@ var requires_id_access = []
 
 func _init().():
 	type = "Door"
-	icon = "D"
+	character = "D"

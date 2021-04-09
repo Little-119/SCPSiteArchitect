@@ -14,9 +14,9 @@ var size := Vector3.ONE
 # warning-ignore:unused_class_variable
 var select_priority: int = 0 # used in Cell.gd
 
-export(String, FILE) var icon := "" # Can be a single character or a path to an image
-export(String) var icon_fallback := "" # In case Icon is a path to an image but it fails to load
-export(Color, RGB) var color: Color = Color.white
+export(String, FILE) var icon: String = "" setget set_icon
+export(String) var character: String = "" setget set_character
+export(Color, RGB) var color: Color = Color.white setget set_color
 
 var falling: float = 0.0
 var coyote_time: int = 0 # time of grace period in which Thing does not fall due to gravity
@@ -90,46 +90,56 @@ func _ready() -> void:
 	z_index += 1
 	uid = ThingsManager.next_thing_uid
 	ThingsManager.next_thing_uid += 1
-	var sprite = Sprite.new()
-	sprite.name = "Sprite"
-	sprite.position = Vector2(16,16)
-	sprite.visible = true
-	var label := Label.new()
-	label.name = "Label"
-	label.rect_min_size = Vector2(32,32)
-	label.align = Label.ALIGN_CENTER
-	label.valign = Label.VALIGN_CENTER
-	label.mouse_filter = Label.MOUSE_FILTER_IGNORE
-	label.theme = theme
-	label.add_color_override("font_color",color)
-	
-	add_child(label)
-	add_child(sprite)
-	if icon is String:
-		match icon:
-			" ":
-				icon = ""
-				continue
-			_:
-				match len(icon):
-					0: # don't add any icon or text. Used for walls, which are rendered elsewhere for efficiency
-						pass
-					1: # ASCII char icon
-						label.text = icon
-					_: # assume 'icon' is meant to be a path to a texture
-						icon = icon.strip_edges()
-						var texture = ImageTexture.new()
-						var err = texture.load(icon)
-						if err:
-							push_error("Sprite (path: %s) for Thing %s failed to load with error code: %s." % [icon,str(self),err])
-							if len(icon_fallback.strip_edges()) > 0:
-								label.text = icon_fallback
-							else:
-								label.text = "?"
-						else:
-							sprite.texture = texture
-							var s = (Vector2.ONE * ProjectSettings.get_setting("Game/cell_size"))/sprite.texture.get_size()
-							sprite.scale = s
+	create_sprite()
+
+func create_sprite() -> void:
+	var label: Label = get_node_or_null("Label")
+	if not label:
+		label = Label.new()
+		label.name = "Label"
+		label.align = Label.ALIGN_CENTER
+		label.valign = Label.VALIGN_CENTER
+		label.mouse_filter = Label.MOUSE_FILTER_IGNORE
+		label.theme = theme
+		label.add_color_override("font_color",color)
+		label.rect_min_size = Vector2.ONE * ProjectSettings.get_setting("Game/cell_size")
+		add_child(label)
+	label.text = character
+	if not icon.empty() and icon.begins_with("res://"):
+		var texture = ImageTexture.new()
+		var err = texture.load(icon)
+		if err:
+			push_error("Sprite (path: %s) for Thing %s failed to load with error code: %s." % [icon,str(self),err])
+			if get_node_or_null("Sprite"):
+				$"Sprite".texture = null
+		else:
+			var sprite = get_node_or_null("Sprite")
+			if not sprite:
+				sprite = Sprite.new()
+				sprite.name = "Sprite"
+				sprite.visible = true
+				sprite.scale = (Vector2.ONE * ProjectSettings.get_setting("Game/cell_size"))/texture.get_size()
+				sprite.position = Vector2.ONE * .5 * ProjectSettings.get_setting("Game/cell_size")
+				label.add_child(sprite)
+			sprite.texture = texture
+
+func set_color(value: Color):
+	if color == value:
+		return
+	color = value
+	create_sprite()
+
+func set_icon(value: String):
+	if icon == value:
+		return
+	icon = value
+	create_sprite()
+
+func set_character(value: String):
+	if character == value:
+		return
+	character = value
+	create_sprite()
 
 func _draw():
 	if get_node_or_null("/root/Game/Player") and self in $"/root/Game/Player".get("selection"):
@@ -157,7 +167,6 @@ var icon_offset: Vector2 = Vector2.ZERO setget set_icon_offset
 
 func set_icon_offset(value: Vector2):
 	icon_offset = value
-	$"Sprite".position = value
 	$"Label".rect_position = value
 
 class IconLerper extends Node:

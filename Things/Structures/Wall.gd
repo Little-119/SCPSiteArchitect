@@ -3,7 +3,7 @@ class_name Wall
 
 func _init().() -> void:
 	type = "Wall"
-	icon = ""
+	character = ""
 	var occluder = LightOccluder2D.new()
 	occluder.occluder = OccluderPolygon2D.new()
 	occluder.occluder.polygon = PoolVector2Array([Vector2.ZERO,Vector2(32,0),Vector2(32,32),Vector2(0,32)])

@@ -5,7 +5,7 @@ var nutrition: float = 1500.0
 
 func _init():
 	type = "Food"
-	icon = "o"
+	character = "o"
 	use_time = 10
 
 func use(user: Thing) -> void:
