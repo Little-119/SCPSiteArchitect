@@ -172,7 +172,6 @@ class IconLerper extends Node:
 		if t > 1:
 			$"..".set_icon_offset(Vector2.ZERO)
 		else:
-			$"..".set_icon_offset(start.linear_interpolate(end,t) * Constants.cell_size)
 			$"..".set_icon_offset(start.linear_interpolate(end,t) * ProjectSettings.get_setting("Game/cell_size"))
 	func _process(_delta: float) -> void:
 		update()
