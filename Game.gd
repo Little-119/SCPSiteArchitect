@@ -24,9 +24,7 @@ func add_child(node: Node, legible_unique_name: bool = false) -> void:
 func setup_universe(from) -> Universe:
 	var universe = Universe.new(from)
 	universe.name = "Universe"
-	var player = (load("res://Player.tscn") as PackedScene).instance()
 	add_child(universe,true)
-	add_child(player,true)
 	if $"DebugContainer".get_child_count() > 0:
 		($"DebugContainer" as Control).rect_position = get_viewport().size/-2
 	return universe
