@@ -233,7 +233,7 @@ func _draw() -> void:
 									var to: Vector2 = (Vector2(path_copy[point_i].x,path_copy[point_i].y) + Vector2(.5,.5)) * ProjectSettings.get_setting("Game/cell_size")
 									draw_line(from,to,Color.white,1,true)
 							break
-						elif action.get_child(0):
+						elif action and action.get_child(0):
 							action = action.get_child(0)
 						else:
 							break
