@@ -52,7 +52,7 @@ func get_parent_cell() -> Cell:
 	else:
 		return Constants.get("default_cell")
 
-func get_map() -> Map:
+func get_map():
 	var parent_cell = get_parent_cell()
 	return parent_cell.map if parent_cell and not parent_cell.is_default_cell else null
 
