@@ -1,5 +1,6 @@
 extends Thing
 class_name Item
+tool
 # Items are objects like food and weapons
 
 var use_time = 10

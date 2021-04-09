@@ -1,5 +1,6 @@
 extends Actor
 class_name TestActor
+tool
 
 func _init().():
 	type = "TestActor"

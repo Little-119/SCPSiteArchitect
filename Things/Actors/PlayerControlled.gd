@@ -1,5 +1,6 @@
 extends Actor
 class_name PlayerControlledActor
+tool
 # This class is more or less for testing
 
 var dir := Vector2.ZERO

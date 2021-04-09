@@ -1,5 +1,6 @@
 extends Structure
 class_name Lamp
+tool
 
 var light: Light2D = Light2D.new()
 var light_radius: int = 128 setget set_light_radius

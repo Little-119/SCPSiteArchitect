@@ -1,5 +1,6 @@
 extends Node2D
 class_name Thing
+tool
 # Things encompass things, things which usually exist inside of cells. Things include structures, turfs, items, and mobs.
 
 const theme = preload("res://Gfx/ThingTheme.tres")
@@ -101,7 +102,9 @@ func create_sprite() -> void:
 		label.valign = Label.VALIGN_CENTER
 		label.mouse_filter = Label.MOUSE_FILTER_IGNORE
 		label.theme = theme
-		label.rect_min_size = Vector2.ONE * ProjectSettings.get_setting("Game/cell_size")
+		label.rect_size = Vector2.ONE * ProjectSettings.get_setting("Game/cell_size")
+		label.rect_pivot_offset = label.rect_size * .5
+		label.rect_scale = label.rect_size / 32
 		add_child(label)
 	label.text = character
 	label.add_color_override("font_color",color)

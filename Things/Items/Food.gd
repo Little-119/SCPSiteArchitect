@@ -1,5 +1,6 @@
 extends Item
 class_name Food
+tool
 
 var nutrition: float = 1500.0
 

@@ -1,5 +1,6 @@
 extends Thing
 class_name Actor
+tool
 # Actors encompass any Thing that acts on its own, hence the name.
 # Could also be called Mobs or Pawns
 
@@ -54,6 +55,8 @@ func _init().():
 	select_priority = 2
 
 func _ready():
+	if Engine.editor_hint:
+		return
 	ai_init()
 
 func add_child(node: Node, legible_unique_name: bool = false) -> void:

@@ -1,5 +1,6 @@
 extends Actor
 class_name Humanoid
+tool
 # Human or human-ish actors, with names and such
 
 export(String) var first_name: String = ""

@@ -1,5 +1,6 @@
 extends SCP
 class_name TrainingFox
+tool
 
 func _init().():
 	type = "TrainingFox"

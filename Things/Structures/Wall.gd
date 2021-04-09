@@ -1,5 +1,6 @@
 extends Structure
 class_name Wall
+tool
 
 func _init().() -> void:
 	type = "Wall"

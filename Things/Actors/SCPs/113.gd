@@ -1,4 +1,5 @@
 extends SCP
+tool
 
 func _init().():
 	type = "113"

@@ -1,5 +1,6 @@
 extends Node2D
 class_name Map
+tool
 # Maps are, well, maps. Areas in which things exist and do stuff. They are three-dimensional grids of Cells.
 
 # warning-ignore:unused_signal
@@ -33,6 +34,9 @@ func get_is_debug() -> bool: # get whether this map is being used in automated t
 var orphaned_things: Array = [] # Array of Things not in a cell, presumably because they were added in editor
 
 func set_size(newsize: Vector3) -> void: # Change the size of the map, which is the amount of colums/rows/layers.
+	if Engine.editor_hint:
+		size = newsize
+		return
 	# Creates new cells if needed, but can't remove them.
 	size = newsize
 	# warning-ignore:narrowing_conversion
@@ -68,6 +72,8 @@ func set_size(newsize: Vector3) -> void: # Change the size of the map, which is 
 				astar.connect_points(cell.point_id,adj_cell.point_id,false)
 
 func _init(newsize = null) -> void:
+	if Engine.editor_hint:
+		return
 	if newsize:
 		set_size(newsize)
 	elif size:
@@ -95,6 +101,20 @@ func get_pixel_size() -> Vector2:
 	return Vector2(size.x * ProjectSettings.get_setting("Game/cell_size"),size.y * ProjectSettings.get_setting("Game/cell_size"))
 
 func _ready() -> void:
+	if Engine.editor_hint:
+		for child in get_children():
+			if child is Thing:
+				if child.has_method("create_sprite"):
+					child.create_sprite()
+					if not child.has_meta("grid_scale") or child.get_meta("grid_scale") == 1:
+						child.position *= ProjectSettings.get_setting("Game/cell_size")
+						child.set_meta("grid_scale",ProjectSettings.get_setting("Game/cell_size"))
+					elif child.get_meta("grid_scale") != ProjectSettings.get_setting("Game/cell_size"):
+						child.position /= child.get_meta("grid_scale")
+						child.position *= ProjectSettings.get_setting("Game/cell_size")
+						child.set_meta("grid_scale",ProjectSettings.get_setting("Game/cell_size"))
+						
+		return
 	for child in get_children(): # collects orphaned things, almost certainly things that were added to the map in-editor
 		if child is Thing:
 			remove_child(child)
@@ -114,6 +134,13 @@ func _ready() -> void:
 		# warning-ignore:return_value_discarded
 		get_player().connect("camera_moved",self,"update")
 
+func add_child(node: Node, legible_unique_name: bool = false):
+	if Engine.editor_hint:
+		if node.has_method("create_sprite"):
+			node.create_sprite()
+			node.set_meta("grid_scale",ProjectSettings.get_setting("Game/cell_size"))
+	.add_child(node,legible_unique_name)
+
 func collect_orphans(orphanage: Map = self) -> void:
 	var orphans: Array = []
 	for child in get_children():
@@ -121,6 +148,11 @@ func collect_orphans(orphanage: Map = self) -> void:
 			remove_child(child)
 			orphans.append(child)
 	for orphan in orphans:
+		if orphan.has_meta("grid_scale"):
+			if orphan.get_meta("grid_scale") != 1:
+				orphan.position /= orphan.get_meta("grid_scale")
+			orphan.remove_meta("grid_scale")
+			
 		var adoptive_cell = orphanage.get_cell_or_null(Vector3(orphan.position.x,orphan.position.y,orphan.position_z))
 		if adoptive_cell:
 			orphan.position = Vector2.ZERO
