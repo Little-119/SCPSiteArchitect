@@ -3,6 +3,7 @@
 
 *.gd text eol=lf
 *.tscn text eol=lf
+*.tres text eol=lf
 *.godot text eol=lf
 *.txt text eol=lf
 
