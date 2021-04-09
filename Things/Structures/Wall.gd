@@ -17,6 +17,10 @@ func tool_lclick_oncell(cell: Cell, event: InputEvent) -> void:
 func _draw():
 	draw_rect(Rect2(Vector2.ZERO,Vector2.ONE * ProjectSettings.get_setting("Game/cell_size")),color)
 
+func set_color(value: Color):
+	.set_color(value)
+	update()
+
 func can_coexist_with(other_thing: Thing) -> bool:
 	if other_thing is Structure:
 		return false
