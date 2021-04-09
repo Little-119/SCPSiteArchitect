@@ -1,5 +1,4 @@
 extends Node
-class_name Game
 # 'Main' node for managing the whole game
 
 var current_universe: Universe setget set_current_universe

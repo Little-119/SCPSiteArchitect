@@ -19,7 +19,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Cell.gd"
 }, {
-"base": "Game",
+"base": "Node",
 "class": "DebugGame",
 "language": "GDScript",
 "path": "res://tests/assets/DebugGame.gd"
@@ -43,11 +43,6 @@ _global_script_classes=[ {
 "class": "Food",
 "language": "GDScript",
 "path": "res://Things/Items/Food.gd"
-}, {
-"base": "Node",
-"class": "Game",
-"language": "GDScript",
-"path": "res://Game.gd"
 }, {
 "base": "",
 "class": "GitAPI",
@@ -137,7 +132,6 @@ _global_script_class_icons={
 "Door": "",
 "Drive": "",
 "Food": "",
-"Game": "",
 "GitAPI": "",
 "Humanoid": "",
 "Item": "",
