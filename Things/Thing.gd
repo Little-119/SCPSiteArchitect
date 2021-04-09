@@ -101,10 +101,10 @@ func create_sprite() -> void:
 		label.valign = Label.VALIGN_CENTER
 		label.mouse_filter = Label.MOUSE_FILTER_IGNORE
 		label.theme = theme
-		label.add_color_override("font_color",color)
 		label.rect_min_size = Vector2.ONE * ProjectSettings.get_setting("Game/cell_size")
 		add_child(label)
 	label.text = character
+	label.add_color_override("font_color",color)
 	if not icon.empty() and icon.begins_with("res://"):
 		var texture = ImageTexture.new()
 		var err = texture.load(icon)
