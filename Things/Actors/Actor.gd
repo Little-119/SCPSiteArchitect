@@ -63,13 +63,13 @@ func add_child(node: Node, legible_unique_name: bool = false) -> void:
 	if node.get_node_or_null(".."):
 		node.get_node("..").remove_child(node)
 	if node is Thing:
-		node.set_meta("initial_visibility",node.visible)
-		node.visible = false
+		node.set_meta("initial_visibility",(node as CanvasItem).visible)
+		(node as CanvasItem).visible = false
 	.add_child(node, legible_unique_name)
 
 func remove_child(node: Node) -> void:
 	if node is Thing:
-		node.visible = node.get_meta("initial_visibility")
+		(node as CanvasItem).visible = node.get_meta("initial_visibility")
 		node.set_meta("initial_visibility",null)
 
 func is_cell_impassable(cell: Cell) -> bool:
@@ -221,15 +221,19 @@ var needs_dict: Dictionary = {}
 var drives: Array = []
 
 func drives_sorter(a: Object,b: Object) -> bool:
-	return a.priority > b.priority
+	return a.get("priority") > b.get("priority")
 
 func add_drive(new_drive_name: String,priority = null,unique: bool = false):
+	# warning-ignore:unsafe_cast
 	var new_drive: Reference = ((load("res://AI/Drives.gd") as GDScript).get(new_drive_name) as GDScript).new()
+	# warning-ignore:unsafe_property_access
 	new_drive.actor = self
 	if priority:
+		# warning-ignore:unsafe_property_access
 		new_drive.priority = priority
 	if unique:
 		for other_drive in drives:
+			# warning-ignore:unsafe_property_access
 			if other_drive.type == new_drive.type:
 				other_drive.priority = priority
 				return
@@ -248,6 +252,7 @@ func ai_init():
 	for need_to_add in inherent_needs:
 		var new_need = load("res://AI/Needs.gd").get(need_to_add).new()
 		new_need.actor = self
+		# warning-ignore:unsafe_cast
 		needs_dict[(need_to_add as String)] = new_need
 		needs.append(new_need)
 	var inherent_drives = drives.duplicate()

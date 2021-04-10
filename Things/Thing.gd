@@ -114,7 +114,7 @@ func create_sprite() -> void:
 		if err:
 			push_error("Sprite (path: %s) for Thing %s failed to load with error code: %s." % [icon,str(self),err])
 			if get_node_or_null("Sprite"):
-				$"Sprite".texture = null
+				($"Sprite" as Sprite).texture = null
 		else:
 			var sprite = get_node_or_null("Sprite")
 			if not sprite:
@@ -170,7 +170,7 @@ var icon_offset: Vector2 = Vector2.ZERO setget set_icon_offset
 
 func set_icon_offset(value: Vector2):
 	icon_offset = value
-	$"Label".rect_position = value
+	($"Label" as Label).rect_position = value
 
 class IconLerper extends Node:
 	var start: Vector2 = Vector2.ZERO
@@ -182,9 +182,9 @@ class IconLerper extends Node:
 	func update() -> void:
 		t += .05
 		if t > 1:
-			$"..".set_icon_offset(Vector2.ZERO)
+			($".." as Thing).set_icon_offset(Vector2.ZERO)
 		else:
-			$"..".set_icon_offset(start.linear_interpolate(end,t) * ProjectSettings.get_setting("Game/cell_size"))
+			($".." as Thing).set_icon_offset(start.linear_interpolate(end,t) * ProjectSettings.get_setting("Game/cell_size"))
 	func _process(_delta: float) -> void:
 		update()
 

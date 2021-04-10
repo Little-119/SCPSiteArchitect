@@ -21,6 +21,7 @@ class BaseAction extends Node:
 	var last_think_result: ThinkResult = null
 	var allowed_execute: bool = true # checked in Actor.gd before calling execute
 	var actioner: Actor # Actor acting this action
+	# warning-ignore:unused_class_variable
 	var driver # Drive that created this action
 	var forced: bool = false # Whether player is making the actor perform this action
 	var subaction # Nested action. Processed instead of this action until it's finished
@@ -49,8 +50,9 @@ class BaseAction extends Node:
 		if parent is Actor:
 			actioner = parent
 		else:
-			actioner = parent.actioner
-			parent.subaction = self
+			actioner = (parent as BaseAction).actioner
+			# warning-ignore:unsafe_property_access
+			(parent as BaseAction).subaction = self
 			return
 		match behavior:
 			NO_EXECUTE:

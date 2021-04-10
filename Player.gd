@@ -118,7 +118,9 @@ func update_selection_card() -> void:
 			if not current_action:
 				action_text = "Idle"
 			else:
+				# warning-ignore:unsafe_property_access
 				if current_action.driver:
+					# warning-ignore:unsafe_property_access
 					action_text = current_action.driver.get_display_name()
 				else:
 					action_text = current_action.get_display_name()

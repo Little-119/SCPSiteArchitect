@@ -3,7 +3,7 @@ extends "res://addons/gut/test.gd"
 var game
 
 func before_each():
-	game = load("res://tests/assets/DebugGame.tscn").instance()
+	game = (load("res://tests/assets/DebugGame.tscn") as PackedScene).instance()
 	var universe = game.setup_universe(false)
 	var map = (load("res://tests/assets/DebugMap.gd") as GDScript).new()
 	map.set_size(Vector3(4,4,1))

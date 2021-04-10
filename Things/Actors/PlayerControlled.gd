@@ -5,6 +5,10 @@ tool
 
 var dir := Vector2.ZERO
 
+func _init():
+	type = "PlayerControlled"
+	color = Color.blue
+
 func _unhandled_input(event):
 	if event is InputEventKey:
 		match event.scancode:

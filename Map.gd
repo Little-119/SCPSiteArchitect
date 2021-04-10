@@ -21,7 +21,7 @@ var astar := AStar.new() # AStar resource which contains points that mobs can co
 func _to_string():
 	return "[Map:%s]" % get_instance_id()
 
-func get_player():
+func get_player() -> Node:
 	return get_node_or_null("../../Player") # @./Universe/Game/Player
 
 var is_debug: bool setget ,get_is_debug # cache and convenience variable for below function
@@ -137,7 +137,7 @@ func _ready() -> void:
 func add_child(node: Node, legible_unique_name: bool = false):
 	if Engine.editor_hint:
 		if node.has_method("create_sprite"):
-			node.create_sprite()
+			(node as Thing).create_sprite()
 			node.set_meta("grid_scale",ProjectSettings.get_setting("Game/cell_size"))
 	.add_child(node,legible_unique_name)
 
@@ -199,7 +199,7 @@ func get_cell_from_screen_position(from_position: Vector2,z:int = 0) -> Cell: # 
 	return get_cell_from_position(from_position,z)
 
 func get_visibility() -> bool: # get if the cell is visible to the player
-	if get_is_debug() or (not visible) or (not $"..".visible):
+	if get_is_debug() or (not visible) or (not ($".." as CanvasItem).visible):
 		return false
 	else:
 		return true
@@ -247,9 +247,9 @@ func _draw() -> void:
 			if not cell.is_default_cell:
 				var box_pos: Vector2 = cell.position
 				draw_rect(Rect2(box_pos,Vector2.ONE * cell.scale.x * 32),Color.white,false)
-		if not get_player().selection.empty():
-			for selected_i in get_player().selection.size():
-				var selected = get_player().selection[selected_i]
+		if not (get_player() as Player).selection.empty():
+			for selected_i in (get_player() as Player).selection.size():
+				var selected = (get_player() as Player).selection[selected_i]
 				if not selected:
 					continue
 				if selected.get("actions"):

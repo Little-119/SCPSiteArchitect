@@ -19,7 +19,6 @@ class TestWithSelection extends "res://tests/integration/test_map_virtual_game.g
 		if cell0.contents.size() == 0:
 			return
 		var actor = cell0.contents[0]
-		var cell1 = game.current_map.get_cell(Vector3(3,2,0))
 		var rclick_event = InputEventMouseButton.new()
 		rclick_event.pressed = true
 		rclick_event.button_index = 2

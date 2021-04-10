@@ -2,6 +2,7 @@
 
 class BaseNeed extends Reference:
 	var type: String
+	# warning-ignore:unused_class_variable
 	var actor: Actor
 	var magnitude: float = 0.0 setget ,get_magnitude
 	func _init():

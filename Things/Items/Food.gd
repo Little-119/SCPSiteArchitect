@@ -10,5 +10,5 @@ func _init():
 	use_time = 10
 
 func use(user: Thing) -> void:
-	user.needs_dict.Hunger.nutrition += nutrition
+	(user as Actor).needs_dict.Hunger.nutrition += nutrition
 	queue_free()
