@@ -204,11 +204,13 @@ func doing_action(action: String, target=null, driver=null) -> bool:
 			continue
 		if existing_action.type == action and existing_action.target == target and existing_action.driver == driver:
 			return true
+		if existing_action.forced:
+			return true
 	return false
 
 func do_action(action: String, target=null, driver=null):
-	doing_action(action,target,driver)
-	return act(action, target, false, driver)
+	if not doing_action(action,target,driver):
+		return act(action, target, false, driver)
 
 # AI-related start
 # see AI/AI DOCUMENTATION.txt for documentation on some AI and action-related things
