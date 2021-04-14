@@ -3,7 +3,6 @@ extends "res://UI/MainPanel.gd"
 func _init() -> void:
 	var buildables: Array = ThingsManager.get_things_of_type("Structure")
 	name = "ArchitectPanel"
-	panel_size = Vector2(8 + 64 + 8 + 64 + 8, 8 + 64 + 8 + 64 + 8 + 64 + 8) # temporary
 	# TODO: Format this UI
 	for i in buildables.size():
 		var item: Thing = buildables[i]

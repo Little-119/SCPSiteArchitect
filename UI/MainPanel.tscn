@@ -6,8 +6,10 @@
 light_mask = 0
 anchor_top = 1.0
 anchor_bottom = 1.0
-margin_right = 40.0
-margin_bottom = 40.0
+margin_left = 32.0
+margin_top = -320.0
+margin_right = 160.0
+margin_bottom = -128.0
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
