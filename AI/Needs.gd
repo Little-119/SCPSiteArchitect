@@ -1,20 +1,6 @@
 # see AI/AI DOCUMENTATION.txt for documentation on this
 
-class BaseNeed extends Reference:
-	var type: String
-	# warning-ignore:unused_class_variable
-	var actor: Actor
-	var magnitude: float = 0.0 setget ,get_magnitude
-	func _init():
-		type = "BaseNeed"
-	func on_life_process():
-		pass
-	func on_ai_process():
-		pass
-	func get_magnitude():
-		return magnitude
-
-class Hunger extends BaseNeed:
+class Hunger extends Need:
 	var nutrition: float = 810.0
 	var nutrition_capacity: float = 2000.0
 	func _init():

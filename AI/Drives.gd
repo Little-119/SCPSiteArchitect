@@ -1,4 +1,22 @@
 
+class Work extends Drive:
+	func _init():
+		type = "work"
+		display_name = "Working"
+	
+	func act():
+		var jobs = actor.get_tree().get_nodes_in_group("Jobs")
+		jobs.sort_custom(actor, "sort_jobs_by_distance")
+		if not jobs.empty():
+			for job in jobs:
+				if job.reserved_by and job.reserved_by != actor:
+					continue
+				else:
+					job.reserved_by = actor
+					job.do(actor)
+					return 0
+		return 1
+
 class Eat extends Drive:
 	func _init():
 		type = "eat"
@@ -39,19 +57,3 @@ class Wander extends Drive:
 			if not destinations.empty():
 				var destination = destinations[randi() % destinations.size()]
 				moveto = actor.do_action("MoveTo",destination,self)
-
-class Labor extends Drive:
-	func _init():
-		type = "labor"
-
-class Construct extends Labor:
-	func _init():
-		type = "construct"
-		display_name = "Constructing"
-	
-	var blueprint
-	
-	func act():
-		if not blueprint:
-			return
-		

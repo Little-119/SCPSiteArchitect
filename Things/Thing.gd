@@ -232,11 +232,14 @@ static func func_is_and_unreserved(thing,script,exclude):
 func find_things_of_type(search_for: GDScript) -> Array:
 	return find_things_custom(self,"func_is",[search_for])
 
-func sort_found_things_by_distance(a: Thing,b: Thing):
+func sort_things_by_distance(a: Thing,b: Thing):
 	if cell.cell_position.distance_squared_to(a.cell.cell_position) < cell.cell_position.distance_squared_to(b.cell.cell_position):
 		return true
 	else:
 		return false
+
+func sort_jobs_by_distance(a: Job, b: Job):
+	sort_things_by_distance(a.get_parent(),b.get_parent())
 
 func find_things_in_self(filter_func_holder, filter_func_name, filter_args) -> Array:
 	var found: Array = []
@@ -248,13 +251,26 @@ func find_things_in_self(filter_func_holder, filter_func_name, filter_args) -> A
 func find_closest_thing_of_type(search_for: GDScript, search_self: bool = false, ignore_reserved: bool = false):
 	var found_things = find_things_of_type(search_for) if not ignore_reserved else find_things_custom(self,"func_is_and_unreserved",[search_for,self])
 	if found_things.size() > 1:
-		found_things.sort_custom(self,"sort_found_things_by_distance")
+		found_things.sort_custom(self,"sort_things_by_distance")
 	if search_self:
 		found_things = find_things_in_self(self,"func_is",[search_for]) + found_things
 	if found_things.empty():
 		return null
 	
 	return found_things.front()
+
+func is_adjacent(other: Thing) -> bool:
+	if get_map() != other.map:
+		return false
+	return get_parent_cell().cell_position.distance_squared_to(other.cell.cell_position) == 2
+
+func emit_job(job: GDScript) -> Node:
+	for c in get_children():
+		if c is job:
+			return null
+	var new_job = job.new()
+	call_deferred("add_child",new_job,true)
+	return new_job
 
 # Start grammar-related
 

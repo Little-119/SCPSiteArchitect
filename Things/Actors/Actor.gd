@@ -250,10 +250,11 @@ func ai_init():
 	var inherent_needs = needs.duplicate()
 	needs.clear()
 	for need_to_add in inherent_needs:
-		var new_need = load("res://AI/Needs.gd").get(need_to_add).new()
+		# need_to_add can be a script or a string referring to an inner class in AI/Needs.gd
+		var new_need = (load("res://AI/Needs.gd").get(need_to_add) if not need_to_add is Script else need_to_add).new()
 		new_need.actor = self
 		# warning-ignore:unsafe_cast
-		needs_dict[(need_to_add as String)] = new_need
+		needs_dict[(need_to_add as String) if need_to_add is String else new_need.type] = new_need
 		needs.append(new_need)
 	var inherent_drives = drives.duplicate()
 	drives.clear()
