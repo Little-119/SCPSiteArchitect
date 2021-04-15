@@ -7,7 +7,7 @@ export var is_default_cell: bool = false # Whether this is the Default Cell or n
 
 var map = null # Map that this Cell is part of
 var contents: Array = [] # List of Things in the cell. get_children() does the same thing unless Cells ever get non-Thing children
-export var cell_position := Vector3.ZERO setget set_cell_position # This Cell's position on the grid, not position on the screen
+var cell_position := Vector3.ZERO setget set_cell_position # This Cell's position on the grid, not position on the screen
 
 # warning-ignore:unused_class_variable
 var point_id: int = 0 # The cell's point ID in the parent map's AStar

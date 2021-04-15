@@ -183,6 +183,7 @@ class IconLerper extends Node:
 		t += .05
 		if t > 1:
 			($".." as Thing).set_icon_offset(Vector2.ZERO)
+			queue_free()
 		else:
 			($".." as Thing).set_icon_offset(start.linear_interpolate(end,t) * ProjectSettings.get_setting("Game/cell_size"))
 	func _process(_delta: float) -> void:

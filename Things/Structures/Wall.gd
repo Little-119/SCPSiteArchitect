@@ -25,7 +25,7 @@ func create_sprite():
 
 func set_color(value: Color):
 	.set_color(value)
-	update()
+	create_sprite()
 
 func can_coexist_with(other_thing: Thing) -> bool:
 	if other_thing is Structure:
