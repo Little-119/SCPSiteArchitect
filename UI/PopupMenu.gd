@@ -16,6 +16,7 @@ func _exit_tree():
 			continue
 		if sibling.name.ends_with("Menu"):
 			return
+	get_tree().paused = false
 	for sibling in siblings:
 		if sibling == self:
 			continue

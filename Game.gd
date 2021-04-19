@@ -21,7 +21,7 @@ func add_child(node: Node, legible_unique_name: bool = false) -> void:
 	.add_child(node, legible_unique_name)
 	move_child($"DebugContainer",get_child_count())
 
-func setup_universe(from = null) -> Universe:
+func setup_universe(from) -> Universe:
 	var universe = Universe.new(from)
 	universe.name = "Universe"
 	add_child(universe,true)

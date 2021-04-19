@@ -12,7 +12,7 @@ func _on_OptionsButton_pressed():
 
 func _on_NewGameButton_second_pressed():
 	$"/root/Game".current_universe.queue_free()
-	var new_universe: Universe = $"/root/Game".setup_universe()
+	var new_universe: Universe = $"/root/Game".setup_universe(false)
 	var map = Map.new(Vector3(16,16,1))
 	new_universe.add_child(map)
 	new_universe.set_current_map(map)
