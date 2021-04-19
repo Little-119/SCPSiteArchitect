@@ -54,6 +54,7 @@ func _unhandled_input(event: InputEvent):
 					if not get_node_or_null("/root/Game/Player/Camera2D/UI/PauseMenu"):
 						get_tree().set_input_as_handled()
 						($"/root/Game/Player/Camera2D/UI" as Control).add_child((load("res://UI/PauseMenu.tscn") as PackedScene).instance())
+					get_tree().paused = not get_tree().paused
 				KEY_QUOTELEFT:
 					if OS.is_debug_build():
 						get_tree().set_input_as_handled()
