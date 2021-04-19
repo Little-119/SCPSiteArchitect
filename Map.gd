@@ -67,7 +67,7 @@ func set_size(newsize: Vector3) -> void: # Change the size of the map, which is 
 		cells_matrix[zn] = y
 	update()
 	for cell in cells:
-		for adj_cell in cell.get_ten_adjacent_cells():
+		for adj_cell in cell.get_adjacent_cells(Cell.TEN):
 			if not astar.are_points_connected(cell.point_id,adj_cell.point_id,false):
 				astar.connect_points(cell.point_id,adj_cell.point_id,false)
 

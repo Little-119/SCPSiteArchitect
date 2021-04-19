@@ -34,10 +34,9 @@ func set_cell_position(newpos: Vector3 = cell_position) -> void:
 	cell_position = newpos
 
 func get_adjacent_cell(offset: Vector3) -> Cell:
-	if map:
-		return map.get_cell_or_null(Vector3(cell_position.x+offset.x,cell_position.y-offset.y,cell_position.z-offset.z))
-	else:
+	if not map:
 		return null
+	return map.get_cell_or_null(Vector3(cell_position.x+offset.x,cell_position.y-offset.y,cell_position.z-offset.z))
 
 func get_cells_in_directions(directions: Array) -> Array:
 	var adjacent_cells = []
@@ -48,25 +47,31 @@ func get_cells_in_directions(directions: Array) -> Array:
 			adjacent_cells.append(cell)
 	return adjacent_cells
 
-func get_four_adjacent_cells() -> Array: # adjacent, excluding diagonals
-	return get_cells_in_directions([Vector3.UP,Vector3.DOWN,Vector3.LEFT,Vector3.RIGHT])
+enum {FOUR=4,SIX=6,EIGHT=8,TEN=10,TWENTYSIX=26}
 
-func get_six_adjacent_cells() -> Array: # adjacent including up and down
-	return get_four_adjacent_cells() + get_cells_in_directions([Vector3.FORWARD,Vector3.BACK])
-
-func get_eight_adjacent_cells() -> Array: # adjacent including diagonal on the same Z-Level
-	return get_four_adjacent_cells() + get_cells_in_directions([Vector3.UP+Vector3.LEFT,Vector3.UP+Vector3.RIGHT,Vector3.DOWN+Vector3.LEFT,Vector3.DOWN+Vector3.RIGHT])
-
-func get_ten_adjacent_cells() -> Array: # adjacent including diagonal-on-same-level and up and down
-	return get_eight_adjacent_cells() + get_cells_in_directions([Vector3.FORWARD,Vector3.BACK])
-
-func get_twentysix_adjacent_cells() -> Array: # this is big brain time probably. I don't even know what I'm going to use these functions for.
-	var cells = get_eight_adjacent_cells()
-	for z in [Vector3.FORWARD,Vector3.BACK]:
-		var dirs = [Vector3.ZERO,Vector3.UP,Vector3.DOWN,Vector3.LEFT,Vector3.RIGHT,Vector3.UP+Vector3.LEFT,Vector3.UP+Vector3.RIGHT,Vector3.DOWN+Vector3.LEFT,Vector3.DOWN+Vector3.RIGHT]
-		for i in dirs.size():
-			dirs[i] += z
-		cells += get_cells_in_directions(dirs)
+func get_adjacent_cells(number: int):
+	var cells: Array = []
+	match number:
+		FOUR, SIX, EIGHT, TEN, TWENTYSIX:
+			cells += get_cells_in_directions([Vector3.UP,Vector3.DOWN,Vector3.LEFT,Vector3.RIGHT])
+			continue
+		SIX: # adjacent including up and down
+			cells += get_cells_in_directions([Vector3.FORWARD,Vector3.BACK])
+		EIGHT, TEN, TWENTYSIX: # adjacent including diagonal on the same Z-Level
+			cells += get_cells_in_directions([Vector3.UP+Vector3.LEFT,Vector3.UP+Vector3.RIGHT,Vector3.DOWN+Vector3.LEFT,Vector3.DOWN+Vector3.RIGHT])
+			continue
+		TEN: # adjacent including diagonal on the same Z-level plus the two above and below cells
+			cells += get_cells_in_directions([Vector3.FORWARD,Vector3.BACK])
+		TWENTYSIX:
+			for z in [Vector3.FORWARD,Vector3.BACK]:
+				var dirs = [Vector3.ZERO,Vector3.UP,Vector3.DOWN,Vector3.LEFT,Vector3.RIGHT,Vector3.UP+Vector3.LEFT,Vector3.UP+Vector3.RIGHT,Vector3.DOWN+Vector3.LEFT,Vector3.DOWN+Vector3.RIGHT]
+				for i in dirs.size():
+					dirs[i] += z
+				cells += get_cells_in_directions(dirs)
+		FOUR, EIGHT:
+			pass
+		_:
+			push_error("Invalid number (%s) passed to %s.get_adjacent_cells" % [number,self])
 	return cells
 
 func get_cells_in_radius(radius: float,multi_z: bool = false) -> Array: # TODO: this can probably be optimized

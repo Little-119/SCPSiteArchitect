@@ -40,12 +40,12 @@ func test_actor_pathfinding():
 	assert_eq(action.last_think_result.code, Actions.STATUS.DONE)
 	action.free()
 
-var prisons = [["get_four_adjacent_cells"],["get_eight_adjacent_cells"]]
+var prisons = [[Cell.FOUR],[Cell.EIGHT]]
 func test_actor_imprisonment(params=use_parameters(prisons)): # Encase actor in walls, tell them to move, expect it to fail
 	universe.name = "TestImprisonedMoveTo"
 	var start_cell: Cell = map.get_cell(Vector3(2,2,0))
 	start_cell.add_thing(actor)
-	for cell in start_cell.call(params[0]):
+	for cell in start_cell.call("get_adjacent_cells",params[0]):
 		cell.add_thing(Wall)
 	var target = map.get_cell(Vector3(4,4,0))
 	var action = actor.act("MoveTo",null,true)
