@@ -85,7 +85,7 @@ class BaseAction extends Node:
 		var result = ThinkResult.new(result_status,error_message)
 		last_think_result = result
 		match result_status:
-			STATUS.FAIL,STATUS.ERROR:
+			STATUS.ERROR:
 				if not is_debug_mode():
 					push_error(error_message)
 				fail()
