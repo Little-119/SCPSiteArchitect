@@ -4,12 +4,15 @@ extends Node
 var current_universe: Universe setget set_current_universe
 # warning-ignore:unused_class_variable
 var current_map: Map setget ,get_current_map # for convenience/consistency with current_universe
+var paused: bool = false setget set_paused
 
 func set_current_universe(new_universe):
-	if new_universe == null:
-		current_universe = null
-	elif new_universe is Universe:
-		current_universe = new_universe
+	if not new_universe:
+		set_paused(false)
+	if current_universe:
+		current_universe.set_process(false)
+		current_universe.visible = false
+	current_universe = new_universe
 
 func get_current_map():
 	if current_universe:
@@ -39,8 +42,17 @@ func ready() -> void:
 		return
 	elif typeof(autoloadmap) == TYPE_BOOL or typeof(autoloadmap) == TYPE_STRING:
 		var universe: Universe = setup_universe(autoloadmap)
-		current_universe = universe
+		set_current_universe(universe)
 		universe.turn_timer.start()
+
+func new_game():
+	var new_universe: Universe = setup_universe(false)
+	var map = Map.new(Vector3(32,32,1))
+	new_universe.add_child(map)
+	new_universe.set_current_map(map)
+	($"/root/Game/Player/Camera2D" as Camera2D).position = Vector2.ZERO
+	set_current_universe(new_universe)
+	new_universe.turn_timer.start()
 
 func _ready() -> void:
 	ready() # allows correctly overriding this in DebugGame
@@ -53,8 +65,8 @@ func _unhandled_input(event: InputEvent):
 					# Overlaps with use of KEY_ESCAPE in Player
 					if not get_node_or_null("/root/Game/Player/Camera2D/UI/PauseMenu"):
 						get_tree().set_input_as_handled()
-						($"/root/Game/Player/Camera2D/UI" as Control).add_child((load("res://UI/PauseMenu.tscn") as PackedScene).instance())
-					get_tree().paused = not get_tree().paused
+						($"/root/Game/Player/Camera2D/UI" as Control).add_child((load("res://UI/PopupMenus/PauseMenu.tscn") as PackedScene).instance())
+					set_paused(not paused)
 				KEY_QUOTELEFT:
 					if OS.is_debug_build():
 						get_tree().set_input_as_handled()
@@ -65,3 +77,11 @@ func _unhandled_input(event: InputEvent):
 						Settings.set("debug_gut_visible",new_gut_visibility)
 						($"DebugContainer" as Control).visible = new_gut_visibility
 						get_tree().set_input_as_handled()
+
+func set_paused(enable: bool) -> void:
+	if not current_universe:
+		return
+	paused = enable
+	for child in get_children():
+		if child is Universe:
+			child.set_process(not enable)

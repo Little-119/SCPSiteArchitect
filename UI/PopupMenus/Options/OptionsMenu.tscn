@@ -1,6 +1,7 @@
 [gd_scene load_steps=2 format=2]
 
-[ext_resource path="res://UI/Options/OptionsMenu.gd" type="Script" id=1]
+[ext_resource path="res://UI/PopupMenus/Options/OptionsMenu.gd" type="Script" id=1]
+
 
 [node name="OptionsMenu" type="Panel"]
 anchor_left = 0.5
@@ -39,5 +40,16 @@ margin_top = -55.0
 margin_right = -150.0
 margin_bottom = -10.0
 text = "CLOSE"
+
+[node name="Label" type="Label" parent="."]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -60.0
+margin_top = 10.0
+margin_right = 60.0
+margin_bottom = 55.0
+text = "OPTIONS"
+align = 1
+valign = 1
 [connection signal="pressed" from="BackButton" to="." method="_on_BackButton_pressed" flags=6]
 [connection signal="pressed" from="CloseButton" to="." method="_on_CloseButton_pressed" flags=6]

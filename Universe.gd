@@ -40,5 +40,5 @@ func on_turn() -> void:
 		map.call("propagate_call","on_turn",[],true)
 
 func set_process(enable: bool) -> void:
-	turn_timer.paused = enable
+	turn_timer.paused = not enable
 	.set_process(enable)
