@@ -49,6 +49,11 @@ _global_script_classes=[ {
 "language": "NativeScript",
 "path": "res://git_api.gdns"
 }, {
+"base": "Button",
+"class": "GuardedButton",
+"language": "GDScript",
+"path": "res://UI/GuardedButton.gd"
+}, {
 "base": "Actor",
 "class": "Humanoid",
 "language": "GDScript",
@@ -148,6 +153,7 @@ _global_script_class_icons={
 "Drive": "",
 "Food": "",
 "GitAPI": "",
+"GuardedButton": "",
 "Humanoid": "",
 "InteractWith": "",
 "Item": "",

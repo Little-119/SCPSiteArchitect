@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://UI/PauseMenuButton.tscn" type="PackedScene" id=1]
 [ext_resource path="res://UI/PauseMenu.gd" type="Script" id=2]
+[ext_resource path="res://UI/GuardedButton.gd" type="Script" id=3]
 
 [node name="PauseMenu" type="Panel"]
 anchor_left = 0.5
@@ -20,17 +21,24 @@ __meta__ = {
 [node name="ResumeButton" parent="." instance=ExtResource( 1 )]
 text = "RESUME"
 
+[node name="NewGameButton" parent="." instance=ExtResource( 1 )]
+margin_top = 65.0
+margin_bottom = 110.0
+text = "NEW GAME"
+script = ExtResource( 3 )
+
+[node name="OptionsButton" parent="." instance=ExtResource( 1 )]
+margin_top = 120.0
+margin_bottom = 110.0
+text = "OPTIONS"
+
 [node name="QuitButton" parent="." instance=ExtResource( 1 )]
 anchor_top = 1.0
 anchor_bottom = 1.0
 margin_top = -60.0
 margin_bottom = -10.0
 text = "QUIT TO DESKTOP"
-
-[node name="OptionsButton" parent="." instance=ExtResource( 1 )]
-margin_top = 65.0
-margin_bottom = 110.0
-text = "OPTIONS"
 [connection signal="pressed" from="ResumeButton" to="." method="_on_ResumeButton_pressed" flags=6]
-[connection signal="pressed" from="QuitButton" to="." method="_on_QuitButton_pressed" flags=6]
+[connection signal="second_pressed" from="NewGameButton" to="." method="_on_NewGameButton_second_pressed"]
 [connection signal="pressed" from="OptionsButton" to="." method="_on_OptionsButton_pressed" flags=6]
+[connection signal="pressed" from="QuitButton" to="." method="_on_QuitButton_pressed" flags=6]
