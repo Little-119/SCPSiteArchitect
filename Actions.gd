@@ -58,10 +58,10 @@ class BaseAction extends Node:
 			NO_EXECUTE:
 				allowed_execute = false
 			ADD_TO_QUEUE:
-				actioner.actions.append(self)
+				actioner.get_actions_raw().append(weakref(self))
 			DO_NOW:
-				actioner.actions.clear()
-				actioner.actions.insert(0,self)
+				actioner.get_actions_raw().clear()
+				actioner.get_actions_raw().insert(0,weakref(self))
 		
 		if is_inside_tree():
 			if get_node_or_null("/root/Game/Player") and (actioner in $"/root/Game/Player".get("selection")) and allowed_execute:

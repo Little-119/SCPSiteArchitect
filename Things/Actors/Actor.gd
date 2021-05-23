@@ -6,7 +6,7 @@ tool
 
 enum {MOVE_OK, MOVE_DIFFERENT_MAP, MOVE_FAIL_GENERIC, MOVE_INVALID_CELL, MOVE_OBSTRUCTED, MOVE_TILES_UNCONNECTED}
 
-var actions: Array = []
+var actions: Array = [] setget ,get_actions
 
 var astar := CustomAStar.new() # Navigation mesh for this Actor. Let us meet again as stars
 
@@ -41,7 +41,7 @@ class CustomAStar:
 					continue # Don't make connections between Z-levels. TODO: Add check for stairs/ladders/slopes and flight
 				connect_points(p_id,x_id,false)
 		ready = true
-		for a in (actor as Actor).actions:
+		for a in (actor as Actor).get_actions():
 			a.think()
 	
 	func test_path_to(destination: Cell) -> bool:
@@ -126,9 +126,8 @@ func _on_map_added_thing(thing: Thing):
 	var point_disabability: bool = astar.is_point_disabled(thing_cell.point_id)
 	astar.set_point_disabled(thing_cell.point_id,cell_impassability)
 	if point_disabability != cell_impassability:
-		for a in actions:
-			if a:
-				a.think()
+		for a in get_actions():
+			a.think()
 
 func die() -> void:
 	queue_free()
@@ -166,21 +165,25 @@ func _physics_process(_delta):
 func on_turn():
 	ai_process()
 	.on_turn()
-	var actions_tmp = actions.duplicate() # protects against the actions list being modified
-	for i in actions_tmp.size():
-		var action = actions_tmp[i]
-		if not action:
-			continue
+	for action in get_actions():
 		if action.allowed_execute:
 			action.process()
 			break
 
-func get_current_action():
-	if actions.empty():
-		return null
+func get_actions_raw() -> Array:
+	return actions
+
+func get_actions() -> Array:
+	var array = []
 	for action in actions:
-		if not action:
-			continue
+		if action.get_ref():
+			array.append(action.get_ref())
+	return array
+
+func get_current_action():
+	if get_actions().empty():
+		return null
+	for action in get_actions():
 		if action.status >= Actions.STATUS.DONE:
 			continue
 		if action.allowed_execute:
@@ -199,9 +202,7 @@ func act(action: String, target=null, force:bool=false, driver=null):
 	return new_action
 
 func doing_action(action: String, target=null, driver=null) -> bool:
-	for existing_action in actions:
-		if not existing_action: # skip deleted objects
-			continue
+	for existing_action in get_actions():
 		if existing_action.type == action and existing_action.target == target and existing_action.driver == driver:
 			return true
 		if existing_action.forced:
