@@ -89,6 +89,8 @@ class BaseAction extends Node:
 				if not is_debug_mode():
 					push_error(error_message)
 				fail()
+			STATUS.FAIL:
+				fail()
 		return result
 	func execute() -> void:
 		pass
