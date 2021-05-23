@@ -76,10 +76,12 @@ func is_cell_impassable(cell: Cell) -> bool:
 	for thing in cell.contents:
 		if thing == self:
 			continue
+		if thing is Structure and (thing as Structure).construction_state >= Structure.CONSTRUCTION_STAGES.WIP:
+			continue
 		if thing is Door:
 			if thing.get("requires_fine_manipulation") and not has_fine_manipulation:
 				return true
-		elif thing.layer >= LAYER.STRUCTURE:
+		if thing.layer >= LAYER.STRUCTURE:
 			return true
 	return false
 

@@ -234,7 +234,7 @@ func find_things_of_type(search_for: GDScript) -> Array:
 	return find_things_custom(self,"func_is",[search_for])
 
 func sort_things_by_distance(a: Thing,b: Thing):
-	if cell.cell_position.distance_squared_to(a.cell.cell_position) < cell.cell_position.distance_squared_to(b.cell.cell_position):
+	if get_parent_cell().cell_position.distance_squared_to(a.cell.cell_position) < get_parent_cell().cell_position.distance_squared_to(b.cell.cell_position):
 		return true
 	else:
 		return false
@@ -263,7 +263,7 @@ func find_closest_thing_of_type(search_for: GDScript, search_self: bool = false,
 func is_adjacent(other: Thing) -> bool:
 	if get_map() != other.map:
 		return false
-	return get_parent_cell().cell_position.distance_squared_to(other.cell.cell_position) == 2
+	return get_parent_cell().cell_position.distance_squared_to(other.cell.cell_position) <= 2
 
 func emit_job(job: GDScript) -> Node:
 	for c in get_children():

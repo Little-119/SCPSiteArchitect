@@ -18,7 +18,7 @@ func _draw():
 	draw_rect(Rect2(Vector2.ZERO,Vector2.ONE * ProjectSettings.get_setting("Game/cell_size")),color)
 
 func create_sprite():
-	if Engine.editor_hint:
+	if not Engine.editor_hint:
 		update()
 	else:
 		.create_sprite()
