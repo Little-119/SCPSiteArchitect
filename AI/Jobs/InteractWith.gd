@@ -3,8 +3,9 @@ class_name InteractWith
 
 func do(actor):
 	if not actor.is_adjacent(get_parent()):
-		if not actor.doing_action("MoveTo",get_parent().cell):
-			actor.do_action("MoveTo",get_parent().cell)
+		var adjacent_spot = actor.find_adjacent_spot(get_parent().cell) # potentially too expensive to call this often
+		if adjacent_spot and not actor.doing_action("MoveTo",adjacent_spot):
+			actor.do_action("MoveTo",adjacent_spot)
 	else:
 		on_done(actor)
 

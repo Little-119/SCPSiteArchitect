@@ -10,3 +10,9 @@ var requires_id_access = []
 func _init().():
 	type = "Door"
 	character = "D"
+	designators.append("forbid")
+
+func _on_designate(designator):
+	._on_designate(designator)
+	if designator.name == "Forbid":
+		toggle_forbidden()

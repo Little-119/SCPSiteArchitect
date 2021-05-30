@@ -74,6 +74,8 @@ func remove_child(node: Node) -> void:
 
 func is_cell_impassable(cell: Cell) -> bool:
 	for thing in cell.contents:
+		if not (thing is Thing):
+			continue
 		if thing == self:
 			continue
 		if thing is Structure and (thing as Structure).construction_state >= Structure.CONSTRUCTION_STAGES.WIP:
@@ -81,6 +83,8 @@ func is_cell_impassable(cell: Cell) -> bool:
 		if thing is Door:
 			if thing.get("requires_fine_manipulation") and not has_fine_manipulation:
 				return true
+			if thing.has_meta("Forbidden") and thing.get_meta("Forbidden"):
+				return true # TODO: add check for if this actor listens to forbid designations
 		if thing.layer >= LAYER.STRUCTURE:
 			return true
 	return false
@@ -122,11 +126,12 @@ func move(direction: Vector3) -> int:
 	var new_pos: Vector3 = get_parent_cell().cell_position + direction
 	return move_to(new_pos)
 
-func _on_map_added_thing(thing: Thing):
-	var thing_cell = thing.get_parent_cell()
-	var cell_impassability: bool = is_cell_impassable(thing_cell)
-	var point_disabability: bool = astar.is_point_disabled(thing_cell.point_id)
-	astar.set_point_disabled(thing_cell.point_id,cell_impassability)
+func on_cell_changed(cell: Cell):
+	if cell.point_id > astar.get_point_count():
+		return
+	var cell_impassability: bool = is_cell_impassable(cell)
+	var point_disabability: bool = astar.is_point_disabled(cell.point_id)
+	astar.set_point_disabled(cell.point_id,cell_impassability)
 	if point_disabability != cell_impassability:
 		for a in get_actions():
 			a.think()

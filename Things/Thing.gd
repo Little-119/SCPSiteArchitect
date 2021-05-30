@@ -36,6 +36,8 @@ export(int,0,0xFF) var position_z: int = 0 setget ,get_position_z # Z component 
 
 var reserved_in # when this Thing is reserved for use by an Actor, the Action is stored here
 
+var designators: Array = [] # can be made up of strings and References defined in Designators.gd
+
 func get_position_z() -> int:
 	var parent_cell = get_parent_cell()
 	if parent_cell:
@@ -151,6 +153,17 @@ func _draw():
 func queue_free() -> void:
 	if get_map():
 		get_map().emit_signal("thing_removed")
+	if get_node_or_null("/root/Game/Player") and self in $"/root/Game/Player".selection:
+		# warning-ignore:unsafe_property_access
+		var selection: Array = $"/root/Game/Player".rawget_selection()
+		for i in selection.size():
+			var thing_ref = selection[i]
+			if thing_ref.get_ref() == self:
+				selection.remove(i)
+				break
+		$"/root/Game/Player".update_selection_card()
+	if get_parent_cell():
+		get_parent_cell().remove_child(self)
 	.queue_free()
 
 func on_turn() -> void:
@@ -233,11 +246,13 @@ static func func_is_and_unreserved(thing,script,exclude):
 func find_things_of_type(search_for: GDScript) -> Array:
 	return find_things_custom(self,"func_is",[search_for])
 
-func sort_things_by_distance(a: Thing,b: Thing):
-	if get_parent_cell().cell_position.distance_squared_to(a.cell.cell_position) < get_parent_cell().cell_position.distance_squared_to(b.cell.cell_position):
-		return true
-	else:
-		return false
+func sort_cells_by_distance(a: Cell, b: Cell) -> bool:
+	var parent_cell_pos = get_parent_cell().cell_position
+	return parent_cell_pos.distance_squared_to(a.cell_position) < parent_cell_pos.distance_squared_to(b.cell_position)
+
+func sort_things_by_distance(a: Thing,b: Thing) -> bool:
+	var parent_cell_pos = get_parent_cell().cell_position
+	return parent_cell_pos.distance_squared_to(a.cell.cell_position) < parent_cell_pos.distance_squared_to(b.cell.cell_position)
 
 func sort_jobs_by_distance(a: Job, b: Job):
 	sort_things_by_distance(a.get_parent(),b.get_parent())
@@ -325,3 +340,31 @@ func gravity() -> void:
 
 func splat() -> void:
 	pass
+
+func add_designator(designator) -> void: # can be string or object
+	assert(not ((designator.name if designator is Object else designator) in designators)) # check for duplicate
+	designators.append(designator)
+	if self in $"/root/Game/Player".selection:
+		$"/root/Game/Player".update_selection_card()
+
+func remove_designator(designator_to_remove) -> void: # can be string or object
+	var designator_to_remove_name = designator_to_remove.name if designator_to_remove is Object else designator_to_remove
+	for i in designators.size():
+		var designator = designators[i]
+		if (designator.name if designator is Object else designator) == designator_to_remove_name:
+			designators[i] = null
+	designators.erase(null)
+	if self in $"/root/Game/Player".selection:
+		$"/root/Game/Player".update_selection_card()
+
+func _on_designate(designator):
+	pass
+
+func toggle_forbidden() -> void: # not everything should be forbiddable, but multiple descendants of Thing use this code (Door and Item)
+	var new_state = not (get_meta("forbidden") if has_meta("forbidden") else false)
+	set_meta("forbidden",new_state)
+	if new_state:
+		$"Label".add_child(load("res://ForbidOverlay.tscn").instance(),true)
+	else:
+		$"Label/ForbidOverlay".queue_free()
+	

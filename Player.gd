@@ -82,18 +82,27 @@ func set_mousetool(new_mousetool) -> void:
 			$"..".get("current_map").call("update")
 	mousetool = new_mousetool
 
+func get_selection() -> Array:
+	var new_array: Array = []
+	for selected in selection:
+		var ref = selected.get_ref()
+		if ref:
+			new_array.append(ref)
+	return new_array
+
+func rawget_selection() -> Array: return selection
+
 func select(new_selection = null,clear_old_selection: bool = true) -> void:
-	var changed = selection.duplicate()
+	var changed = get_selection().duplicate()
 	changed.append(new_selection)
 	#if selection.size() > 0 or new_selection == null:
 	if true:
 		var card = get_node_or_null("Camera2D/UI/SelectionCard")
 		if card:
-			card.name = "SelectionCardFreed"
 			card.queue_free()
 		if clear_old_selection:
 			selection.clear()
-	selection.append(new_selection)
+	selection.append(weakref(new_selection))
 	if new_selection:
 		var selection_card: Panel = (load("res://SelectionCard.tscn") as PackedScene).instance()
 		($"Camera2D/UI" as Control).add_child(selection_card,true)
@@ -109,23 +118,52 @@ func update_selection_card() -> void:
 	var selection_card: Panel = get_node_or_null("Camera2D/UI/SelectionCard")
 	if not selection_card:
 		return
-	if selection.size() == 1:
-		var selected: Thing = selection[0]
-		(selection_card.get_node("Title") as RichTextLabel).text = (selected as Thing).get_display_name()
-		var action_text: String = ""
-		if selected is Actor:
-			var current_action: Actions.BaseAction = (selected as Actor).get_current_action()
-			if not current_action:
-				action_text = "Idle"
-			else:
-				# warning-ignore:unsafe_property_access
-				if current_action.driver:
-					# warning-ignore:unsafe_property_access
-					action_text = current_action.driver.get_display_name()
-				else:
-					action_text = current_action.get_display_name()
-		(selection_card.get_node("CurrentAction") as RichTextLabel).text = action_text
-	elif selection.size() > 1:
-		var title_text: String = "Things"
-		(selection_card.get_node("Title") as RichTextLabel).text = title_text + " x" + str(selection.size()) # TODO: find if everything selected is of a common type and show that common type here because that's how RW does it so why not actually maybe that's a bad way of thinking
+	selection_card.get_node("DesignatorContainer").clear_buttons()
 		
+	var designators: Array = []
+	var selection_derefd: Array = get_selection()
+	if selection_derefd.size() > 0:
+		designators = selection_derefd.front().designators
+	if selection_derefd.size() > 1:
+		for i in range(1,selection_derefd.size()):
+			var selected = selection_derefd[i]
+			for j in designators.size():
+				if not (designators[j] in selected.designators):
+					designators[j] = null
+	while null in designators:
+		designators.erase(null)
+	
+	match selection_derefd.size():
+		0:
+			selection_card.queue_free()
+		1:
+			var selected: Thing = selection_derefd[0]
+			(selection_card.get_node("Title") as RichTextLabel).text = (selected as Thing).get_display_name()
+			var action_text: String = ""
+			if selected is Actor:
+				var current_action: Actions.BaseAction = (selected as Actor).get_current_action()
+				if not current_action:
+					action_text = "Idle"
+				else:
+					# warning-ignore:unsafe_property_access
+					if current_action.driver:
+						# warning-ignore:unsafe_property_access
+						action_text = current_action.driver.get_display_name()
+					else:
+						action_text = current_action.get_display_name()
+			(selection_card.get_node("CurrentAction") as RichTextLabel).text = action_text
+		_:
+			var title_text: String = "Things"
+			(selection_card.get_node("Title") as RichTextLabel).text = title_text + " x" + str(selection_derefd.size()) # TODO: find if everything selected is of a common type and show that common type here because that's how RW does it so why not actually maybe that's a bad way of thinking
+	for designator in designators:
+		var designator_object: Reference = load("res://Designators.gd")[designator.capitalize()].new() if not (designator is Object) else designator
+		designator_object.selection = selection_derefd.duplicate()
+		var new_button: Button = (load("res://UI/DesignatorButton.tscn") as PackedScene).instance()
+		new_button.designator = designator_object
+		new_button.text = designator_object.text
+		new_button.add_color_override("font_color",designator_object.text_color)
+		new_button.add_color_override("font_color_hover",designator_object.text_color)
+		selection_card.get_node("DesignatorContainer").add_child(new_button)
+		for selected in selection_derefd:
+			# warning-ignore:return_value_discarded
+			new_button.connect("pressed",selected,"_on_designate",[designator_object])

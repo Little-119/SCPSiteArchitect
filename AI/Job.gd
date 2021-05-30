@@ -12,5 +12,11 @@ var reserved_by
 func _init():
 	add_to_group("Jobs")
 
-func do(actor):
+func do(actor) -> void:
 	pass
+
+func on_done(actor) -> void:
+	pass
+
+func cancel():
+	queue_free()

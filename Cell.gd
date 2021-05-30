@@ -201,16 +201,19 @@ func add_child(child: Node,b: bool = false) -> void:
 		child.call("on_moved",old_parent)
 	if not old_parent or (map != old_parent.get("map")):
 		if child.get("type"):
+			map.propagate_call("on_cell_changed",[self])
 			map.emit_signal("thing_added",child)
 			if child.get("astar"):
 				child.get("astar").refresh()
-				map.connect("thing_added",child,"_on_map_added_thing")
+	elif old_parent: # if the node is moving between cells in the same map
+		map.propagate_call("on_cell_changed",[self])
 	zlevel_update(null)
 
 func remove_child(child: Node) -> void:
 	if child.get("type"):
 		contents.erase(child)
 	.remove_child(child)
+	map.propagate_call("on_cell_changed",[self])
 	order_children()
 	#if map:
 		#map.emit_signal("thing_removed",child)

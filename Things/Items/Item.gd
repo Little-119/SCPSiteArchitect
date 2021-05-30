@@ -11,3 +11,8 @@ func _init():
 
 func use(_user: Thing) -> void:
 	pass
+
+func _on_designate(designator):
+	._on_designate(designator)
+	if designator.name == "Forbid":
+		toggle_forbidden()

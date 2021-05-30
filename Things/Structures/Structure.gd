@@ -19,6 +19,7 @@ func _init().():
 	type = "Structure"
 	layer = LAYER.STRUCTURE
 	select_priority = 1
+	designators.append("deconstruct")
 
 func tool_lclick_oncell(cell: Cell, event: InputEvent) -> void:
 	.tool_lclick_oncell(cell, event)
@@ -60,10 +61,32 @@ func set_construction_state(value: int) -> void:
 					set_color(get_meta("unblueprinted_color"))
 					remove_meta("unblueprinted_color")
 	if get_map():
-		get_map().emit_signal("on_thing_added")
+		get_map().emit_signal("things_changed")
 	construction_state = value
+
+func deconstruct() -> void: # remove structure and drop resources
+	queue_free()
 
 class Construct extends "res://AI/Jobs/InteractWith.gd":
 	func on_done(actor):
 		get_parent().construction_state = CONSTRUCTION_STAGES.COMPLETE
 		.on_done(actor)
+
+class Deconstruct extends "res://AI/Jobs/InteractWith.gd":
+	func on_done(actor):
+		get_parent().deconstruct()
+		.on_done(actor)
+
+func _on_designate(designator):
+	if designator.name == "Deconstruct":
+		var new_state = not (get_meta("deconstructing") if has_meta("deconstructing") else false)
+		if $"/root/Game".has_meta("GodMode") and new_state:
+			deconstruct()
+		set_meta("deconstructing",new_state)
+		if new_state:
+			$"Label".add_child(load("res://DeconstructOverlay.tscn").instance(),true)
+			set_meta("deconstruct_job",emit_job(Deconstruct))
+		else:
+			$"Label/DeconstructOverlay".queue_free()
+			if has_meta("deconstruct_job"):
+				get_meta("deconstruct_job").cancel()
