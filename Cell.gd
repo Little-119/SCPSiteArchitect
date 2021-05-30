@@ -47,19 +47,23 @@ func get_cells_in_directions(directions: Array) -> Array:
 			adjacent_cells.append(cell)
 	return adjacent_cells
 
-enum {FOUR=4,SIX=6,EIGHT=8,TEN=10,TWENTYSIX=26}
+enum {FOUR=4,SIX=6,EIGHT=8,TEN=10,TWENTYSIX=26} # These are the numbers that can be passed to get_adjacent_cells
 
 func get_adjacent_cells(number: int):
-	var cells: Array = []
+	# keep in mind that these directions are relative to the camera.
+	# e.g. Vector3.BACK (0,0,1) is a tile up (away from the ground) in the game world
+	var cells: Array = get_cells_in_directions([Vector3.UP,Vector3.DOWN,Vector3.LEFT,Vector3.RIGHT])
+	# all allowed numbers of cells include the adjacent four cells
 	match number:
-		FOUR, SIX, EIGHT, TEN, TWENTYSIX:
-			cells += get_cells_in_directions([Vector3.UP,Vector3.DOWN,Vector3.LEFT,Vector3.RIGHT])
-			continue
+		FOUR:
+			pass
 		SIX: # adjacent including up and down
 			cells += get_cells_in_directions([Vector3.FORWARD,Vector3.BACK])
 		EIGHT, TEN, TWENTYSIX: # adjacent including diagonal on the same Z-Level
 			cells += get_cells_in_directions([Vector3.UP+Vector3.LEFT,Vector3.UP+Vector3.RIGHT,Vector3.DOWN+Vector3.LEFT,Vector3.DOWN+Vector3.RIGHT])
 			continue
+		EIGHT:
+			pass
 		TEN: # adjacent including diagonal on the same Z-level plus the two above and below cells
 			cells += get_cells_in_directions([Vector3.FORWARD,Vector3.BACK])
 		TWENTYSIX:
@@ -68,8 +72,6 @@ func get_adjacent_cells(number: int):
 				for i in dirs.size():
 					dirs[i] += z
 				cells += get_cells_in_directions(dirs)
-		FOUR, EIGHT:
-			pass
 		_:
 			push_error("Invalid number (%s) passed to %s.get_adjacent_cells" % [number,self])
 	return cells
