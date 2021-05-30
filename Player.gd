@@ -11,7 +11,7 @@ signal camera_moved
 
 var mousetool = null
 
-var selection: Array = []# setget set_selection
+var selection: Array = [] setget ,get_selection
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.is_pressed():
@@ -49,7 +49,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.is_pressed():
 		match (event as InputEventKey).scancode:
 			KEY_SPACE:
-				$"..".set_process(not $"..".is_processing()) # toggle pause
+				if not event.is_echo():
+					$"..".set_process(not $"..".is_processing()) # toggle pause
 			KEY_ESCAPE:
 				if mousetool:
 					set_mousetool(null)

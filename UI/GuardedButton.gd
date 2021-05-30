@@ -9,6 +9,7 @@ export(String) var uncovered_text: String = "(ARE YOU SURE?)"
 export(float,0,5) var debounce_time: float = 0.5
 
 func _init():
+	# warning-ignore:return_value_discarded
 	connect("pressed",self,"_on_pressed")
 
 func _on_pressed():
@@ -22,7 +23,9 @@ func _on_pressed():
 			debounce_timer.one_shot = true
 			debounce_timer.autostart = true
 			debounce_timer.wait_time = debounce_time
+			# warning-ignore:return_value_discarded
 			debounce_timer.connect("timeout",debounce_timer,"queue_free")
+			# warning-ignore:return_value_discarded
 			debounce_timer.connect("tree_exiting",self,"set_disabled",[false])
 			add_child(debounce_timer,true)
 		primed = true

@@ -8,7 +8,7 @@ enum {MOVE_OK, MOVE_DIFFERENT_MAP, MOVE_FAIL_GENERIC, MOVE_INVALID_CELL, MOVE_OB
 
 var actions: Array = [] setget ,get_actions
 
-var astar := CustomAStar.new() # Navigation mesh for this Actor. Let us meet again as stars
+var astar: AStar = CustomAStar.new() # Navigation mesh for this Actor. "Let us meet again As Stars"
 
 var sight_radius: float = 5.0
 
@@ -80,7 +80,7 @@ func is_cell_impassable(cell: Cell) -> bool:
 			continue
 		if thing is Structure and (thing as Structure).construction_state >= Structure.CONSTRUCTION_STAGES.WIP:
 			continue
-		if thing is Door:
+		if thing is Door: # This behavior is defined here in Actor.gd and not in Door.gd so Actor subtypes can override it
 			if thing.get("requires_fine_manipulation") and not has_fine_manipulation:
 				return true
 			if thing.has_meta("Forbidden") and thing.get_meta("Forbidden"):
@@ -177,7 +177,7 @@ func on_turn():
 			action.process()
 			break
 
-func get_actions_raw() -> Array:
+func rawget_actions() -> Array:
 	return actions
 
 func get_actions() -> Array:

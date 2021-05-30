@@ -37,6 +37,8 @@ func set_construction_state(value: int) -> void:
 	assert(value >= 0 and value <= 2,"Value out of range")
 	if construction_state == value:
 		return
+	if Engine.editor_hint:
+		construction_state = value
 	match value: # check new state, then check current state
 		CONSTRUCTION_STAGES.BLUEPRINT:
 			emit_job(Construct)

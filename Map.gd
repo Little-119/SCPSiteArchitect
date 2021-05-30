@@ -248,10 +248,7 @@ func _draw() -> void:
 				var box_pos: Vector2 = cell.position
 				draw_rect(Rect2(box_pos,Vector2.ONE * cell.scale.x * 32),Color.white,false)
 		if not (get_player() as Player).selection.empty():
-			for selected_i in (get_player() as Player).selection.size():
-				var selected = (get_player() as Player).selection[selected_i]
-				if not selected:
-					continue
+			for selected in (get_player() as Player).selection:
 				if selected.get("actions"):
 					var action = selected.actions.front()
 					while true:

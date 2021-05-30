@@ -51,6 +51,8 @@ class Wander extends Drive:
 					continue
 				if cell == actor.cell:
 					continue
+				# test_path_to is defined in CustomAStar (inner class in Actor.gd)
+				# warning-ignore:unsafe_method_access
 				if not actor.astar.test_path_to(cell):
 					continue
 				destinations.append(cell)

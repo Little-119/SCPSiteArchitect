@@ -10,7 +10,6 @@ var type := "Thing"
 var uid: int = -1
 # warning-ignore:unused_class_variable
 var layer: float = LAYER.EMPTY
-var size := Vector3.ONE
 
 # warning-ignore:unused_class_variable
 var select_priority: int = 0 # used in Cell.gd

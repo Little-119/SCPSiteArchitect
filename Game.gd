@@ -58,7 +58,7 @@ func _ready() -> void:
 	ready() # allows correctly overriding this in DebugGame
 
 func _unhandled_input(event: InputEvent):
-	if event.is_pressed():
+	if event.is_pressed() and not event.is_echo():
 		if event is InputEventKey:
 			match (event as InputEventKey).scancode:
 				KEY_ESCAPE:

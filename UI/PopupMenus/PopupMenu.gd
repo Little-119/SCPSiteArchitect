@@ -16,6 +16,7 @@ func _exit_tree():
 			continue
 		if sibling.name.ends_with("Menu"):
 			return
+	# warning-ignore:unsafe_method_access
 	$"/root/Game".set_paused(false)
 	for sibling in siblings:
 		if sibling == self:
