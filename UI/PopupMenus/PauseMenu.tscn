@@ -1,10 +1,23 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://UI/PopupMenus/PauseMenuButton.tscn" type="PackedScene" id=1]
 [ext_resource path="res://UI/PopupMenus/PauseMenu.gd" type="Script" id=2]
 [ext_resource path="res://UI/GuardedButton.gd" type="Script" id=3]
+[ext_resource path="res://Gfx/UITheme.tres" type="Theme" id=4]
 
+[sub_resource type="GDScript" id=1]
+script/source = "extends Button
 
+func _ready():
+	update_text()
+
+func update_text():
+	text = \"DEBUG: %s GOD MODE\" % (\"ENABLE\" if not Globals.god_mode else \"DISABLE\")
+
+func _on_pressed():
+	Globals.god_mode = not Globals.god_mode
+	update_text()
+"
 
 [node name="PauseMenu" type="Panel"]
 anchor_left = 0.5
@@ -15,6 +28,7 @@ margin_left = -110.0
 margin_top = -160.0
 margin_right = 110.0
 margin_bottom = 160.0
+theme = ExtResource( 4 )
 script = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -40,7 +54,15 @@ anchor_bottom = 1.0
 margin_top = -60.0
 margin_bottom = -10.0
 text = "QUIT TO DESKTOP"
+
+[node name="ToggleGodModeButton" parent="." instance=ExtResource( 1 )]
+margin_top = 175.0
+margin_bottom = 220.0
+text = "DEBUG: ENABLE GOD MODE"
+script = SubResource( 1 )
+
 [connection signal="pressed" from="ResumeButton" to="." method="_on_ResumeButton_pressed" flags=6]
 [connection signal="second_pressed" from="NewGameButton" to="." method="_on_NewGameButton_second_pressed"]
 [connection signal="pressed" from="OptionsButton" to="." method="_on_OptionsButton_pressed" flags=6]
 [connection signal="pressed" from="QuitButton" to="." method="_on_QuitButton_pressed" flags=6]
+[connection signal="pressed" from="ToggleGodModeButton" to="ToggleGodModeButton" method="_on_pressed"]

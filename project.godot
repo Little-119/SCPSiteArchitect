@@ -189,6 +189,7 @@ config/quit_on_go_back=false
 
 Settings="*res://Settings.gd"
 Constants="*res://Constants.gd"
+Globals="*res://Globals.gd"
 Actions="*res://Actions.gd"
 ThingsManager="*res://ThingsManager.gd"
 

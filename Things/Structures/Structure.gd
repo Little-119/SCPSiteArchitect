@@ -30,7 +30,7 @@ func tool_lclick_oncell(cell: Cell, event: InputEvent) -> void:
 			break
 	if valid:
 		var new_thing: Structure = (get_script() as GDScript).new()
-		new_thing.construction_state = CONSTRUCTION_STAGES.BLUEPRINT
+		new_thing.construction_state = CONSTRUCTION_STAGES.BLUEPRINT if not Globals.god_mode else CONSTRUCTION_STAGES.COMPLETE
 		cell.add_thing(new_thing)
 
 func set_construction_state(value: int) -> void:
@@ -82,7 +82,7 @@ class Deconstruct extends "res://AI/Jobs/InteractWith.gd":
 func _on_designate(designator):
 	if designator.name == "Deconstruct":
 		var new_state = not (get_meta("deconstructing") if has_meta("deconstructing") else false)
-		if $"/root/Game".has_meta("GodMode") and new_state:
+		if Globals.god_mode and new_state:
 			deconstruct()
 		set_meta("deconstructing",new_state)
 		if new_state:
