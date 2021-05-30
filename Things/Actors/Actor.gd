@@ -126,6 +126,30 @@ func move(direction: Vector3) -> int:
 	var new_pos: Vector3 = get_parent_cell().cell_position + direction
 	return move_to(new_pos)
 
+func find_adjacent_spot(to: Cell) -> Cell: # If the Actor needs to path to a cell adjacent to a (probably impassable) cell, it can find it with this
+	var adjacent_cells = to.get_adjacent_cells(Cell.EIGHT)
+	if get_parent_cell() in adjacent_cells:
+		return get_parent_cell() # We're already adjacent to the destination
+	for i in adjacent_cells.size(): # remove impassable cells from adjacent_cells
+		var v = adjacent_cells[i]
+		if is_cell_impassable(v):
+			adjacent_cells[i] = null
+	while null in adjacent_cells: # clear up any nulls created by the removal of impassable cells
+		adjacent_cells.erase(null)
+	if adjacent_cells.empty():
+		return null # whoops, all the cells are impassable I guess, nevermind
+	var closest: Cell = null
+	var lowest_distance: int = pow(2,15)-1 # 16-bit int. Probably doesn't matter, can be arbitray high-enough number, but INF loops over for some reason
+	var parent_cell_id = get_parent_cell().point_id
+	for cell in adjacent_cells:
+		var path: PoolIntArray = astar.get_id_path(parent_cell_id,cell.point_id)
+		if path.empty():
+			continue
+		if path.size() < lowest_distance:
+			closest = cell
+			lowest_distance = path.size()
+	return closest
+
 func on_cell_changed(cell: Cell):
 	if cell.point_id > astar.get_point_count():
 		return
