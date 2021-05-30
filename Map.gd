@@ -33,6 +33,22 @@ func get_is_debug() -> bool: # get whether this map is being used in automated t
 
 var orphaned_things: Array = [] # Array of Things not in a cell, presumably because they were added in editor
 
+var signal_queue: Array = []
+
+func on_turn():
+	for sig in signal_queue:
+		emit_signal(sig[0],sig[1],sig[2],sig[3])
+	signal_queue.clear()
+
+func queue_signal(signal_name: String,a=null,b=null,c=null) -> void: # queue signal until next turn
+	if not has_signal(signal_name):
+		return
+	var sig: Array = [signal_name,a,b,c]
+	for queued in signal_queue:
+		if (queued as Array).hash() == sig.hash():
+			return
+	signal_queue.append(sig)
+
 func set_size(newsize: Vector3) -> void: # Change the size of the map, which is the amount of colums/rows/layers.
 	if Engine.editor_hint:
 		size = newsize
