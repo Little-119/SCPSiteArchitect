@@ -139,7 +139,7 @@ func find_adjacent_spot(to: Cell) -> Cell: # If the Actor needs to path to a cel
 	if adjacent_cells.empty():
 		return null # whoops, all the cells are impassable I guess, nevermind
 	var closest: Cell = null
-	var lowest_distance: int = pow(2,15)-1 # 16-bit int. Probably doesn't matter, can be arbitray high-enough number, but INF loops over for some reason
+	var lowest_distance: float = INF
 	var parent_cell_id = get_parent_cell().point_id
 	for cell in adjacent_cells:
 		var path: PoolIntArray = astar.get_id_path(parent_cell_id,cell.point_id)
