@@ -63,8 +63,6 @@ func set_construction_state(value: int) -> void:
 				CONSTRUCTION_STAGES.BLUEPRINT: # blueprint-to-complete
 					set_color(get_meta("unblueprinted_color"))
 					remove_meta("unblueprinted_color")
-	if get_map():
-		get_map().emit_signal("things_changed")
 	construction_state = value
 
 func deconstruct() -> void: # remove structure and drop resources
