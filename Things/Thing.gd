@@ -76,6 +76,9 @@ func get_game():
 func get_player():
 	return get_relative("get_game","Player")
 
+func get_meta_or_null(key: String): # get_meta but defaults to null instead of erroring
+	return get_meta(key) if has_meta(key) else null
+
 func _init() -> void:
 	var collider = StaticBody.new()
 	var shape_owner = collider.create_shape_owner(Node.new())
@@ -254,7 +257,7 @@ func sort_things_by_distance(a: Thing,b: Thing) -> bool:
 	return parent_cell_pos.distance_squared_to(a.cell.cell_position) < parent_cell_pos.distance_squared_to(b.cell.cell_position)
 
 func sort_jobs_by_distance(a: Job, b: Job):
-	sort_things_by_distance(a.get_parent(),b.get_parent())
+	return sort_things_by_distance(a.get_parent(),b.get_parent())
 
 func find_things_in_self(filter_func_holder, filter_func_name, filter_args) -> Array:
 	var found: Array = []
