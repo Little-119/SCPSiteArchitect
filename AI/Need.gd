@@ -1,6 +1,7 @@
 extends Reference
 class_name Need
 
+# warning-ignore:unused_class_variable
 var type: String = "Need"
 # warning-ignore:unused_class_variable
 var actor: Actor

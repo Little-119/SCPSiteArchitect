@@ -12,9 +12,11 @@ var reserved_by
 func _init():
 	add_to_group("Jobs")
 
+# warning-ignore:unused_argument
 func do(actor) -> void:
 	pass
 
+# warning-ignore:unused_argument
 func on_done(actor) -> void:
 	pass
 

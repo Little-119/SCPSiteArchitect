@@ -11,5 +11,6 @@ func _on_OptionsButton_pressed():
 	queue_free()
 
 func _on_NewGameButton_second_pressed():
+	# warning-ignore:unsafe_method_access
 	$"/root/Game".new_game()
 	queue_free()

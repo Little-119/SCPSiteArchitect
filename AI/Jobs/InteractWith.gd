@@ -9,5 +9,6 @@ func do(actor):
 	else:
 		on_done(actor)
 
+# warning-ignore:unused_argument
 func on_done(actor):
 	queue_free()

@@ -119,6 +119,7 @@ func update_selection_card() -> void:
 	var selection_card: Panel = get_node_or_null("Camera2D/UI/SelectionCard")
 	if not selection_card:
 		return
+	# warning-ignore:unsafe_method_access
 	selection_card.get_node("DesignatorContainer").clear_buttons()
 		
 	var designators: Array = []
@@ -158,8 +159,10 @@ func update_selection_card() -> void:
 			(selection_card.get_node("Title") as RichTextLabel).text = title_text + " x" + str(selection_derefd.size()) # TODO: find if everything selected is of a common type and show that common type here because that's how RW does it so why not actually maybe that's a bad way of thinking
 	for designator in designators:
 		var designator_object: Reference = load("res://Designators.gd")[designator.capitalize()].new() if not (designator is Object) else designator
+		# warning-ignore:unsafe_property_access
 		designator_object.selection = selection_derefd.duplicate()
 		var new_button: Button = (load("res://UI/DesignatorButton.tscn") as PackedScene).instance()
+		# warning-ignore:unsafe_property_access
 		new_button.designator = designator_object
 		# warning-ignore:unsafe_property_access
 		designator_object.button = new_button

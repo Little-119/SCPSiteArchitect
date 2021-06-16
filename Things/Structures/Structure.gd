@@ -41,6 +41,7 @@ func set_construction_state(value: int) -> void:
 		construction_state = value
 	match value: # check new state, then check current state
 		CONSTRUCTION_STAGES.BLUEPRINT:
+			# warning-ignore:return_value_discarded
 			emit_job(Construct)
 			match construction_state:
 				CONSTRUCTION_STAGES.COMPLETE: # complete-to-blueprint. Usually called when placed by player
