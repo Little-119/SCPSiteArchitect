@@ -195,7 +195,9 @@ class IconLerper extends Node:
 		if what == NOTIFICATION_PARENTED:
 			update()
 	func update() -> void:
-		t += .05
+		var universe = get_parent().get_universe()
+		if not universe.turn_timer.paused:
+			t += .05 * (.1 / universe.turn_timer.wait_time)
 		if t > 1:
 			($".." as Thing).set_icon_offset(Vector2.ZERO)
 			queue_free()

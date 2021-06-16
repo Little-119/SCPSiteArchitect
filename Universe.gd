@@ -5,8 +5,25 @@ class_name Universe
 var maps: Array = []
 var current_map = null setget set_current_map
 
-var turn_timer := Timer.new()
+var turn_timer: CustomTurnTimer = CustomTurnTimer.new()
 var turn: int = 0
+
+class CustomTurnTimer extends Timer:
+	const default_wait_time: float = .1
+	
+	func _init():
+		name = "TurnTimer"
+		wait_time = default_wait_time
+	
+	func get_time_scale() -> float:
+		return default_wait_time / wait_time
+	
+	func set_time_scale(value: float) -> void:
+		wait_time = default_wait_time * (1/value)
+	
+	func _process(delta):
+		pass
+		#print(paused)
 
 func set_current_map(map: Map):
 	current_map = map
@@ -22,8 +39,6 @@ func _init(to_load = null) -> void:
 		var map = Map.load_map(to_load)
 		add_child(map,true)
 		set_current_map(map)
-	turn_timer.name = "TurnTimer"
-	turn_timer.wait_time = .1
 	# warning-ignore:return_value_discarded
 	turn_timer.connect("timeout",self,"on_turn")
 	add_child(turn_timer)
@@ -42,3 +57,17 @@ func on_turn() -> void:
 func set_process(enable: bool) -> void:
 	turn_timer.paused = not enable
 	.set_process(enable)
+
+func _input(event: InputEvent):
+	if event is InputEventKey and event.pressed and not event.is_echo():
+		if event.is_action_type(): # ordered by usage, probably. Yes this is apparently the best way to do this with InputActions
+			if event.is_action("time_normal"):
+				turn_timer.set_time_scale(1)
+			elif event.is_action("time_faster"):
+				turn_timer.set_time_scale(3)
+			elif event.is_action("time_slow"):
+				turn_timer.set_time_scale(.05)
+			elif event.is_action("time_fastest"):
+				turn_timer.set_time_scale(5)
+			elif event.is_action("time_fast"):
+				turn_timer.set_time_scale(2)
