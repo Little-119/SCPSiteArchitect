@@ -255,20 +255,20 @@ var drives: Array = []
 func drives_sorter(a: Object,b: Object) -> bool:
 	return a.get("priority") > b.get("priority")
 
-func add_drive(new_drive_name: String,priority = null,unique: bool = false):
-	# warning-ignore:unsafe_cast
-	var new_drive: Reference = ((load("res://AI/Drives.gd") as GDScript).get(new_drive_name) as GDScript).new()
+func add_drive(new_drive_name: String,priority = null,unique: bool = false) -> void:
+	var new_drive: Reference = load("res://AI/Drives/%s.gd" % new_drive_name).new()
+	if unique:
+		for other_drive in drives:
+			# warning-ignore:unsafe_property_access
+			if other_drive.type == new_drive_name.to_lower(): # We've found a drive of the same type
+				if priority: # update its priority with the one this is being called with
+					other_drive.priority = priority
+				return # there can only be one, so return
 	# warning-ignore:unsafe_property_access
 	new_drive.actor = self
 	if priority:
 		# warning-ignore:unsafe_property_access
 		new_drive.priority = priority
-	if unique:
-		for other_drive in drives:
-			# warning-ignore:unsafe_property_access
-			if other_drive.type == new_drive.type:
-				other_drive.priority = priority
-				return
 	drives.append(new_drive)
 
 func remove_drive(drive_name: String) -> void:
