@@ -161,9 +161,8 @@ func update_selection_card() -> void:
 		designator_object.selection = selection_derefd.duplicate()
 		var new_button: Button = (load("res://UI/DesignatorButton.tscn") as PackedScene).instance()
 		new_button.designator = designator_object
-		new_button.text = designator_object.text
-		new_button.add_color_override("font_color",designator_object.text_color)
-		new_button.add_color_override("font_color_hover",designator_object.text_color)
+		# warning-ignore:unsafe_property_access
+		designator_object.button = new_button
 		selection_card.get_node("DesignatorContainer").add_child(new_button)
 		for selected in selection_derefd:
 			# warning-ignore:return_value_discarded
