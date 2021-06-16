@@ -5,10 +5,7 @@ var designator: Object
 func _input(event: InputEvent):
 	if event is InputEventKey and (event as InputEventKey).pressed and not (event as InputEventKey).is_echo():
 		# warning-ignore:unsafe_property_access
-		if not designator.key:
-			return
-		# warning-ignore:unsafe_property_access
-		if (event as InputEventKey).scancode == designator.key:
+		if (designator.action and event.is_action(designator.action)):
 			emit_signal("pressed")
 
 func _on_pressed():

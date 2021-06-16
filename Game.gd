@@ -59,24 +59,17 @@ func _ready() -> void:
 
 func _unhandled_input(event: InputEvent):
 	if event.is_pressed() and not event.is_echo():
-		if event is InputEventKey:
-			match (event as InputEventKey).scancode:
-				KEY_ESCAPE:
-					# Overlaps with use of KEY_ESCAPE in Player
-					if not get_node_or_null("/root/Game/Player/Camera2D/UI/PauseMenu"):
-						get_tree().set_input_as_handled()
-						($"/root/Game/Player/Camera2D/UI" as Control).add_child((load("res://UI/PopupMenus/PauseMenu.tscn") as PackedScene).instance())
-					set_paused(not paused)
-				KEY_QUOTELEFT:
-					if OS.is_debug_build():
-						get_tree().set_input_as_handled()
-						get_tree().quit(0)
-				KEY_F1: # Toggles GUT visibility
-					if OS.is_debug_build():
-						var new_gut_visibility: bool = not Settings.get("debug_gut_visible")
-						Settings.set("debug_gut_visible",new_gut_visibility)
-						($"DebugContainer" as Control).visible = new_gut_visibility
-						get_tree().set_input_as_handled()
+		if event.is_action("menu"):
+			if not get_node_or_null("/root/Game/Player/Camera2D/UI/PauseMenu"):
+				get_tree().set_input_as_handled()
+				($"/root/Game/Player/Camera2D/UI" as Control).add_child((load("res://UI/PopupMenus/PauseMenu.tscn") as PackedScene).instance())
+			set_paused(not paused)
+		elif event.is_action("toggle_godotunittesting"):
+			if OS.is_debug_build():
+				var new_gut_visibility: bool = not Settings.get("debug_gut_visible")
+				Settings.set("debug_gut_visible",new_gut_visibility)
+				($"DebugContainer" as Control).visible = new_gut_visibility
+				get_tree().set_input_as_handled()
 
 func set_paused(enable: bool) -> void:
 	if not current_universe:

@@ -46,15 +46,13 @@ func _unhandled_input(event: InputEvent) -> void:
 			var new_z = clamp(($"Camera2D" as Camera2D).zoom.x + z_delta,zoom_min,zoom_max)
 			($"Camera2D" as Camera2D).zoom = Vector2(new_z,new_z)
 			($"Camera2D" as Camera2D).scale = Vector2(new_z,new_z)
-	if event is InputEventKey and event.is_pressed():
-		match (event as InputEventKey).scancode:
-			KEY_SPACE:
-				if not event.is_echo():
-					$"..".set_process(not $"..".is_processing()) # toggle pause
-			KEY_ESCAPE:
-				if mousetool:
-					set_mousetool(null)
-					get_tree().set_input_as_handled()
+	if event.is_action("pause_toggle"):
+		if event.pressed and not event.is_echo():
+			$"..".set_paused(not $"..".paused) # toggle pause
+	elif event.is_action("cancel"):
+		if mousetool:
+			set_mousetool(null)
+			get_tree().set_input_as_handled()
 
 func _process(delta: float) -> void:
 	var move_dir := Vector2.ZERO

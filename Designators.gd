@@ -8,8 +8,7 @@ class Designator extends Reference:
 	var icon: Texture setget ,get_icon
 	# warning-ignore:unused_class_variable
 	var selection: Array
-	# warning-ignore:unused_class_variable
-	var key: int
+	var action: String
 	
 	func on_activate():
 		pass
@@ -28,7 +27,6 @@ class Designator extends Reference:
 		var button_label_text = label_text
 		if not label_text:
 			button_label_text = name
-			prints(button_label_text,button_label_text.length())
 			if button_label_text.length() > 6:
 				button_label_text = regex.sub(button_label_text,"",true)
 		(new_button.get_node("Label") as Label).text = button_label_text.substr(0,6)
@@ -39,7 +37,7 @@ class Deconstruct extends Designator:
 		name = "Deconstruct"
 		text = "-"
 		text_color = Color.orange
-		key = KEY_X
+		action = "designate_deconstruct"
 	
 	func set_button(new_button: Button):
 		var second_text: Label = new_button.get_node("SecondText")
@@ -52,7 +50,7 @@ class Forbid extends Designator:
 	func _init():
 		name = "Forbid"
 		text = "F"
-		key = KEY_F
+		action = "designate_toggleforbid"
 	
 	func get_text_color():
 		return Color.red if selection.front().get_meta_or_null("forbidden") else Color.green

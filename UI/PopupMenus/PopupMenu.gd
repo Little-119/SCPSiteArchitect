@@ -28,5 +28,5 @@ func _exit_tree():
 func _input(event: InputEvent):
 	if event.is_pressed():
 		if event is InputEventKey:
-			if (event as InputEventKey).scancode == KEY_ESCAPE:
+			if (event as InputEventKey).is_action("ui_cancel"):
 				queue_free()
