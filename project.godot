@@ -37,7 +37,7 @@ _global_script_classes=[ {
 "base": "Reference",
 "class": "Drive",
 "language": "GDScript",
-"path": "res://AI/Drive.gd"
+"path": "res://AI/Drives/Drive.gd"
 }, {
 "base": "Item",
 "class": "Food",
