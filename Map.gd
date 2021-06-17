@@ -53,6 +53,7 @@ func set_size(newsize: Vector3) -> void: # Change the size of the map, which is 
 	if Engine.editor_hint:
 		size = newsize
 		return
+	var cells_tmp: Array = cells.duplicate() # temporary list of all cells, where index can't be inferred from position with pos_to_index
 	# Creates new cells if needed, but can't remove them.
 	size = newsize
 	# warning-ignore:narrowing_conversion
@@ -72,7 +73,7 @@ func set_size(newsize: Vector3) -> void: # Change the size of the map, which is 
 				if x[xn]:
 					continue
 				var nc: Cell = Cell.new()
-				cells.append(nc)
+				cells_tmp.append(nc)
 				x[xn] = nc
 				nc.cell_position = Vector3(xn,yn,zn)
 				nc.set("map",self)
@@ -81,6 +82,14 @@ func set_size(newsize: Vector3) -> void: # Change the size of the map, which is 
 				add_child(nc)
 			y[yn] = x
 		cells_matrix[zn] = y
+	
+	# clear cells array and re-add all cells in an order that allows inference of index from position with pos_to_index
+	cells.clear()
+	cells.resize(cells_tmp.size())
+	for cell in cells_tmp:
+		var index: int = pos_to_index(cell.cell_position)
+		cells[index] = cell
+	
 	update()
 	for cell in cells:
 		for adj_cell in cell.get_adjacent_cells(Cell.TEN):
@@ -192,6 +201,8 @@ func load_submap(submap: Map, offset: Vector3) -> void: # Take another map, merg
 
 func pos_to_index(pos: Vector3) -> int:
 	# takes a Vector3 and returns the index for a cell at that position
+	# returns -1 if position is not all positive
+	# doesn't care if position is larger than size of map
 	if pos.x < 0 or pos.y < 0 or pos.z < 0:
 		return -1
 	return int(pos.x + (pos.y*size.x) + (pos.z * size.x * size.y))
