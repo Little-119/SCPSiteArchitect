@@ -4,6 +4,4 @@ extends Node
 
 var RNG: RandomNumberGenerator = RandomNumberGenerator.new()
 
-const turn_length: float = 0.1 # length of a turn in seconds
-
 onready var default_cell: Cell = (load("res://DefaultCell.tscn") as PackedScene).instance()

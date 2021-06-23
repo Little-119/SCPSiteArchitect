@@ -9,7 +9,7 @@ var turn_timer: CustomTurnTimer = CustomTurnTimer.new()
 var turn: int = 0
 
 class CustomTurnTimer extends Timer:
-	const default_wait_time: float = .1
+	var default_wait_time: float = ProjectSettings.get_setting("Game/turn_length")
 	
 	func _init():
 		name = "TurnTimer"
