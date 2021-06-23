@@ -21,14 +21,18 @@ func _init() -> void:
 		if result:
 			if result.strings[1] in settings:
 				var value = result.strings[2]
-				if value.to_lower() == "true":
-					value = true
-				elif value.to_lower() == "false":
-					value = false
-				elif value.is_valid_integer():
-					value = int(value)
-				elif value.is_valid_float():
-					value = float(value)
+				match value.to_lower():
+					"", "null":
+						value = null
+					"true":
+						value = true
+					"false":
+						value = false
+					_:
+						if value.is_valid_integer():
+							value = int(value)
+						elif value.is_valid_float():
+							value = float(value)
 				settings[result.strings[1]] = value
 		if settings_file.eof_reached():
 			break
