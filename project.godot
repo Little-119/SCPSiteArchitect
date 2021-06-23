@@ -14,6 +14,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Things/Actors/Actor.gd"
 }, {
+"base": "",
+"class": "Bed",
+"language": "GDScript",
+"path": "res://Things/Structures/Furniture/Bed.gd"
+}, {
 "base": "Node2D",
 "class": "Cell",
 "language": "GDScript",
@@ -43,6 +48,11 @@ _global_script_classes=[ {
 "class": "Food",
 "language": "GDScript",
 "path": "res://Things/Items/Food.gd"
+}, {
+"base": "Structure",
+"class": "Furniture",
+"language": "GDScript",
+"path": "res://Things/Structures/Furniture/Furniture.gd"
 }, {
 "base": "",
 "class": "GitAPI",
@@ -146,12 +156,14 @@ _global_script_classes=[ {
 } ]
 _global_script_class_icons={
 "Actor": "",
+"Bed": "",
 "Cell": "",
 "DebugGame": "",
 "Dirt": "",
 "Door": "",
 "Drive": "",
 "Food": "",
+"Furniture": "",
 "GitAPI": "",
 "GuardedButton": "",
 "Humanoid": "",

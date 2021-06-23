@@ -83,8 +83,11 @@ func is_cell_impassable(cell: Cell) -> bool:
 			continue
 		if thing == self:
 			continue
-		if thing is Structure and (thing as Structure).construction_state >= Structure.CONSTRUCTION_STAGES.WIP:
-			continue
+		if thing is Structure:
+			if thing is Furniture:
+				continue
+			if (thing as Structure).construction_state >= Structure.CONSTRUCTION_STAGES.WIP:
+				continue
 		if thing is Door: # This behavior is defined here in Actor.gd and not in Door.gd so Actor subtypes can override it
 			if thing.get("requires_fine_manipulation") and not has_fine_manipulation:
 				return true

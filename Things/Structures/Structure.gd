@@ -6,6 +6,8 @@ tool
 enum CONSTRUCTION_STAGES {COMPLETE,WIP,BLUEPRINT}
 export(CONSTRUCTION_STAGES) var construction_state: int = CONSTRUCTION_STAGES.COMPLETE setget set_construction_state
 
+var asignee setget set_asignee
+
 func get_display_name() -> String:
 	var suffix: String = ""
 	match CONSTRUCTION_STAGES:
@@ -86,3 +88,6 @@ func _on_designate(designator):
 			$"Label/DeconstructOverlay".queue_free()
 			if has_meta("deconstruct_job"):
 				get_meta("deconstruct_job").cancel()
+
+func set_asignee(value):
+	asignee = value

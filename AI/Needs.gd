@@ -16,3 +16,16 @@ class Hunger extends Need:
 	func get_magnitude():
 		magnitude = (nutrition / nutrition_capacity)
 		return .get_magnitude()
+
+class Sleep extends Need:
+	var rest: float = 30.0
+	var rest_capacity: float = 100.0
+	func _init():
+		type = "Hunger"
+	func on_life_process():
+		rest -= .1
+	func on_ai_process():
+		if (rest / rest_capacity) <= .3:
+			actor.add_drive("Sleep",Actor.PRIORITY.NEED - 5,true)
+		else:
+			actor.remove_drive("Sleep")

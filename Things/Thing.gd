@@ -238,7 +238,7 @@ func can_exist_on(cell: Cell) -> bool: # Checks if there's anything this Thing c
 			return false
 	return true
 
-func find_things_custom(filter_func_holder, filter_func_name, filter_args) -> Array:
+func find_things_custom(filter_func_holder: Object, filter_func_name: String, filter_args: Array = []) -> Array:
 	var found: Array = []
 	if not get_map():
 		push_error("Tried to find things of type when not in a map")

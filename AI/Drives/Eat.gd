@@ -13,4 +13,4 @@ func act():
 		return 0
 	else:
 		actor.do_action("UseItem",food,self)
-		return 
+		return 0

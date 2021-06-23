@@ -18,5 +18,5 @@ func _init():
 func get_display_name() -> String: # returns name to display to player when indicating what actor is doing
 	return type.capitalize() if not display_name else display_name.capitalize()
 
-func act() -> void:
+func act():
 	return
