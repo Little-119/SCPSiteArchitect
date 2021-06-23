@@ -62,11 +62,12 @@ class BaseAction extends Node:
 			DO_NOW:
 				actioner.rawget_actions().clear()
 				actioner.rawget_actions().insert(0,weakref(self))
-		
-		if is_inside_tree():
-			if get_node_or_null("/root/Game/Player") and (actioner in $"/root/Game/Player".get("selection")) and allowed_execute:
-				if actioner.get("map"):
-					actioner.get("map").update() # for drawing path lines, etc
+	func _ready():
+		if get_node_or_null("/root/Game/Player") and (actioner in $"/root/Game/Player".get("selection")) and allowed_execute:
+			if actioner.get("map"):
+				actioner.get("map").update() # for drawing path lines, etc
+			if is_debug_mode():
+				set_meta("is_debug_mode",true)
 	func process() -> void:
 		if subaction:
 			subaction.process()
