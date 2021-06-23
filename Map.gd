@@ -304,5 +304,5 @@ func _draw() -> void:
 # warning-ignore:unsafe_property_access
 func get_local_time(turn: int = $"..".turn) -> Dictionary:
 	var time = (load("res://TimeObject.gd") as GDScript).new()
-	time.seconds = turn * Constants.turn_length
+	time.seconds = turn * ProjectSettings.get_setting("Game/turn_length")
 	return time.get_all()
