@@ -2,6 +2,9 @@ extends Node2D
 class_name Universe
 # Universes are collections of maps, with their own turn timer
 
+const TIME_SPEED: Dictionary = {SLOW=.5,NORMAL=1,FAST=2,FASTER=3,FASTEST=5}
+# Enum for timescale multipliers. const dictionary because enums don't allow floats, only ints
+
 var maps: Array = []
 var current_map = null setget set_current_map
 
@@ -62,12 +65,12 @@ func _input(event: InputEvent):
 	if event is InputEventKey and event.pressed and not event.is_echo():
 		if event.is_action_type(): # ordered by usage, probably. Yes this is apparently the best way to do this with InputActions
 			if event.is_action("time_normal"):
-				turn_timer.set_time_scale(1)
+				turn_timer.set_time_scale(TIME_SPEED.NORMAL)
 			elif event.is_action("time_faster"):
-				turn_timer.set_time_scale(3)
+				turn_timer.set_time_scale(TIME_SPEED.FASTER)
 			elif event.is_action("time_slow"):
-				turn_timer.set_time_scale(.05)
+				turn_timer.set_time_scale(TIME_SPEED.SLOW)
 			elif event.is_action("time_fastest"):
-				turn_timer.set_time_scale(5)
+				turn_timer.set_time_scale(TIME_SPEED.FASTEST)
 			elif event.is_action("time_fast"):
-				turn_timer.set_time_scale(2)
+				turn_timer.set_time_scale(TIME_SPEED.FAST)
