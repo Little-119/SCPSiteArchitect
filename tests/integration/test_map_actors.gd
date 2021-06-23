@@ -7,7 +7,7 @@ func before_each():
 	actor = Actor.new()
 
 func after_each():
-	actor.queue_free()
+	actor.free()
 	.after_each()
 
 func test_actor_moveto():

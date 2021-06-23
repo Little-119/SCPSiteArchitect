@@ -157,6 +157,9 @@ func _draw():
 		draw_rect(Rect2(0,0,ProjectSettings.get_setting("Game/cell_size"),ProjectSettings.get_setting("Game/cell_size")),Color.white,false,2)
 
 func queue_free() -> void:
+	if not is_inside_tree():
+		.queue_free()
+		return
 	if get_map():
 		get_map().emit_signal("thing_removed")
 	if get_node_or_null("/root/Game/Player") and self in $"/root/Game/Player".selection:
