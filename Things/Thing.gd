@@ -7,6 +7,7 @@ const theme = preload("res://Gfx/ThingTheme.tres")
 const LAYER = preload("res://LayersEnum.gd")
 
 var type := "Thing"
+
 var uid: int = -1
 # warning-ignore:unused_class_variable
 var layer: float = LAYER.EMPTY
@@ -96,6 +97,9 @@ func _ready() -> void:
 	uid = ThingsManager.next_thing_uid
 	ThingsManager.next_thing_uid += 1
 	create_sprite()
+
+func copy() -> Thing: # Makes a new Thing of this Thing's class
+	return (get_script() as GDScript).new()
 
 func create_sprite() -> void:
 	var label: Label = get_node_or_null("Label")
@@ -223,6 +227,12 @@ func tool_lclick_oncell(clicked_cell: Cell, event: InputEvent) -> void: # called
 	pass
 
 func can_coexist_with(_other_thing: Thing) -> bool: # check if this Thing can be on the same tile as another Thing. Used for placing, probably not for moving
+	return true
+
+func can_exist_on(cell: Cell) -> bool: # Checks if there's anything this Thing can't coexist with on a tile
+	for other_thing in cell.contents:
+		if not can_coexist_with(other_thing):
+			return false
 	return true
 
 func find_things_custom(filter_func_holder, filter_func_name, filter_args) -> Array:
