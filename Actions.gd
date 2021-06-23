@@ -46,7 +46,7 @@ class BaseAction extends Node:
 	func _init(parent: Node = null,behavior: int = DO_NOW,force: bool = false) -> void:
 		allowed_execute = behavior != NO_EXECUTE
 		forced = force
-		parent.call_deferred("add_child",self,true)
+		parent.add_child(self,true)
 		if parent is Actor:
 			actioner = parent
 		else:
