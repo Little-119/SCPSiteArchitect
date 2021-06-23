@@ -1,4 +1,4 @@
-extends "res://UI/MainPanel.gd"
+extends "MainPanel.gd"
 
 func _init() -> void:
 	var buildables: Array = ThingsManager.get_things_of_type("Structure")
@@ -10,7 +10,7 @@ func _init() -> void:
 		b.rect_size = Vector2(64,64)
 		b.light_mask = 0
 		# warning-ignore:return_value_discarded
-		b.connect("pressed",self,"equip_buildable",[item])
+		b.connect("pressed",self,"equip_mousetool",[item])
 		add_child(b)
 
 func _ready():
