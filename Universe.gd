@@ -24,9 +24,6 @@ class CustomTurnTimer extends Timer:
 	func set_time_scale(value: float) -> void:
 		wait_time = default_wait_time * (1/value)
 	
-	func _process(delta):
-		pass
-		#print(paused)
 
 func set_current_map(map: Map):
 	current_map = map
