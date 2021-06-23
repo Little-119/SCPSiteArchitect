@@ -1,9 +1,13 @@
-extends "res://UI/MainPanel.gd"
+extends Panel
 
 func _init() -> void:
-	var buildables: Array = ThingsManager.get_things_of_type("Structure")
-	for i in buildables.size():
-		var item: Thing = buildables[i]
+	var actors: Array = ThingsManager.get_things_of_type("Actor")
+	name = "HirePanel"
+	for i in actors.size():
+		var item: Thing = actors[i]
+		print(item)
+		if item.abstract:
+			continue
 		var b := Button.new()
 		b.clip_text = true
 		b.text = item.type

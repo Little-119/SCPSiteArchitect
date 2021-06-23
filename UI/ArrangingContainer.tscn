@@ -1,0 +1,32 @@
+[gd_scene load_steps=2 format=2]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Container
+
+# Arranges children Controls from left to right, then top to bottom
+# To illustrate:
+# 0 1 2
+# 3 4 5
+# 6 7 8
+# Assumes children Controls are of the same size
+
+func _on_sort_children():
+	var children = get_children()
+	for i in children.size():
+		var child = children[i]
+		var x = fmod(i,rect_size.x/child.rect_size.x)
+		x *= child.rect_size.x
+		var y = floor(i/(rect_size.x/child.rect_size.x))
+		y *= child.rect_size.y
+		child.rect_position = Vector2(x,y)
+"
+
+[node name="ArrangingContainer" type="Container"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = SubResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[connection signal="sort_children" from="." to="." method="_on_sort_children"]

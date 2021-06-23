@@ -59,6 +59,11 @@ func _ready():
 		return
 	ai_init()
 
+func tool_lclick_oncell(cell: Cell, event: InputEvent) -> void:
+	.tool_lclick_oncell(cell, event)
+	if can_exist_on(cell):
+		cell.add_thing(copy())
+
 func add_child(node: Node, legible_unique_name: bool = false) -> void:
 	if node.get_node_or_null(".."):
 		node.get_node("..").remove_child(node)

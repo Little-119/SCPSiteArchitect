@@ -1,0 +1,33 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://UI/ArrangingContainer.tscn" type="PackedScene" id=1]
+[ext_resource path="res://UI/MainPanel.tscn" type="PackedScene" id=2]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends \"res://UI/MainPanel.gd\"
+
+func _init() -> void:
+	var actors: Array = ThingsManager.get_things_of_type(\"Actor\")
+	for i in actors.size():
+		var item: Thing = actors[i]
+		var b := Button.new()
+		b.clip_text = true
+		b.text = item.type
+		b.rect_size = Vector2(64,64)
+		b.light_mask = 0
+		# warning-ignore:return_value_discarded
+		b.connect(\"pressed\",self,\"equip_buildable\",[b,item])
+		add_child(b)
+
+func _ready():
+	for child in get_children():
+		if child is Button:
+			remove_child(child)
+			$\"Container\".add_child(child)
+"
+
+[node name="HirePanel" instance=ExtResource( 2 )]
+margin_right = 288.0
+script = SubResource( 1 )
+
+[node name="Container" parent="." index="0" instance=ExtResource( 1 )]

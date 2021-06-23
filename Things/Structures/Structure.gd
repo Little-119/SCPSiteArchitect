@@ -23,13 +23,8 @@ func _init().():
 
 func tool_lclick_oncell(cell: Cell, event: InputEvent) -> void:
 	.tool_lclick_oncell(cell, event)
-	var valid: bool = true
-	for other_thing in cell.contents:
-		if not can_coexist_with(other_thing):
-			valid = false
-			break
-	if valid:
-		var new_thing: Structure = (get_script() as GDScript).new()
+	if can_exist_on(cell):
+		var new_thing: Structure = copy()
 		new_thing.construction_state = CONSTRUCTION_STAGES.BLUEPRINT if not Globals.god_mode else CONSTRUCTION_STAGES.COMPLETE
 		cell.add_thing(new_thing)
 

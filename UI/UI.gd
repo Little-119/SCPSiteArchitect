@@ -14,9 +14,9 @@ func _process(_delta) -> void:
 
 func _on_mainbutton_pressed(button_name: String) -> void:
 	match button_name:
-		"Architect":
-			if has_node("ArchitectPanel"):
-				$"ArchitectPanel".queue_free()
+		"Architect", "Hire":
+			if has_node(button_name + "Panel"):
+				get_node(button_name + "Panel").queue_free()
 			else:
 				# warning-ignore:return_value_discarded
-				add_child((load("res://UI/ArchitectPanel.tscn") as PackedScene).instance())
+				add_child((load("res://UI/%sPanel.tscn" % button_name) as PackedScene).instance())
