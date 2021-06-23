@@ -22,6 +22,7 @@ func _init().():
 	layer = LAYER.STRUCTURE
 	select_priority = 1
 	designators.append("deconstruct")
+	designators.append("cancel")
 
 func tool_lclick_oncell(cell: Cell, event: InputEvent) -> void:
 	.tool_lclick_oncell(cell, event)

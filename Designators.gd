@@ -54,3 +54,17 @@ class Forbid extends Designator:
 	
 	func get_text_color():
 		return Color.red if selection.front().get_meta_or_null("forbidden") else Color.green
+
+class Cancel extends Designator:
+	func _init():
+		name = "Cancel"
+		text = "O"
+		text_color = Color.red
+		action = "designate_cancel"
+	
+	func set_button(new_button: Button):
+		var second_text: Label = new_button.get_node("SecondText")
+		second_text.add_color_override("font_color",Color.red)
+		second_text.add_color_override("font_color_hover",Color.red)
+		second_text.text = "/"
+		.set_button(new_button)
