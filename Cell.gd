@@ -213,7 +213,7 @@ func remove_child(child: Node) -> void:
 	if child.get("type"):
 		contents.erase(child)
 	.remove_child(child)
-	map.propagate_call("on_cell_changed",[self])
+	(map.propagate_call("on_cell_changed",[self]) if map else null) # "if not map: ..." does not work here for some reason
 	order_children()
 	#if map:
 		#map.emit_signal("thing_removed",child)
