@@ -10,7 +10,7 @@ func _init() -> void:
 		b.rect_size = Vector2(64,64)
 		b.light_mask = 0
 		# warning-ignore:return_value_discarded
-		b.connect("pressed",self,"equip_buildable",[b,item])
+		b.connect("pressed",self,"equip_buildable",[item])
 		add_child(b)
 
 func _ready():
