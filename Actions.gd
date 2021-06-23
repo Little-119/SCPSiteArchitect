@@ -35,7 +35,7 @@ class BaseAction extends Node:
 			if get_node_or_null("/root/Game/Player") and actioner in $"/root/Game/Player".get("selection"):
 				$"/root/Game/Player".call("update_selection_card")
 	func is_debug_mode() -> bool: # checks if this action is part of automated testing
-		return get_path().get_name(2) == "DebugContainer"
+		return actioner.get_path().get_name(2) == "DebugContainer"
 	# warning-ignore:unused_class_variable
 	var path: PoolVector3Array # Path to target, if needed
 	# warning-ignore:unused_class_variable
@@ -46,7 +46,7 @@ class BaseAction extends Node:
 	func _init(parent: Node = null,behavior: int = DO_NOW,force: bool = false) -> void:
 		allowed_execute = behavior != NO_EXECUTE
 		forced = force
-		parent.add_child(self,true)
+		parent.call_deferred("add_child",self,true)
 		if parent is Actor:
 			actioner = parent
 		else:
