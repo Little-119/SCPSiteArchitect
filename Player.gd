@@ -151,6 +151,8 @@ func update_selection_card() -> void:
 						action_text = current_action.driver.get_display_name()
 					else:
 						action_text = current_action.get_display_name()
+				selection_card.get_node("Needs").refresh()
+				
 			(selection_card.get_node("CurrentAction") as RichTextLabel).text = action_text
 		_:
 			var title_text: String = "Things"

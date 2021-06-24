@@ -5,6 +5,7 @@ class Hunger extends Need:
 	var nutrition_capacity: float = 2000.0
 	func _init():
 		type = "Hunger"
+		display_name = "Nutrition"
 	func on_life_process():
 		nutrition -= 1
 	func on_ai_process():
@@ -22,7 +23,7 @@ class Sleep extends Need:
 	var rest: float = 300.0 setget set_rest
 	var rest_capacity: float = 1000.0
 	func _init():
-		type = "Hunger"
+		type = "Sleep"
 	func get_magnitude():
 		magnitude = (rest / rest_capacity)
 		return .get_magnitude()

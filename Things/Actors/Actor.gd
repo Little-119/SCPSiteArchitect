@@ -208,6 +208,8 @@ func on_turn():
 		if action.allowed_execute:
 			action.process()
 			break
+	if self in get_node("/root/Game/Player").get_selection():
+		get_node("/root/Game/Player/Camera2D/UI/SelectionCard/Needs").refresh()
 
 func rawget_actions() -> Array:
 	return actions
