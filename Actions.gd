@@ -69,7 +69,7 @@ class BaseAction extends Node:
 			if is_debug_mode():
 				set_meta("is_debug_mode",true)
 	func process() -> void:
-		if subaction:
+		if subaction and is_instance_valid(subaction):
 			subaction.process()
 		else:
 			execute()
