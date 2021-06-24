@@ -18,14 +18,26 @@ class Hunger extends Need:
 		return .get_magnitude()
 
 class Sleep extends Need:
-	var rest: float = 30.0
-	var rest_capacity: float = 100.0
+	const REST_DRAIN_PER_TURN: int = 1
+	var rest: float = 300.0 setget set_rest
+	var rest_capacity: float = 1000.0
 	func _init():
 		type = "Hunger"
+	func get_magnitude():
+		magnitude = (rest / rest_capacity)
+		return .get_magnitude()
 	func on_life_process():
-		rest -= .1
+		self.rest -= REST_DRAIN_PER_TURN
+	static func actor_is_sleeping(actor) -> bool:
+		for action in actor.get_actions():
+			if action is Actions.UseStructure and action.target and "rest_effectiveness" in action.target:
+				return true
+		return false
 	func on_ai_process():
-		if (rest / rest_capacity) <= .3:
+		if get_magnitude() <= .3:
 			actor.add_drive("Sleep",Actor.PRIORITY.NEED - 5,true)
 		else:
-			actor.remove_drive("Sleep")
+			if not actor_is_sleeping(actor) or get_magnitude() >= .95:
+				actor.remove_drive("Sleep")
+	func set_rest(value: float):
+		rest = clamp(value, 0, rest_capacity)

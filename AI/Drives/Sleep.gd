@@ -25,11 +25,8 @@ func act():
 	
 	if not bed:
 		return 1
-	elif (bed.get_parent_cell() == actor.get_parent_cell()):
-		actor.needs_dict["Sleep"].rest += 70
-		return 0
-	elif actor.doing_action("MoveTo",bed.get_parent_cell(),self):
+	elif actor.doing_action("UseStructure",bed,self):
 		return 0
 	else:
-		actor.do_action("MoveTo",bed.get_parent_cell(),self)
+		actor.do_action("UseStructure",bed,self)
 		return 0

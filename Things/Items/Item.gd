@@ -9,7 +9,7 @@ var use_time = 10
 func _init():
 	type = "Item"
 
-func use(_user: Thing) -> void:
+func use(_user: Thing, _args: Array) -> void:
 	pass
 
 func _on_designate(designator):

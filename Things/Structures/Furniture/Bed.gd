@@ -15,3 +15,10 @@ func set_asignee(value):
 		#asignee.get_ref().remove_meta("Bed")
 		pass
 	asignee = value
+
+func use(user: Thing, args: Array):
+	if "needs_dict" in user:
+		var sleep_need: Need = user.needs_dict["Sleep"]
+		sleep_need.rest += sleep_need.REST_DRAIN_PER_TURN + (1 * rest_effectiveness)
+		print(user.needs_dict["Sleep"].rest)
+		return 0

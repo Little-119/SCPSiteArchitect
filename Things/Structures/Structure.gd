@@ -8,6 +8,8 @@ export(CONSTRUCTION_STAGES) var construction_state: int = CONSTRUCTION_STAGES.CO
 
 var asignee setget set_asignee
 
+var interaction_point_offset: Vector3 = Vector3.ZERO
+
 func get_display_name() -> String:
 	var suffix: String = ""
 	match CONSTRUCTION_STAGES:
@@ -92,3 +94,6 @@ func _on_designate(designator):
 
 func set_asignee(value):
 	asignee = value
+
+func use(_user: Thing,_args: Array) -> int:
+	return 1

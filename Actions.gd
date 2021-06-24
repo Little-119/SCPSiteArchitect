@@ -212,8 +212,9 @@ class TakeItem extends BaseAction:
 
 class UseItem extends BaseAction:
 	func get_class() -> String: return "UseItem"
-	func _init(parent: Node = null,behavior: int = DO_NOW,force: bool = false).(parent,behavior,force) -> void:
-		pass
+	var use_args: Array = []
+	func _init(parent: Node = null,behavior: int = DO_NOW,force: bool = false,args_to_pass: Array = []).(parent,behavior,force) -> void:
+		use_args = args_to_pass
 	func execute() -> void:
 		if target.get_parent() == actioner:
 			if progress >= target.use_time:
@@ -225,3 +226,21 @@ class UseItem extends BaseAction:
 			if not subaction:
 				subaction = TakeItem.new(self,DO_NOW,forced)
 				subaction.target = target
+
+class UseStructure extends BaseAction:
+	func get_class() -> String: return "UseStructure"
+	var use_args: Array = []
+	func _init(parent: Node = null,behavior: int = DO_NOW,force: bool = false,args_to_pass: Array = []).(parent,behavior,force) -> void:
+		use_args = args_to_pass
+	func execute() -> void:
+		var interaction_cell: Cell = target.get_parent_cell().get_adjacent_cell(target.interaction_point_offset)
+		if actioner in interaction_cell.contents:
+			var result = target.use(actioner,use_args)
+			if result == 1:
+				finish()
+				return
+		else:
+			if not subaction:
+				subaction = MoveTo.new(self,DO_NOW,forced)
+				subaction.target = interaction_cell
+	

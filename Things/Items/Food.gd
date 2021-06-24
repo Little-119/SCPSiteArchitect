@@ -9,6 +9,6 @@ func _init():
 	character = "o"
 	use_time = 10
 
-func use(user: Thing) -> void:
+func use(user: Thing, _args: Array) -> void:
 	(user as Actor).needs_dict.Hunger.nutrition += nutrition
 	queue_free()
