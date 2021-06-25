@@ -76,12 +76,14 @@ func get_adjacent_cells(number: int):
 			push_error("Invalid number (%s) passed to %s.get_adjacent_cells" % [number,self])
 	return cells
 
-func get_cells_in_radius(radius: float,multi_z: bool = false) -> Array: # TODO: this can probably be optimized
-	var cells = []
-	for cell in map.cells:
-		if cell_position.distance_to(cell.cell_position) <= radius and (not multi_z or cell.cell_position.z == cell_position.z):
-			cells.append(cell)
-	return cells
+func get_cells_in_radius(radius: float,multi_z: bool = false) -> Array: # Returns a sqaure as a band-aid performance fix. TODO: Make it return a circle of cells, but optimized
+	var directions: Array = []
+	var z_radius = .5 if not multi_z else radius
+	for z in range(-floor(z_radius),ceil(z_radius)):
+		for y in range(-floor(radius),ceil(radius)):
+			for x in range(-floor(radius),ceil(radius)):
+				directions.append(Vector3(x,y,z))
+	return get_cells_in_directions(directions)
 
 func on_left_click(event: InputEventWithModifiers) -> void: # called in Map.gd. Probably could be called here, too bad!
 	var thing_to_select
@@ -188,21 +190,23 @@ func zlevel_update(zlevel) -> void:
 	modulate = Color(1,1,1,clamp(1-(diff/-4),0,1))
 
 func add_child(child: Node,b: bool = false) -> void:
-	assert(child)
 	var old_parent
-	if child.get("type"): # 'if child is Thing' causes an error. Workaround: see if it has a property called type
+	if "type" in child: # 'if child is Thing' causes an error. Workaround: see if it has a property called type
 		old_parent = child.get_node_or_null("..")
 		if old_parent:
 			old_parent.remove_child(child)
 		contents.append(child)
 		order_children()
 	.add_child(child,b)
-	if child.get("type"): # same as above, but this needs to be called after add_child
+	if "type" in child: # same as above, but this needs to be called after add_child
 		child.call("on_moved",old_parent)
-	if not old_parent or (map != old_parent.get("map")):
+	if not old_parent or (map != old_parent.map): # Object isn't being moved from any cell, or the old parent is in a different map
+		if old_parent:
+			old_parent.map.things.erase(child)
 		if child.get("type"):
 			map.propagate_call("on_cell_changed",[self])
 			map.emit_signal("thing_added",child)
+			map.things.append(child)
 			if child.get("astar"):
 				child.get("astar").refresh()
 	elif old_parent: # if the node is moving between cells in the same map

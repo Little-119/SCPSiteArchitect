@@ -10,7 +10,7 @@ var display_name setget ,get_display_name # name to display to player. can be se
 var priority: float = 0
 
 func _to_string():
-	return type + " " + str(priority)
+	return "[Drive (%s)]" % [type.capitalize()]
 
 func _init():
 	type = "drive"
@@ -19,4 +19,7 @@ func get_display_name() -> String: # returns name to display to player when indi
 	return type.capitalize() if not display_name else display_name.capitalize()
 
 func act():
-	return
+	pass
+
+func act_async(_userdata): 
+	pass

@@ -81,6 +81,7 @@ func get_meta_or_null(key: String): # get_meta but defaults to null instead of e
 	return get_meta(key) if has_meta(key) else null
 
 func _init() -> void:
+	add_to_group("things")
 	var collider = StaticBody.new()
 	var shape_owner = collider.create_shape_owner(Node.new())
 	var shape = BoxShape.new()
@@ -175,8 +176,12 @@ func queue_free() -> void:
 		get_parent_cell().remove_child(self)
 	.queue_free()
 
-func on_turn() -> void:
+func on_turn_async(_userdata) -> void:
 	pass
+
+func on_turn() -> void:
+	for entry in found_things_cache.values():
+		entry.turns += 1
 
 func force_move(to,dest_map = get_map()) -> void:
 	if to is Vector3: #otherwise assume 'to' is a cell
@@ -238,17 +243,73 @@ func can_exist_on(cell: Cell) -> bool: # Checks if there's anything this Thing c
 			return false
 	return true
 
-func find_things_custom(filter_func_holder: Object, filter_func_name: String, filter_args: Array = []) -> Array:
+var found_things_cache: Dictionary = {}
+
+class FoundThingsCacheEntry extends Reference: # TODO: Find some way to update this cache when needed
+	# difficult to do considering I don't know what filters will be added in the future
+	var expired: bool = false
+	var turns: int = 0 setget set_turns
+	var times_read: int = 0
+	func expire():
+		found.clear()
+		expired = true
+	func set_turns(value: int):
+		if value >= 500:
+			expire()
+		else:
+			turns = value
+	var index: String
+	var found: Array setget set_found,get_found
+	func set_found(value: Array):
+		for i in value.size():
+			value[i] = weakref(value[i])
+		return value
+	func get_found() -> Array:
+		var array: Array = []
+		for thing_ref in found:
+			var thing: Thing = thing_ref.get_ref()
+			if thing:
+				array.append(thing)
+		return array
+		
+	func _init(cache_holder: Thing, index_new: String,found_new: Array):
+		index = index_new
+		found = found_new
+		
+		cache_holder.found_things_cache[index] = self
+	
+	static func generate_index(map,filter_func_holder: Object, filter_func_name: String, filter_args: Array = []) -> String:
+		return str(map) + str(filter_func_holder) + filter_func_name + str(filter_args)
+
+func find_things_custom(filter_func_holder: Object, filter_func_name: String, filter_args: Array = [], radius: int = 0) -> Array:
 	var found: Array = []
-	if not get_map():
-		push_error("Tried to find things of type when not in a map")
-		return found
-	for cell1 in get_map().cells:
-		for thing in cell1.contents:
+	var cache_index: String = FoundThingsCacheEntry.generate_index(get_map(),filter_func_holder,filter_func_name,filter_args)
+	if radius < 1:
+		if found_things_cache.has(cache_index):
+			var cached: FoundThingsCacheEntry = found_things_cache[cache_index]
+			if not cached.expired:
+				cached.times_read += 1
+				return cached.found
+	filter_args.insert(0,null)
+	if true:
+		var to_search: Array = get_map().cells if radius < 1 else get_parent_cell().get_cells_in_radius(radius)
+		for cell1 in to_search:
+			var contents = cell1.contents
+			for thing in cell1.contents:
+				if thing == self:
+					continue
+				filter_args[0] = thing
+				if filter_func_holder.callv(filter_func_name,filter_args):
+					found.append(thing)
+	else:
+		for thing in get_map().things:
 			if thing == self:
 				continue
-			if filter_func_holder.callv(filter_func_name,[thing] + filter_args):
+			filter_args[0] = thing
+			if filter_func_holder.callv(filter_func_name,filter_args):
 				found.append(thing)
+	
+	FoundThingsCacheEntry.new(self,cache_index,found)
 	return found
 
 static func func_is(thing, script): # helper function for below

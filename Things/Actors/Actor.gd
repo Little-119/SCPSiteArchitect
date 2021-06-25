@@ -201,6 +201,9 @@ func _physics_process(_delta):
 	pass
 	#see()
 
+func on_turn_async(_userdata):
+	ai_process_async()
+
 func on_turn():
 	ai_process()
 	.on_turn()
@@ -303,7 +306,7 @@ func ai_init():
 	for drive_to_add in inherent_drives:
 		add_drive(drive_to_add)
 
-func ai_process():
+func _process_needs():
 	for need in needs:
 		for type in ["life","ai"]:
 			var funcname = "on_%s_process_%s" % [type,need.type]
@@ -311,6 +314,19 @@ func ai_process():
 				call(funcname,need) # Need is passed so that override can also invoke normal behavior
 			else:
 				need.call("on_%s_process" % type)
+
+func ai_process_async():
+	if not drives.empty():
+		var threads: Array = []
+		for drive in drives:
+			var thread: Thread = Thread.new()
+			thread.start(drive,"act_async")
+			threads.append(thread)
+		for thread in threads:
+			thread.wait_to_finish()
+
+func ai_process():
+	_process_needs()
 	drives.sort_custom(self,"drives_sorter")
 	if not drives.empty():
 		for drive in drives:

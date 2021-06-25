@@ -52,7 +52,16 @@ func add_child(node: Node, legible_unique_name: bool = false):
 func on_turn() -> void:
 	turn += 1
 	for map in maps:
-		map.call("propagate_call","on_turn",[],true)
+		var threads: Array = []
+		var start = OS.get_ticks_usec()
+		for thing in map.things:
+			var t = Thread.new()
+			t.start(thing,"on_turn_async")
+			threads.append(t)
+		for t in threads:
+			t.wait_to_finish()
+		for thing in map.things:
+			thing.on_turn()
 
 func set_process(enable: bool) -> void:
 	turn_timer.paused = not enable

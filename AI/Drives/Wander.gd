@@ -11,17 +11,17 @@ func act():
 	if not moveto in actor.actions:
 		moveto = null
 	if not moveto:
-		var destinations = []
-		for cell in actor.cell.get_cells_in_radius(3):
-			if actor.is_cell_impassable(cell):
-				continue
-			if cell == actor.cell:
-				continue
-			# test_path_to is defined in CustomAStar (inner class in Actor.gd)
-			# warning-ignore:unsafe_method_access
+		var destinations: Array = actor.cell.get_cells_in_radius(3)
+		var destination: Cell = null
+		while not destinations.empty():
+			# randomly pick a cell, check if it's reachable. If not, pick another one, repeat
+			var i: int = (randi() % destinations.size())
+			var cell: Cell = destinations[i]
 			if not actor.astar.test_path_to(cell):
+				destinations.remove(i)
 				continue
-			destinations.append(cell)
-		if not destinations.empty():
-			var destination = destinations[randi() % destinations.size()]
+			else:
+				destination = cell
+				break
+		if destination:
 			moveto = actor.do_action("MoveTo",destination,self)

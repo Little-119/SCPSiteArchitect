@@ -8,18 +8,20 @@ signal thing_added # emitted in Cell.add_child
 # warning-ignore:unused_signal
 signal thing_removed
 
-const max_size := Vector3(512,512,32) # maximum allowed size
+const max_size: Vector3 = Vector3(512,512,32) # maximum allowed size
 export(Vector3) var size: Vector3 setget set_size # size is the amount of columns/rows/layers of Cells
-var cells_matrix := [] # 3-D array of cells. In order of Z(-levels), then Y, then X
-var cells := [] # 1-D list of all cells in map
+var cells_matrix: Array = [] # 3-D array of cells. In order of Z(-levels), then Y, then X
+var cells: Array = [] # 1-D list of all cells in map
+
+var things: Array = []
 
 var current_zlevel: int = 0 # z-level currently being displayed to the player
 
-var astar := AStar.new() # AStar resource which contains points that mobs can copy from for their own CustomAStar
+var astar: AStar = AStar.new() # AStar resource which contains points that mobs can copy from for their own CustomAStar
 # Let us meet again as stars.
 
 func _to_string():
-	return "[Map:%s]" % get_instance_id()
+	return "[Map:" + str(get_instance_id()) + "]"
 
 func get_player() -> Node:
 	return get_node_or_null("../../Player") # @./Universe/Game/Player
