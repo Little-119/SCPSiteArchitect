@@ -9,6 +9,14 @@ export(String) var nick_name: String = ""
 export(String) var alias: String = "" # e.g. D-class designations
 export(String) var culture: String = "American"
 
+func set_full_name(name_as_array: PoolStringArray):
+	first_name = name_as_array[0]
+	last_name = name_as_array[1]
+	if name_as_array.size() >= 3:
+		nick_name = name_as_array[2]
+	else:
+		nick_name = ""
+
 func _to_string():
 	return "[%s (Name: '%s'):%s]" % [type,get_display_name(),get_instance_id()]
 
@@ -31,6 +39,4 @@ func _init():
 	drives.append("Work")
 	drives.append("Wander")
 	var new_name = generate_name(gender, culture)
-	first_name = new_name[0]
-	last_name = new_name[1]
-	nick_name = new_name[2]
+	set_full_name(new_name)
