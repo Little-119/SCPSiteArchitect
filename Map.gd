@@ -116,7 +116,7 @@ static func load_map(from) -> Map: # load a map from ones made in the editor or 
 					push_error("Error when loading map: Did not find scene at " + str(from))
 				else:
 					var instance = scene.instance()
-					if instance.get_script() != load("res://Map.gd"):
+					if instance.get_script() != load("res://Map.gd") and instance.get_script().get_base_script() != load("res://Map.gd"):
 						push_error("Error when loading map: Found scene, but scene is not map. Path: " + str(from))
 					else:
 						instance.collect_orphans()
