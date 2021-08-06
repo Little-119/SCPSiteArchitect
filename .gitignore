@@ -9,3 +9,5 @@ lib/
 export_presets.cfg
 *.translation
 .mono/
+
+addons/gd2cs.py
