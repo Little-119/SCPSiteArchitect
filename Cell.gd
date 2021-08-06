@@ -38,43 +38,42 @@ func get_adjacent_cell(offset: Vector3) -> Cell:
 		return null
 	return map.get_cell_or_null(Vector3(cell_position.x+offset.x,cell_position.y-offset.y,cell_position.z-offset.z))
 
-func get_cells_in_directions(directions: Array) -> Array:
-	var adjacent_cells = []
-	for direction in directions:
-		if direction == Vector3.ZERO: continue
-		var cell: Cell = get_adjacent_cell(direction)
+func get_cells_in_directions(directions: PoolVector3Array) -> Array:
+	var adj_cells: Array = []
+	for dir in directions:
+		var cell: Cell = get_adjacent_cell(dir)
 		if cell:
-			adjacent_cells.append(cell)
-	return adjacent_cells
+			adj_cells.append(cell)
+	return adj_cells
 
 enum {FOUR=4,SIX=6,EIGHT=8,TEN=10,TWENTYSIX=26} # These are the numbers that can be passed to get_adjacent_cells
 
 func get_adjacent_cells(number: int):
 	# keep in mind that these directions are relative to the camera.
 	# e.g. Vector3.BACK (0,0,1) is a tile up (away from the ground) in the game world
-	var cells: Array = get_cells_in_directions([Vector3.UP,Vector3.DOWN,Vector3.LEFT,Vector3.RIGHT])
+	var directions: PoolVector3Array = [Vector3.UP,Vector3.DOWN,Vector3.LEFT,Vector3.RIGHT]
 	# all allowed numbers of cells include the adjacent four cells
 	match number:
 		FOUR:
 			pass
 		SIX: # adjacent including up and down
-			cells += get_cells_in_directions([Vector3.FORWARD,Vector3.BACK])
+			directions.append_array(PoolVector3Array([Vector3.FORWARD,Vector3.BACK]))
 		EIGHT, TEN, TWENTYSIX: # adjacent including diagonal on the same Z-Level
-			cells += get_cells_in_directions([Vector3.UP+Vector3.LEFT,Vector3.UP+Vector3.RIGHT,Vector3.DOWN+Vector3.LEFT,Vector3.DOWN+Vector3.RIGHT])
+			directions.append_array(PoolVector3Array([Vector3.UP+Vector3.LEFT,Vector3.UP+Vector3.RIGHT,Vector3.DOWN+Vector3.LEFT,Vector3.DOWN+Vector3.RIGHT]))
 			continue
 		EIGHT:
 			pass
 		TEN: # adjacent including diagonal on the same Z-level plus the two above and below cells
-			cells += get_cells_in_directions([Vector3.FORWARD,Vector3.BACK])
+			directions.append_array(PoolVector3Array([Vector3.FORWARD,Vector3.BACK]))
 		TWENTYSIX:
-			for z in [Vector3.FORWARD,Vector3.BACK]:
-				var dirs = [Vector3.ZERO,Vector3.UP,Vector3.DOWN,Vector3.LEFT,Vector3.RIGHT,Vector3.UP+Vector3.LEFT,Vector3.UP+Vector3.RIGHT,Vector3.DOWN+Vector3.LEFT,Vector3.DOWN+Vector3.RIGHT]
+			for z in PoolVector3Array([Vector3.FORWARD,Vector3.BACK]):
+				var dirs: PoolVector3Array = [Vector3.ZERO,Vector3.UP,Vector3.DOWN,Vector3.LEFT,Vector3.RIGHT,Vector3.UP+Vector3.LEFT,Vector3.UP+Vector3.RIGHT,Vector3.DOWN+Vector3.LEFT,Vector3.DOWN+Vector3.RIGHT]
 				for i in dirs.size():
 					dirs[i] += z
-				cells += get_cells_in_directions(dirs)
+				directions += dirs
 		_:
 			push_error("Invalid number (%s) passed to %s.get_adjacent_cells" % [number,self])
-	return cells
+	return get_cells_in_directions(directions)
 
 func get_cells_in_radius(radius: float,multi_z: bool = false) -> Array: # Returns a sqaure as a band-aid performance fix. TODO: Make it return a circle of cells, but optimized
 	var directions: Array = []

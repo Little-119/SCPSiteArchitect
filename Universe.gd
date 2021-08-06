@@ -49,17 +49,18 @@ func add_child(node: Node, legible_unique_name: bool = false):
 		node.name = "Map " + str(node.get_instance_id())
 	.add_child(node,legible_unique_name)
 
+var on_turn_async_threads: Array = []
+
 func on_turn() -> void:
 	turn += 1
+	for t in on_turn_async_threads:
+		t.wait_to_finish()
 	for map in maps:
-		var threads: Array = []
-		var start = OS.get_ticks_usec()
+		on_turn_async_threads.clear()
 		for thing in map.things:
 			var t = Thread.new()
-			t.start(thing,"on_turn_async")
-			threads.append(t)
-		for t in threads:
-			t.wait_to_finish()
+			t.start(thing,"on_turn_async",null,Thread.PRIORITY_LOW)
+			on_turn_async_threads.append(t)
 		for thing in map.things:
 			thing.on_turn()
 
