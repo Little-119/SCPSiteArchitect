@@ -9,12 +9,12 @@ func _init():
 
 func act_async(_userdata):
 	if not moveto and not destination:
-		var destinations: Array = actor.cell.get_cells_in_radius(3)
+		var destinations: Array = actor.cell.get_vector3s_in_radius(3)
 		var destination: Cell = null
 		while not destinations.empty():
 			# randomly pick a cell, check if it's reachable. If not, pick another one, repeat
 			var i: int = (randi() % destinations.size())
-			var cell: Cell = destinations[i]
+			var cell: Cell = actor.cell.get_adjacent_cell(destinations[i])
 			if not actor.astar.test_path_to(cell):
 				destinations.remove(i)
 				continue

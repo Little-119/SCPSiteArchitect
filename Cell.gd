@@ -75,14 +75,24 @@ func get_adjacent_cells(number: int):
 			push_error("Invalid number (%s) passed to %s.get_adjacent_cells" % [number,self])
 	return get_cells_in_directions(directions)
 
-func get_cells_in_radius(radius: float,multi_z: bool = false) -> Array: # Returns a sqaure as a band-aid performance fix. TODO: Make it return a circle of cells, but optimized
-	var directions: Array = []
+static func get_vector3s_in_radius(radius: float, multi_z: bool = false) -> PoolVector3Array: # like get_cells_in_radius, but returns an array
+	# Returns a sqaure as a band-aid performance fix. TODO: Make it return a circle of cells, but optimized
+	var directions: PoolVector3Array = []
 	var z_radius = .5 if not multi_z else radius
-	for z in range(-floor(z_radius),ceil(z_radius)):
+	for z in (range(-floor(radius),ceil(radius))) if multi_z else [0]:
 		for y in range(-floor(radius),ceil(radius)):
 			for x in range(-floor(radius),ceil(radius)):
 				directions.append(Vector3(x,y,z))
-	return get_cells_in_directions(directions)
+	return directions
+
+func get_positions_in_radius(radius: float, multi_z: bool = false) -> PoolVector3Array:
+	var directions: PoolVector3Array = get_vector3s_in_radius(radius, multi_z)
+	for i in directions.size():
+		directions[i] += cell_position
+	return directions
+
+func get_cells_in_radius(radius: float, multi_z: bool = false) -> Array:
+	return get_cells_in_directions(get_vector3s_in_radius(radius,multi_z))
 
 func on_left_click(event: InputEventWithModifiers) -> void: # called in Map.gd. Probably could be called here, too bad!
 	var thing_to_select
